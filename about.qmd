@@ -16,4 +16,16 @@ about:
 
 ---
 
-About this blog
+:::{#hero-heading}
+
+Matt Triano is a Data Scientist at the University of Chicago's Urban Labs. When not innovating on data platforms, Matt enjoys exploring new tech, open source development, and hardware hacking.
+
+## Education
+
+DePaul University | Chicago, IL
+M.S. in Computer Science | Sept 2013 - Mar 2018
+
+Purdue University | West Lafayette, IN
+B.S. in Physics | Aug 2006 - Dec 2010
+
+:::
