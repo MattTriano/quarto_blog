@@ -9,8 +9,8 @@
 <link>https://www.matttriano.net/index.html</link>
 <atom:link href="https://www.matttriano.net/index.xml" rel="self" type="application/rss+xml"/>
 <description>A blog by Matt Triano</description>
-<generator>quarto-1.2.335</generator>
-<lastBuildDate>Sun, 23 Apr 2023 05:00:00 GMT</lastBuildDate>
+<generator>quarto-1.2.475</generator>
+<lastBuildDate>Sun, 23 Apr 2023 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Post With Code</title>
   <dc:creator>Harlow Malloc</dc:creator>
@@ -29,7 +29,7 @@
   <category>code</category>
   <category>analysis</category>
   <guid>https://www.matttriano.net/posts/post-with-code/index.html</guid>
-  <pubDate>Sun, 23 Apr 2023 05:00:00 GMT</pubDate>
+  <pubDate>Sun, 23 Apr 2023 00:00:00 GMT</pubDate>
   <media:content url="https://www.matttriano.net/posts/post-with-code/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -50,7 +50,7 @@
  ]]></description>
   <category>news</category>
   <guid>https://www.matttriano.net/posts/welcome/index.html</guid>
-  <pubDate>Thu, 20 Apr 2023 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 20 Apr 2023 00:00:00 GMT</pubDate>
   <media:content url="https://www.matttriano.net/posts/welcome/thumbnail.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
