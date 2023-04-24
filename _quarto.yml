@@ -1,0 +1,17 @@
+project:
+  type: website
+
+website:
+  title: "Triano's Quarto Blog"
+  site-url: https://www.matttriano.net
+  description: "A blog by Matt Triano"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/MattTriano
+
+format:
+  html:
+    theme: darkly
+    css: styles.css
