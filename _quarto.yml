@@ -13,6 +13,10 @@ website:
       - icon: rss
         href: index.xml
 
+listing:
+  contents: posts
+  feed: true
+
 format:
   html:
     theme: darkly
