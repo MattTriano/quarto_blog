@@ -1,9 +1,30 @@
 [
   {
+    "listing": "/posts/post-with-code/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/welcome/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/002_notebook_test/jupyter_quarto.html",
+    "items": []
+  },
+  {
     "listing": "/index.html",
     "items": [
+      "/posts/002_notebook_test/jupyter_quarto.html",
       "/posts/post-with-code/index.html",
       "/posts/welcome/index.html"
+    ]
+  },
+  {
+    "listing": "/about.html",
+    "items": [
+      "/posts/post-with-code/index.html",
+      "/posts/welcome/index.html",
+      "/posts/002_notebook_test/jupyter_quarto.html"
     ]
   }
 ]
