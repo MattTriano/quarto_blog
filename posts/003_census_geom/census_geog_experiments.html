@@ -799,17 +799,19 @@ url:       https://www2.census.gov/geo/tiger/TIGER2022/2022_TL_Shapefiles_File_N
 <li>ROADS: All Roads</li>
 <li>TRACT: Census Tract</li>
 </ul>
-<div class="cell" data-execution_count="197">
+<div class="cell" data-execution_count="224">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tiger22_addresses_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"ADDR/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tiger22_area_landmarks_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"AREALM/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>tiger22_feature_names_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"FEATNAMES/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>tiger22_water_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"AREAWATER/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>tiger22_water_edges_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"LINEARWATER/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>tiger22_rails_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"RAILS/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>tiger22_roads_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"ROADS/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>tiger22_tract_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"TRACT/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tiger22_address_features_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"ADDRFEAT/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>tiger22_address_feature_names_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"ADDRFN/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>tiger22_area_landmarks_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"AREALM/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>tiger22_feature_names_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"FEATNAMES/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>tiger22_water_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"AREAWATER/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>tiger22_water_edges_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"LINEARWATER/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>tiger22_rails_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"RAILS/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>tiger22_roads_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"ROADS/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>tiger22_tract_url <span class="op">=</span> tiger22_df.loc[tiger22_df[<span class="st">"name"</span>] <span class="op">==</span> <span class="st">"TRACT/"</span>, <span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="illinois-census-tracts" class="level2">
@@ -1911,30 +1913,913 @@ url:       https://www2.census.gov/geo/tiger/TIGER2022/ROADS/tl_2022_17031_roads
 </div>
 </div>
 </div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>cc_roads22_gdf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
 <div class="cell" data-execution_count="223">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">18</span></span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
-<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_tract_land_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.005</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span>
-<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_roads22_gdf.plot(linewidth<span class="op">=</span><span class="fl">0.01</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">18</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_tract_land_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.005</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_roads22_gdf.plot(linewidth<span class="op">=</span><span class="fl">0.01</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="census_geog_experiments_files/figure-html/cell-61-output-1.png" class="img-fluid"></p>
+<p><img src="census_geog_experiments_files/figure-html/cell-60-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="251">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>cc_roads22_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="251">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">LINEARID</th>
+<th data-quarto-table-cell-role="th">FULLNAME</th>
+<th data-quarto-table-cell-role="th">RTTYP</th>
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>110380277026</td>
+<td>47th Pl Exd</td>
+<td>M</td>
+<td>S1400</td>
+<td>LINESTRING (-87.59577 41.81461, -87.59570 41.8...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1104259027148</td>
+<td>Edens Expy Spr</td>
+<td>M</td>
+<td>S1100</td>
+<td>LINESTRING (-87.86543 42.14969, -87.86394 42.1...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="252">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>cc_roads22_gdf[<span class="st">"MTFCC"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="252">
+<pre><code>MTFCC
+S1400    44317
+S1730    22230
+S1640     5442
+S1630     1240
+S1820      883
+S1200      599
+S1740      450
+S1710      377
+S1780      259
+S1100      191
+S1750       28
+S1500        1
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="253">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>cc_roads22_gdf[<span class="st">"RTTYP"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="253">
+<pre><code>RTTYP
+M      44839
+NaN    30939
+S        111
+U         71
+I         50
+O          7
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="254">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>pd.crosstab(cc_roads22_gdf[<span class="st">"RTTYP"</span>], cc_roads22_gdf[<span class="st">"MTFCC"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="254">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">S1100</th>
+<th data-quarto-table-cell-role="th">S1200</th>
+<th data-quarto-table-cell-role="th">S1400</th>
+<th data-quarto-table-cell-role="th">S1500</th>
+<th data-quarto-table-cell-role="th">S1640</th>
+<th data-quarto-table-cell-role="th">S1710</th>
+<th data-quarto-table-cell-role="th">S1730</th>
+<th data-quarto-table-cell-role="th">S1740</th>
+<th data-quarto-table-cell-role="th">S1780</th>
+<th data-quarto-table-cell-role="th">S1820</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">RTTYP</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">I</td>
+<td>48</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">M</td>
+<td>133</td>
+<td>426</td>
+<td>42395</td>
+<td>1</td>
+<td>612</td>
+<td>26</td>
+<td>1109</td>
+<td>109</td>
+<td>25</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">O</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>0</td>
+<td>4</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">S</td>
+<td>6</td>
+<td>104</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">U</td>
+<td>4</td>
+<td>67</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Hmm.</p>
+<p>Based on counts, I infer that <code>RTTYP</code> value <strong>M</strong> probably stands for Main or Major or Municipal.</p>
+<p>Based on the counts and the name scheme for <code>MTFCC</code>, I assume (and have confirmed below) that [<code>MTFCC</code> <strong>S1100</strong>, <code>RTTYP</code> <strong>I</strong>] referrs to Interstates.</p>
+<div class="cell" data-execution_count="257">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>cc_roads22_gdf.loc[</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>    (cc_roads22_gdf[<span class="st">"MTFCC"</span>] <span class="op">==</span> <span class="st">"S1100"</span>) <span class="op">&amp;</span> (cc_roads22_gdf[<span class="st">"RTTYP"</span>] <span class="op">==</span> <span class="st">"I"</span>)</span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="257">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">LINEARID</th>
+<th data-quarto-table-cell-role="th">FULLNAME</th>
+<th data-quarto-table-cell-role="th">RTTYP</th>
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16532</td>
+<td>1106087288978</td>
+<td>I- 80</td>
+<td>I</td>
+<td>S1100</td>
+<td>LINESTRING (-87.52528 41.57698, -87.52567 41.5...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16574</td>
+<td>1109097585731</td>
+<td>I- 294</td>
+<td>I</td>
+<td>S1100</td>
+<td>LINESTRING (-87.91908 41.83601, -87.91904 41.8...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16919</td>
+<td>1109097861222</td>
+<td>I- 94</td>
+<td>I</td>
+<td>S1100</td>
+<td>LINESTRING (-87.63614 41.84582, -87.63601 41.8...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16934</td>
+<td>11015504130831</td>
+<td>I- 90</td>
+<td>I</td>
+<td>S1100</td>
+<td>LINESTRING (-87.62262 41.77505, -87.62338 41.7...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18127</td>
+<td>1104493001200</td>
+<td>I- 190</td>
+<td>I</td>
+<td>S1100</td>
+<td>LINESTRING (-87.84814 41.98372, -87.84868 41.9...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="259">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">14</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_roads22_gdf.loc[</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>    (cc_roads22_gdf[<span class="st">"MTFCC"</span>] <span class="op">==</span> <span class="st">"S1100"</span>) <span class="op">&amp;</span> (cc_roads22_gdf[<span class="st">"RTTYP"</span>] <span class="op">==</span> <span class="st">"I"</span>)</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>].plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.05</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_tract_land_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.005</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="census_geog_experiments_files/figure-html/cell-66-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
-<section id="todo" class="level2">
-<h2 class="anchored" data-anchor-id="todo">ToDo:</h2>
-<p>There’s more to investigate, but I’ll put a pin in this for now.</p>
-<p>Also, I should refactor to facilitate easy pipeline rollouts.</p>
+<section id="addresses" class="level2">
+<h2 class="anchored" data-anchor-id="addresses">Addresses</h2>
+<p>ToDo: tiger22_address_feature_names_url</p>
+<div class="cell" data-execution_count="225">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>tiger22_addresses_df <span class="op">=</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span>tiger22_addresses_url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="226">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tiger22_addresses_df.shape)</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>tiger22_addresses_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(3226, 8)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="226">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>tl_2022_01001_addr.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>103K</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01001_addr.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>tl_2022_01003_addr.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>507K</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01003_addr.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="227">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>cc_addresses22_df <span class="op">=</span> tiger22_addresses_df.loc[tiger22_addresses_df[<span class="st">"name"</span>].<span class="bu">str</span>.contains(<span class="st">"_17031_"</span>)].copy()</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>cc_addresses22_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="227">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">613</td>
+<td>tl_2022_17031_addr.zip</td>
+<td>2022-10-31 16:46:00</td>
+<td>3.9M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_17031_addr.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="228">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>cc_addresses22_file_path <span class="op">=</span> download_file_from_single_row_metadata_df(file_df<span class="op">=</span>cc_addresses22_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>file name: tl_2022_17031_addr.zip
+url:       https://www2.census.gov/geo/tiger/TIGER2022/ADDR/tl_2022_17031_addr.zip</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="229">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>cc_addresses22_gdf <span class="op">=</span> gpd.read_file(cc_addresses22_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="230">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cc_addresses22_gdf.shape)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>cc_addresses22_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(270921, 11)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="230">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TLID</th>
+<th data-quarto-table-cell-role="th">FROMHN</th>
+<th data-quarto-table-cell-role="th">TOHN</th>
+<th data-quarto-table-cell-role="th">SIDE</th>
+<th data-quarto-table-cell-role="th">ZIP</th>
+<th data-quarto-table-cell-role="th">PLUS4</th>
+<th data-quarto-table-cell-role="th">FROMTYP</th>
+<th data-quarto-table-cell-role="th">TOTYP</th>
+<th data-quarto-table-cell-role="th">ARID</th>
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>111689810</td>
+<td>3987</td>
+<td>3999</td>
+<td>R</td>
+<td>60192</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>I</td>
+<td>4004702369138</td>
+<td>D1000</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>111689809</td>
+<td>4001</td>
+<td>4083</td>
+<td>R</td>
+<td>60192</td>
+<td>NaN</td>
+<td>I</td>
+<td>NaN</td>
+<td>4002320013208</td>
+<td>D1000</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="address-features" class="level3">
+<h3 class="anchored" data-anchor-id="address-features">Address Features</h3>
+<div class="cell" data-execution_count="232">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>tiger22_addr_feats_df <span class="op">=</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span>tiger22_address_features_url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="233">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tiger22_addr_feats_df.shape)</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>tiger22_addr_feats_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(3226, 8)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="233">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>tl_2022_01001_addrfeat.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>705K</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01001_addrfeat.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>tl_2022_01003_addrfeat.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>2.2M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01003_addrfeat.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="234">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>cc_addr_feats22_df <span class="op">=</span> tiger22_addr_feats_df.loc[tiger22_addr_feats_df[<span class="st">"name"</span>].<span class="bu">str</span>.contains(<span class="st">"_17031_"</span>)].copy()</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>cc_addr_feats22_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="234">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">613</td>
+<td>tl_2022_17031_addrfeat.zip</td>
+<td>2022-10-31 16:46:00</td>
+<td>16M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_17031_addrfeat.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AD...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="235">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>cc_addr_feats22_file_path <span class="op">=</span> download_file_from_single_row_metadata_df(file_df<span class="op">=</span>cc_addr_feats22_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>file name: tl_2022_17031_addrfeat.zip
+url:       https://www2.census.gov/geo/tiger/TIGER2022/ADDRFEAT/tl_2022_17031_addrfeat.zip</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="236">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>cc_addr_feats22_gdf <span class="op">=</span> gpd.read_file(cc_addr_feats22_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="237">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cc_addr_feats22_gdf.shape)</span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>cc_addr_feats22_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(178057, 26)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="237">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TLID</th>
+<th data-quarto-table-cell-role="th">TFIDL</th>
+<th data-quarto-table-cell-role="th">TFIDR</th>
+<th data-quarto-table-cell-role="th">ARIDL</th>
+<th data-quarto-table-cell-role="th">ARIDR</th>
+<th data-quarto-table-cell-role="th">LINEARID</th>
+<th data-quarto-table-cell-role="th">FULLNAME</th>
+<th data-quarto-table-cell-role="th">LFROMHN</th>
+<th data-quarto-table-cell-role="th">LTOHN</th>
+<th data-quarto-table-cell-role="th">RFROMHN</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">PARITYR</th>
+<th data-quarto-table-cell-role="th">PLUS4L</th>
+<th data-quarto-table-cell-role="th">PLUS4R</th>
+<th data-quarto-table-cell-role="th">LFROMTYP</th>
+<th data-quarto-table-cell-role="th">LTOTYP</th>
+<th data-quarto-table-cell-role="th">RFROMTYP</th>
+<th data-quarto-table-cell-role="th">RTOTYP</th>
+<th data-quarto-table-cell-role="th">OFFSETL</th>
+<th data-quarto-table-cell-role="th">OFFSETR</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>608944628</td>
+<td>224940750</td>
+<td>223761625</td>
+<td>NaN</td>
+<td>400198243134</td>
+<td>1104492999121</td>
+<td>State Line Rd</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>1400</td>
+<td>...</td>
+<td>E</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>I</td>
+<td>N</td>
+<td>N</td>
+<td>LINESTRING (-87.52526 41.59370, -87.52538 41.5...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>608944628</td>
+<td>224940750</td>
+<td>223761625</td>
+<td>NaN</td>
+<td>400198243134</td>
+<td>1104492999533</td>
+<td>State Line Ave</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>1400</td>
+<td>...</td>
+<td>E</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>I</td>
+<td>N</td>
+<td>N</td>
+<td>LINESTRING (-87.52526 41.59370, -87.52538 41.5...</td>
+</tr>
+</tbody>
+</table>
+
+<p>2 rows × 26 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="242">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">18</span></span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_tract_land_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"grey"</span>, linewidth<span class="op">=</span><span class="fl">0.005</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_addr_feats22_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.0025</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="census_geog_experiments_files/figure-html/cell-80-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="water" class="level2">
+<h2 class="anchored" data-anchor-id="water">Water</h2>
+<div class="cell" data-execution_count="243">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>tiger22_water_df <span class="op">=</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span>tiger22_water_url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="244">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tiger22_water_df.shape)</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>tiger22_water_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(3235, 8)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="244">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>tl_2022_01001_areawater.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>395K</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01001_areawater.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AR...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>tl_2022_01003_areawater.zip</td>
+<td>2022-10-31 16:05:00</td>
+<td>1.7M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01003_areawater.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AR...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="245">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>cc_water22_df <span class="op">=</span> tiger22_water_df.loc[tiger22_water_df[<span class="st">"name"</span>].<span class="bu">str</span>.contains(<span class="st">"_17031_"</span>)].copy()</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>cc_water22_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="245">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">613</td>
+<td>tl_2022_17031_areawater.zip</td>
+<td>2022-10-31 16:46:00</td>
+<td>392K</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_17031_areawater.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/AR...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="246">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>cc_water22_file_path <span class="op">=</span> download_file_from_single_row_metadata_df(file_df<span class="op">=</span>cc_water22_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>file name: tl_2022_17031_areawater.zip
+url:       https://www2.census.gov/geo/tiger/TIGER2022/AREAWATER/tl_2022_17031_areawater.zip</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="247">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>cc_water22_gdf <span class="op">=</span> gpd.read_file(cc_water22_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="248">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cc_water22_gdf.shape)</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>cc_water22_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(408, 9)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="248">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ANSICODE</th>
+<th data-quarto-table-cell-role="th">HYDROID</th>
+<th data-quarto-table-cell-role="th">FULLNAME</th>
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">ALAND</th>
+<th data-quarto-table-cell-role="th">AWATER</th>
+<th data-quarto-table-cell-role="th">INTPTLAT</th>
+<th data-quarto-table-cell-role="th">INTPTLON</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>NaN</td>
+<td>110380386029</td>
+<td>NaN</td>
+<td>H2030</td>
+<td>0</td>
+<td>66228</td>
+<td>+42.0831253</td>
+<td>-88.1601390</td>
+<td>POLYGON ((-88.16540 42.08249, -88.16533 42.082...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>NaN</td>
+<td>110380385201</td>
+<td>Keene Lk</td>
+<td>H2030</td>
+<td>0</td>
+<td>190257</td>
+<td>+42.1343584</td>
+<td>-88.1469798</td>
+<td>POLYGON ((-88.15463 42.13135, -88.15454 42.131...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="250">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">18</span></span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_tract_land_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"grey"</span>, linewidth<span class="op">=</span><span class="fl">0.005</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> cc_water22_gdf.plot(facecolor<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.0025</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="census_geog_experiments_files/figure-html/cell-88-output-1.png" class="img-fluid"></p>
+</div>
+</div>
 
 
 
