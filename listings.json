@@ -12,6 +12,10 @@
     "items": []
   },
   {
+    "listing": "/posts/003_census_geom/census_geog_experiments.html",
+    "items": []
+  },
+  {
     "listing": "/index.html",
     "items": [
       "/posts/002_notebook_test/jupyter_quarto.html",
