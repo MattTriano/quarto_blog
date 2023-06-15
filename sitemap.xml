@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.matttriano.net/posts/post-with-code/index.html</loc>
-    <lastmod>2023-06-14T13:48:26.584Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.net/posts/welcome/index.html</loc>
-    <lastmod>2023-06-14T13:48:27.260Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2023-06-14T13:48:27.644Z</lastmod>
-  </url>
-  <url>
     <loc>https://www.matttriano.net/index.html</loc>
-    <lastmod>2023-06-14T13:48:31.084Z</lastmod>
+    <lastmod>2023-06-15T00:33:31.939Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.net/about.html</loc>
-    <lastmod>2023-06-14T13:48:31.552Z</lastmod>
+    <lastmod>2023-06-15T00:33:32.707Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.net/posts/post-with-code/index.html</loc>
+    <lastmod>2023-06-15T00:33:32.999Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto.html</loc>
+    <lastmod>2023-06-15T00:33:33.323Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.net/posts/welcome/index.html</loc>
+    <lastmod>2023-06-15T00:33:37.159Z</lastmod>
   </url>
 </urlset>

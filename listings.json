@@ -1,21 +1,5 @@
 [
   {
-    "listing": "/posts/post-with-code/index.html",
-    "items": []
-  },
-  {
-    "listing": "/posts/welcome/index.html",
-    "items": []
-  },
-  {
-    "listing": "/posts/002_notebook_test/jupyter_quarto.html",
-    "items": []
-  },
-  {
-    "listing": "/posts/003_census_geom/census_geog_experiments.html",
-    "items": []
-  },
-  {
     "listing": "/index.html",
     "items": [
       "/posts/002_notebook_test/jupyter_quarto.html",
@@ -30,5 +14,21 @@
       "/posts/welcome/index.html",
       "/posts/002_notebook_test/jupyter_quarto.html"
     ]
+  },
+  {
+    "listing": "/posts/post-with-code/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/002_notebook_test/jupyter_quarto.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/003_census_geom/census_geog_experiments.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/welcome/index.html",
+    "items": []
   }
 ]
