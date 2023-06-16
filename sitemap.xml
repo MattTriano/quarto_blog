@@ -2,22 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.matttriano.net/index.html</loc>
-    <lastmod>2023-06-16T01:49:19.695Z</lastmod>
+    <lastmod>2023-06-16T13:58:32.011Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.net/about.html</loc>
-    <lastmod>2023-06-16T01:49:20.515Z</lastmod>
+    <lastmod>2023-06-16T13:58:32.935Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.net/posts/post-with-code/index.html</loc>
-    <lastmod>2023-06-16T01:49:20.827Z</lastmod>
+    <lastmod>2023-06-16T13:58:33.287Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.net/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
+    <lastmod>2023-06-16T13:58:34.123Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2023-06-16T01:49:21.843Z</lastmod>
+    <lastmod>2023-06-16T13:58:34.439Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.net/posts/welcome/index.html</loc>
-    <lastmod>2023-06-16T01:49:26.251Z</lastmod>
+    <lastmod>2023-06-16T13:58:38.355Z</lastmod>
   </url>
 </urlset>

@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2023-06-14">
 <meta name="description" content="Documenting the synthesis stage of development">
 
-<title>Triano’s Quarto Blog - Census TIGER Ingester Development</title>
+<title>Triano’s Quarto Blog - Census TIGER Dataset Collector Dev</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -179,7 +179,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <div class="quarto-title-block"><div><h1 class="title">Census TIGER Ingester Development</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+      <div class="quarto-title-block"><div><h1 class="title">Census TIGER Dataset Collector Dev</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
                   <div>
         <div class="description">
           Documenting the synthesis stage of development
@@ -225,7 +225,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="cell" data-execution_count="33">
+<div class="cell" data-execution_count="41">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> textwrap</span>
@@ -233,8 +233,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.request <span class="im">import</span> urlretrieve</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The US Census Bureau (USCB) runs a massive array of surveys of residents of the United States. After aggregating responses into demographic and/or geographic groups, the USCB publishes those aggregated datasets to its massive public data catalog. I’ve already developed some tooling to collect and ingest Census datasets into my personal data warehouse and analytics environment, but to map out geographic Census data or join in other geospatial datasets, I also need to collect and ingest spatial files describing the geographic boundaries of Census groupings. Fortunately, the USCB provides shapefiles with these geometries in their TIGER (Topologically Integrated Geographic Encoding and Referencing) data offerings, and in this notebook, I’ll synthesize the findings the experiments and research in my last notebook into a data model and data collection tools.</p>
@@ -246,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Each year, the USCB can add or alter geographic boundaries or connected data features, so they organize TIGER data offering into annual vintages, which can be downloaded either through the USCB web interface or from their <a href="https://www2.census.gov/geo/tiger/">file server interface</a> (https://www2.census.gov/geo/tiger/).</p>
 <p>The functions in the cell below aid in scraping the table off of any of pages linked in that file-tree interface.</p>
-<div class="cell" data-execution_count="19">
+<div class="cell" data-execution_count="4">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> request_page(metadata_url: <span class="bu">str</span>) <span class="op">-&gt;</span> requests.models.Response:</span>
@@ -287,7 +289,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p><code>request_page()</code> makes a GET request for the content at the URL <code>metadata_url</code> and returns the response (if successful, i.e.&nbsp;if the response has the “success” HTTP response status code). This function is only called by <code>scrape_census_ftp_metadata_page()</code>, but it’s separated out to make it easier to test <code>scrape_census_ftp_metadata_page()</code>.</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="5">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> request_page(metadata_url: <span class="bu">str</span>) <span class="op">-&gt;</span> requests.models.Response:</span>
@@ -299,36 +301,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p><code>scrape_census_ftp_metadata_page()</code> gets the content from a given Census file-tree page (at URL <code>metadata_url</code>), parses it into a convenient and well structured format (a <code>pandas DataFrame</code>) with features that aid in filtering to desired rows.</p>
-<div class="cell" data-execution_count="21">
+<div class="cell" data-execution_count="10">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> request_page(metadata_url<span class="op">=</span><span class="st">"https://www2.census.gov/geo/tiger/"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>soup <span class="op">=</span> BeautifulSoup(resp.content, <span class="st">"html.parser"</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> soup.find(<span class="st">"table"</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> table.find_all(<span class="st">"tr"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>rows[<span class="dv">0</span>:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>rows[<span class="dv">0</span>:<span class="dv">7</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="21">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>[&lt;tr&gt;&lt;th valign="top"&gt;&lt;img alt="[ICO]" src="/icons/blank.gif"/&gt;&lt;/th&gt;&lt;th&gt;&lt;a href="?C=N;O=D"&gt;Name&lt;/a&gt;&lt;/th&gt;&lt;th&gt;&lt;a href="?C=M;O=A"&gt;Last modified&lt;/a&gt;&lt;/th&gt;&lt;th&gt;&lt;a href="?C=S;O=A"&gt;Size&lt;/a&gt;&lt;/th&gt;&lt;th&gt;&lt;a href="?C=D;O=A"&gt;Description&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;,
  &lt;tr&gt;&lt;th colspan="5"&gt;&lt;hr/&gt;&lt;/th&gt;&lt;/tr&gt;,
  &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[PARENTDIR]" src="/icons/back.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="/geo/"&gt;Parent Directory&lt;/a&gt;&lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
  &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[   ]" src="/icons/layout.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="Directory_Contents_ReadMe.pdf"&gt;Directory_Contents_ReadMe.pdf&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2019-06-25 09:13  &lt;/td&gt;&lt;td align="right"&gt;439K&lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
  &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2010/"&gt;GENZ2010/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2013-07-24 12:46  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
  &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2012/"&gt;GENZ2012/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2013-07-24 12:47  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
- &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2013/"&gt;GENZ2013/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2014-07-02 08:28  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
- &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2014/"&gt;GENZ2014/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2017-07-20 13:31  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
- &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2015/"&gt;GENZ2015/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2017-07-20 13:31  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;,
- &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2016/"&gt;GENZ2016/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2017-07-20 13:31  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;]</code></pre>
+ &lt;tr&gt;&lt;td valign="top"&gt;&lt;img alt="[DIR]" src="/icons/folder.gif"/&gt;&lt;/td&gt;&lt;td&gt;&lt;a href="GENZ2013/"&gt;GENZ2013/&lt;/a&gt;&lt;/td&gt;&lt;td align="right"&gt;2014-07-02 08:28  &lt;/td&gt;&lt;td align="right"&gt;  - &lt;/td&gt;&lt;td&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;]</code></pre>
 </div>
 </div>
-<p>The cell above shows code that extracts HTML <code>tr</code> (table-row) elements extracted from the page (as well as what the raw <code>tr</code> elements look like before processing), and the cell below shows the end product of <code>scrape_census_ftp_metadata_page()</code>.</p>
-<div class="cell" data-execution_count="24">
+<p>The cell above shows code that extracts HTML <code>tr</code> (table-row) elements extracted from the page (sorry for showing something so ugly!), and the cell below shows the (beautiful) end product of <code>scrape_census_ftp_metadata_page()</code>.</p>
+<div class="cell" data-execution_count="11">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>all_tiger_vintages_df <span class="op">=</span> scrape_census_ftp_metadata_page(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    metadata_url<span class="op">=</span><span class="st">"https://www2.census.gov/geo/tiger/"</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>display(all_tiger_vintages_df.head(<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>display(all_tiger_vintages_df.head(<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -393,33 +392,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>False</td>
 <td>https://www2.census.gov/geo/tiger/GENZ2013</td>
 </tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5</td>
-<td>GENZ2014/</td>
-<td>2017-07-20 13:31:00</td>
-<td>-</td>
-<td></td>
-<td>True</td>
-<td>GENZ2014</td>
-<td>False</td>
-<td>https://www2.census.gov/geo/tiger/GENZ2014</td>
-</tr>
 </tbody>
 </table>
 
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Files onn the top-level TIGER dataset page:               </span><span class="sc">{</span>all_tiger_vintages_df[<span class="st">'is_file'</span>]<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:&gt;3}</span><span class="ss">"</span>)</span>
+<div class="cell" data-execution_count="26">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Files on the top-level TIGER dataset page:                </span><span class="sc">{</span>all_tiger_vintages_df[<span class="st">'is_file'</span>]<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:&gt;3}</span><span class="ss">"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TIGER data offerings on the top-level TIGER dataset page: </span><span class="sc">{</span>all_tiger_vintages_df[<span class="st">'is_dir'</span>]<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:&gt;3}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Files onn the top-level TIGER dataset page:                 1
+<pre><code>Files on the top-level TIGER dataset page:                  1
 TIGER data offerings on the top-level TIGER dataset page:  59</code></pre>
 </div>
 </div>
 <p>The <code>GENZyyyy</code> TIGER data offerings are interesting, but the real wealth of geospatial files can be found in the TIGER offerings with names matching the <code>TIGERyyyy</code> pattern, and I implemented the <code>get_tiger_vintages_metadata()</code> function to get the metadata for these offerings, or <strong>vintages</strong>.</p>
-<div class="cell" data-execution_count="32">
+<div class="cell" data-execution_count="25">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_tiger_vintages_metadata() <span class="op">-&gt;</span> pd.DataFrame:</span>
@@ -434,9 +425,10 @@ TIGER data offerings on the top-level TIGER dataset page:  59</code></pre>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>tiger_vintages_df <span class="op">=</span> get_tiger_vintages_metadata()</span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Available TIGER vintages:"</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> textwrap.wrap(<span class="st">", "</span>.join(<span class="bu">list</span>(tiger_vintages_df[<span class="st">"clean_name"</span>].values)), width<span class="op">=</span><span class="dv">95</span>):</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    </span><span class="sc">{</span>line<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>display(tiger_vintages_df.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> textwrap.wrap(<span class="st">", "</span>.join(<span class="bu">list</span>(tiger_vintages_df[<span class="st">"clean_name"</span>].values)), width<span class="op">=</span><span class="dv">95</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> names:</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    </span><span class="sc">{</span>line<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>display(tiger_vintages_df.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Available TIGER vintages:
@@ -502,9 +494,9 @@ TIGER data offerings on the top-level TIGER dataset page:  59</code></pre>
 </div>
 </div>
 </div>
-<p>Now that we have tools for scraping the any page in the Census’s file server, we can use those tools to collect</p>
-<div class="cell" data-execution_count="34">
-<details>
+<p>Now that we have tools for scraping the any page in the Census’s file server, we can use those tools to retrieve data on the geographic entities in a given TIGER vintage.</p>
+<div class="cell" data-execution_count="35">
+<details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TIGERCatalog:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
@@ -534,38 +526,102 @@ TIGER data offerings on the top-level TIGER dataset page:  59</code></pre>
 <span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>            tiger_vintage_url <span class="op">=</span> <span class="va">self</span>.vintage_metadata[<span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
 <span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span>tiger_vintage_url)</span>
 <span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="ss">f"Failed to get unambiguous metadata (got </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>vintage_metadata<span class="sc">}</span><span class="ss">)"</span>)</span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_entity_metadata(<span class="va">self</span>, entity_name: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.vintage_entities.loc[<span class="va">self</span>.vintage_entities[<span class="st">"clean_name"</span>] <span class="op">==</span> entity_name].copy()</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> print_entity_names(<span class="va">self</span>):</span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>        entity_names <span class="op">=</span> <span class="va">self</span>.vintage_entities.loc[<span class="va">self</span>.vintage_entities[<span class="st">"is_dir"</span>], <span class="st">"clean_name"</span>].values</span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"TIGER Entity options for the </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>year<span class="sc">}</span><span class="ss"> TIGER vintage:"</span>)</span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entity_name <span class="kw">in</span> entity_names:</span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"  - </span><span class="sc">{</span>entity_name<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Entity count: </span><span class="sc">{</span><span class="bu">len</span>(entity_names)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TIGERGeographicEntityVintage:</span>
-<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, entity_name: <span class="bu">str</span>, year: <span class="bu">str</span>, catalog: Optional[TIGERCatalog] <span class="op">=</span> <span class="va">None</span>):</span>
-<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_name <span class="op">=</span> entity_name</span>
-<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.year <span class="op">=</span> <span class="bu">str</span>(year)</span>
-<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vintage_catalog <span class="op">=</span> TIGERVintageCatalog(year<span class="op">=</span>year, catalog<span class="op">=</span>catalog)</span>
-<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_metadata <span class="op">=</span> <span class="va">self</span>.vintage_catalog.get_entity_metadata(entity_name<span class="op">=</span><span class="va">self</span>.entity_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">Exception</span>(</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f"Failed to get unambiguous metadata (got </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>vintage_metadata<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_entity_metadata(<span class="va">self</span>, entity_name: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.vintage_entities.loc[<span class="va">self</span>.vintage_entities[<span class="st">"clean_name"</span>] <span class="op">==</span> entity_name].copy()</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> print_entity_names(<span class="va">self</span>):</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>        entity_names <span class="op">=</span> <span class="va">self</span>.vintage_entities.loc[</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.vintage_entities[<span class="st">"is_dir"</span>], <span class="st">"clean_name"</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>        ].values</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"TIGER Entity options for the </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>year<span class="sc">}</span><span class="ss"> TIGER vintage:"</span>)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entity_name <span class="kw">in</span> entity_names:</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"  - </span><span class="sc">{</span>entity_name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Entity count: </span><span class="sc">{</span><span class="bu">len</span>(entity_names)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="34">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tiger_catalog <span class="op">=</span> TIGERCatalog()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tiger_catalog <span class="op">=</span> TIGERCatalog()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>vintage_entity_catalog <span class="op">=</span> TIGERVintageCatalog(year<span class="op">=</span><span class="st">"2022"</span>, catalog<span class="op">=</span>tiger_catalog)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>vintage_entity_catalog.print_entity_names()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stdout">
+<pre><code>TIGER Entity options for the 2022 TIGER vintage:
+  - ADDR
+  - ADDRFEAT
+  - ADDRFN
+  - AIANNH
+  - AITSN
+  - ANRC
+  - AREALM
+  - AREAWATER
+  - BG
+  - CD
+  - COASTLINE
+  - CONCITY
+  - COUNTY
+  - COUSUB
+  - EDGES
+  - ELSD
+  - ESTATE
+  - FACES
+  - FACESAH
+  - FACESAL
+  - FACESMIL
+  - FEATNAMES
+  - LINEARWATER
+  - MIL
+  - PLACE
+  - POINTLM
+  - PRIMARYROADS
+  - PRISECROADS
+  - PUMA
+  - RAILS
+  - ROADS
+  - SCSD
+  - SDADM
+  - SLDL
+  - SLDU
+  - STATE
+  - SUBBARRIO
+  - TABBLOCK20
+  - TBG
+  - TRACT
+  - TTRACT
+  - UAC
+  - UNSD
+  - ZCTA520
+Entity count: 44</code></pre>
 </div>
-<div class="cell" data-execution_count="5">
+</div>
+<p>Let’s examine Census Tracts.</p>
+<p>I’ll need some tooling to collect information on a given entity in a given TIGER vintage. I know this object will need data that’s in the relevant <code>TIGERVintageCatalog</code> instance, so I’ll make that an attribute of the entity vintage class. I could require that the use passes in a <code>TIGERVintageCatalog</code> instance (which would reduce the number of calls to the same Census resource in the usecase where a user is interactively working using these classes), but ultimately I’m going to build out pipelines that only collect one TIGER entity at a from a given vintage (as I don’t need most of the available entities listed above).</p>
+<div class="cell" data-execution_count="36">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tiger_catalog.get_vintage_metadata(year<span class="op">=</span><span class="st">"2022"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TIGERGeographicEntityVintage:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, entity_name: <span class="bu">str</span>, year: <span class="bu">str</span>, catalog: Optional[TIGERCatalog] <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_name <span class="op">=</span> entity_name</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.year <span class="op">=</span> <span class="bu">str</span>(year)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vintage_catalog <span class="op">=</span> TIGERVintageCatalog(year<span class="op">=</span>year, catalog<span class="op">=</span>catalog)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_metadata <span class="op">=</span> <span class="va">self</span>.vintage_catalog.get_entity_metadata(entity_name<span class="op">=</span><span class="va">self</span>.entity_name)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">@property</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> entity_url(<span class="va">self</span>):</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.entity_metadata[<span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>tiger_tract22_obj <span class="op">=</span> TIGERGeographicEntityVintage(entity_name<span class="op">=</span><span class="st">"TRACT"</span>, year<span class="op">=</span><span class="st">"2022"</span>, catalog<span class="op">=</span>tiger_catalog)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>display(tiger_tract22_obj.entity_metadata)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>entity_df <span class="op">=</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span>tiger_tract22_obj.entity_url)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(entity_df.shape)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>display(entity_df.head(<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display">
 <div>
 
 
@@ -585,20 +641,226 @@ TIGER data offerings on the top-level TIGER dataset page:  59</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">18</td>
-<td>TIGER2022/</td>
-<td>2022-11-01 08:09:00</td>
+<td data-quarto-table-cell-role="th">41</td>
+<td>TRACT/</td>
+<td>2022-09-30 22:39:00</td>
 <td>-</td>
 <td></td>
 <td>True</td>
-<td>TIGER2022</td>
+<td>TRACT</td>
 <td>False</td>
-<td>https://www2.census.gov/geo/tiger/TIGER2022</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/TRACT</td>
 </tr>
 </tbody>
 </table>
 
 </div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(56, 8)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>tl_2022_01_tract.zip</td>
+<td>2022-10-31 19:42:00</td>
+<td>11M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_01_tract.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/TR...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>tl_2022_02_tract.zip</td>
+<td>2022-10-31 19:42:00</td>
+<td>3.0M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_02_tract.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/TR...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Looking at the names, I see that the Census groups tracts by state <strong>FIPS</strong> code (Federal Information Processing Series code). I know the FIPS code for Illinois is “17” (you can review the FIPS codes for other geographic entities <a href="https://www.census.gov/library/reference/code-lists/ansi.html">here</a>). I also know I don’t always want to pull data for all states, so I need to add a method that allows the user to filter the entity files. Also, I should build in the step of getting the entity files metadata.</p>
+<div class="cell" data-execution_count="47">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TIGERGeographicEntityVintage:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, entity_name: <span class="bu">str</span>, year: <span class="bu">str</span>, catalog: Optional[TIGERCatalog] <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_name <span class="op">=</span> entity_name</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.year <span class="op">=</span> <span class="bu">str</span>(year)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vintage_catalog <span class="op">=</span> TIGERVintageCatalog(year<span class="op">=</span>year, catalog<span class="op">=</span>catalog)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.entity_metadata <span class="op">=</span> <span class="va">self</span>.vintage_catalog.get_entity_metadata(entity_name<span class="op">=</span><span class="va">self</span>.entity_name)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">@property</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> entity_url(<span class="va">self</span>):</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.entity_metadata[<span class="st">"metadata_url"</span>].values[<span class="dv">0</span>]</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">@property</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> entity_files_metadata(<span class="va">self</span>):</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> scrape_census_ftp_metadata_page(metadata_url<span class="op">=</span><span class="va">self</span>.entity_url)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_entity_file_metadata(<span class="va">self</span>, filter_str: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.entity_files_metadata.loc[<span class="va">self</span>.entity_files_metadata[<span class="st">"name"</span>].<span class="bu">str</span>.contains(filter_str)].copy()</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>tiger_tract22_obj <span class="op">=</span> TIGERGeographicEntityVintage(entity_name<span class="op">=</span><span class="st">"TRACT"</span>, year<span class="op">=</span><span class="st">"2022"</span>, catalog<span class="op">=</span>tiger_catalog)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>il_tracts22_metadata <span class="op">=</span> tiger_tract22_obj.get_entity_file_metadata(filter_str<span class="op">=</span><span class="st">"_17_"</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>display(il_tracts22_metadata)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"IL Tracts archive download Url: </span><span class="sc">{</span>il_tracts22_metadata[<span class="st">'metadata_url'</span>]<span class="sc">.</span>values[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">last_modified</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">is_dir</th>
+<th data-quarto-table-cell-role="th">clean_name</th>
+<th data-quarto-table-cell-role="th">is_file</th>
+<th data-quarto-table-cell-role="th">metadata_url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>tl_2022_17_tract.zip</td>
+<td>2022-10-31 19:43:00</td>
+<td>9.5M</td>
+<td></td>
+<td>False</td>
+<td>tl_2022_17_tract.zip</td>
+<td>True</td>
+<td>https://www2.census.gov/geo/tiger/TIGER2022/TR...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>IL Tracts archive download Url: https://www2.census.gov/geo/tiger/TIGER2022/TRACT/tl_2022_17_tract.zip</code></pre>
+</div>
+</div>
+<p>Geopandas provides some extremely convenient functionality for loading data. I can provide the URL to a zipped archive (of geospatial files) to <code>geopandas</code>’ <code>read_file()</code> function and it handles the network request and unzipping for me.</p>
+<div class="cell" data-execution_count="48">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>il_tracts_gdf <span class="op">=</span> gpd.read_file(il_tracts22_metadata[<span class="st">"metadata_url"</span>].values[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="49">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(il_tracts_gdf.shape)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>il_tracts_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(3265, 13)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="49">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">STATEFP</th>
+<th data-quarto-table-cell-role="th">COUNTYFP</th>
+<th data-quarto-table-cell-role="th">TRACTCE</th>
+<th data-quarto-table-cell-role="th">GEOID</th>
+<th data-quarto-table-cell-role="th">NAME</th>
+<th data-quarto-table-cell-role="th">NAMELSAD</th>
+<th data-quarto-table-cell-role="th">MTFCC</th>
+<th data-quarto-table-cell-role="th">FUNCSTAT</th>
+<th data-quarto-table-cell-role="th">ALAND</th>
+<th data-quarto-table-cell-role="th">AWATER</th>
+<th data-quarto-table-cell-role="th">INTPTLAT</th>
+<th data-quarto-table-cell-role="th">INTPTLON</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>17</td>
+<td>019</td>
+<td>010701</td>
+<td>17019010701</td>
+<td>107.01</td>
+<td>Census Tract 107.01</td>
+<td>G5020</td>
+<td>S</td>
+<td>5266000</td>
+<td>30553</td>
+<td>+40.1150269</td>
+<td>-088.0329549</td>
+<td>POLYGON ((-88.05240 40.11923, -88.05238 40.119...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>17</td>
+<td>019</td>
+<td>005902</td>
+<td>17019005902</td>
+<td>59.02</td>
+<td>Census Tract 59.02</td>
+<td>G5020</td>
+<td>S</td>
+<td>962402</td>
+<td>4892</td>
+<td>+40.1087344</td>
+<td>-088.2247204</td>
+<td>POLYGON ((-88.22891 40.11271, -88.22882 40.112...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>And now I have plottable, spatially-joinable geospatial data ready to ingest into a data warehouse table or to plot out.</p>
+<div class="cell" data-execution_count="45">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">14</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> il_tracts_gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.015</span> <span class="op">*</span> fig_width, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="TIGER_data_collector_dev_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 
