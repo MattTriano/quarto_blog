@@ -1,0 +1,15 @@
+name: gx_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - black
+  - geopandas
+  - great-expectations
+  - ipywidgets
+  - jupyterlab
+  - openpyxl
+  - pandas[version='<2']
+  - pyarrow
+  - python=3.10
+  - seaborn
