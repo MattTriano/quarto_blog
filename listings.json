@@ -2,23 +2,25 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html",
       "/posts/004_census_tiger_dev/TIGER_data_collector_dev.html",
-      "/posts/002_notebook_test/jupyter_quarto.html",
-      "/posts/post-with-code/index.html",
-      "/posts/welcome/index.html"
+      "/posts/002_notebook_test/jupyter_quarto.html"
     ]
   },
   {
     "listing": "/about.html",
     "items": [
       "/posts/004_census_tiger_dev/TIGER_data_collector_dev.html",
-      "/posts/post-with-code/index.html",
-      "/posts/welcome/index.html",
+      "/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html",
       "/posts/002_notebook_test/jupyter_quarto.html"
     ]
   },
   {
-    "listing": "/posts/post-with-code/index.html",
+    "listing": "/posts/003_census_geom/census_geog_experiments.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html",
     "items": []
   },
   {
@@ -27,14 +29,6 @@
   },
   {
     "listing": "/posts/002_notebook_test/jupyter_quarto.html",
-    "items": []
-  },
-  {
-    "listing": "/posts/003_census_geom/census_geog_experiments.html",
-    "items": []
-  },
-  {
-    "listing": "/posts/welcome/index.html",
     "items": []
   }
 ]
