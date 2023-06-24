@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Triano's Quarto Blog"
-  site-url: https://www.matttriano.net
+  site-url: https://www.matttriano.dev
   description: "A blog by Matt Triano"
   navbar:
     right:
