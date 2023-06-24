@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.361">
+<meta name="generator" content="quarto-1.3.427">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -238,169 +238,83 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>Great Expectations is an open-source Python-based library that brings the idea of “testing” to your data. It enables you to define expectations for properties of your datasets (like records per batch, distribution of values in a column, columns in a table, etc) and check that the data meets those expectations when the data is updated.</p>
+<section id="workflow-overview" class="level1">
+<h1>Workflow Overview</h1>
+<p>The high-level <code>great_expectations</code> workflow follows this pattern:</p>
+<ol start="0" type="1">
+<li>Install <code>great_expectations</code>.</li>
+<li>Create (or load) a <a href="https://docs.greatexpectations.io/docs/guides/setup/configuring_data_contexts/instantiating_data_contexts/instantiate_data_context"><code>DataContext</code></a> for your project.</li>
+<li>Connect <a href="https://docs.greatexpectations.io/docs/guides/connecting_to_your_data/connect_to_data_lp/"><code>Datasources</code></a> (and their <code>DataAssets</code>) to your <code>DataContext</code>.</li>
+<li>Define <a href="https://docs.greatexpectations.io/docs/guides/expectations/expectations_lp"><code>Expectations</code></a> for your <code>DataAssets</code>.</li>
+<li>Set <a href="https://docs.greatexpectations.io/docs/guides/validation/validate_data_lp"><code>Checkpoints</code></a> to validate your <code>DataAssets</code>.</li>
+</ol>
+<p>In this post, I’ll demonstrate this workflow with local-file-based <code>DataAssets</code> in a local filesystem <code>DataContext</code> (although <code>great_expectations</code> also works with SQL-based and cloud-bucket-based <code>DataAssets</code>).</p>
+<section id="great-expectations-setup" class="level2">
+<h2 class="anchored" data-anchor-id="great-expectations-setup">0. Great Expectations Setup</h2>
+<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a conda env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
+</section>
 <section id="sample-data-collection-and-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="sample-data-collection-and-preparation">Sample Data Collection and Preparation</h2>
-<div class="cell" data-execution_count="2">
+<p>Many data pipelines process data in discrete, periodic batches. I’m going to simulate that situation by downloading a dataset, splitting it into 1-month batches (based on a datetime-like column), and then write each of those 1-month batches to file. I’m going to use the <a href="https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5">Food Inspection dataset</a> on Chicago’s public data portal.</p>
+<div class="cell" data-execution_count="4">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>POST_DIR <span class="op">=</span> Path(<span class="st">"."</span>).resolve()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>POST_DATA_DIR <span class="op">=</span> POST_DIR.joinpath(<span class="st">"data"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>POST_DATA_DIR.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>POST_DATA_DIR.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># First, we need to download the data to our local machine.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://data.cityofchicago.org/api/geospatial/4ijn-s7e5?method=export&amp;format=GeoJSON"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>full_file_path <span class="op">=</span> POST_DATA_DIR.joinpath(<span class="st">"full_food_inspections.geojson"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> full_file_path.is_file():</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    urlretrieve(url<span class="op">=</span>url, filename<span class="op">=</span>full_file_path)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf <span class="op">=</span> gpd.read_file(full_file_path)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># For some reason, Socrata adds on these four always-null location columns on</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   to geospatial exports. I'm going to remove them.</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>location_cols <span class="op">=</span> [<span class="st">"location_state"</span>, <span class="st">"location_zip"</span>, <span class="st">"location_address"</span>, <span class="st">"location_city"</span>]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># uncomment the lines below to confirm those columns are always empty</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># print("Rows with a non-null value in these location_xxx columns:")</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># display(food_inspection_gdf[location_cols].notnull().sum())</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf <span class="op">=</span> food_inspection_gdf.drop(columns<span class="op">=</span>location_cols)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># That column ordering is a bit chaotic, so I'll reorder them (for readability).</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>col_order <span class="op">=</span> [</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"inspection_id"</span>, <span class="st">"inspection_date"</span>, <span class="st">"dba_name"</span>, <span class="st">"aka_name"</span>, <span class="st">"license_"</span>, <span class="st">"facility_type"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"risk"</span>, <span class="st">"inspection_type"</span>, <span class="st">"results"</span>, <span class="st">"address"</span>, <span class="st">"city"</span>, <span class="st">"state"</span>, <span class="st">"zip"</span>, <span class="st">"violations"</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"geometry"</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf <span class="op">=</span> food_inspection_gdf[col_order].copy()</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># I also want to break this into batches based on the dates, so I need to cast</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#   the `inspection_date` to a datetime type.</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[<span class="st">"inspection_date"</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    food_inspection_gdf[<span class="st">"inspection_date"</span>]</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># I'll also cast string and numeric features to their proper dtypes.</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf <span class="op">=</span> food_inspection_gdf.convert_dtypes()</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[<span class="st">"inspection_id"</span>] <span class="op">=</span> food_inspection_gdf[<span class="st">"inspection_id"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[<span class="st">"license_"</span>] <span class="op">=</span> food_inspection_gdf[<span class="st">"license_"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[<span class="st">"longitude"</span>] <span class="op">=</span> food_inspection_gdf[<span class="st">"longitude"</span>].astype(<span class="st">"Float64"</span>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[<span class="st">"latitude"</span>] <span class="op">=</span> food_inspection_gdf[<span class="st">"latitude"</span>].astype(<span class="st">"Float64"</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co"># I'll also just make all string uppercase (to reduce cardinality)</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>str_cols <span class="op">=</span> <span class="bu">list</span>(food_inspection_gdf.head(<span class="dv">2</span>).select_dtypes(include<span class="op">=</span><span class="st">"string"</span>).columns)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf[str_cols] <span class="op">=</span> food_inspection_gdf[str_cols].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.<span class="bu">str</span>.upper())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="3">
+<p>Here’s a sample of the dataset (after some light preprocessing and <code>dtype</code>setting).</p>
+<div class="cell" data-execution_count="25">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://data.cityofchicago.org/api/geospatial/4ijn-s7e5?method=export&amp;format=GeoJSON"</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>full_file_path <span class="op">=</span> POST_DATA_DIR.joinpath(<span class="st">"full_food_inspections.geojson"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> full_file_path.is_file():</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    urlretrieve(url<span class="op">=</span>url, filename<span class="op">=</span>full_file_path)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf <span class="op">=</span> gpd.read_file(full_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="4">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(full_food_inspection_gdf.shape)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(food_inspection_gdf.shape)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>food_inspection_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>(255573, 21)</code></pre>
+<pre><code>(255573, 17)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">location_state</th>
-<th data-quarto-table-cell-role="th">facility_type</th>
-<th data-quarto-table-cell-role="th">city</th>
-<th data-quarto-table-cell-role="th">location_zip</th>
-<th data-quarto-table-cell-role="th">inspection_id</th>
-<th data-quarto-table-cell-role="th">license_</th>
-<th data-quarto-table-cell-role="th">latitude</th>
-<th data-quarto-table-cell-role="th">zip</th>
-<th data-quarto-table-cell-role="th">state</th>
-<th data-quarto-table-cell-role="th">location_address</th>
-<th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">aka_name</th>
-<th data-quarto-table-cell-role="th">risk</th>
-<th data-quarto-table-cell-role="th">longitude</th>
-<th data-quarto-table-cell-role="th">dba_name</th>
-<th data-quarto-table-cell-role="th">inspection_date</th>
-<th data-quarto-table-cell-role="th">results</th>
-<th data-quarto-table-cell-role="th">inspection_type</th>
-<th data-quarto-table-cell-role="th">address</th>
-<th data-quarto-table-cell-role="th">violations</th>
-<th data-quarto-table-cell-role="th">geometry</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>NaN</td>
-<td>Restaurant</td>
-<td>CHICAGO</td>
-<td>NaN</td>
-<td>2577546</td>
-<td>2808408</td>
-<td>41.79300598548857</td>
-<td>60638</td>
-<td>IL</td>
-<td>NaN</td>
-<td>...</td>
-<td>CIAO RAGAZZI</td>
-<td>Risk 1 (High)</td>
-<td>-87.78197456162096</td>
-<td>CIAO RAGAZZI</td>
-<td>2023-06-20</td>
-<td>Pass w/ Conditions</td>
-<td>Canvass</td>
-<td>5440 S NARRAGANSETT AVE</td>
-<td>10. ADEQUATE HANDWASHING SINKS PROPERLY SUPPLI...</td>
-<td>POINT (-87.78197 41.79301)</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>NaN</td>
-<td>Restaurant</td>
-<td>CHICAGO</td>
-<td>NaN</td>
-<td>2577553</td>
-<td>2078887</td>
-<td>41.83100808816173</td>
-<td>60616</td>
-<td>IL</td>
-<td>NaN</td>
-<td>...</td>
-<td>CHI SOX BAR &amp; GRILL</td>
-<td>Risk 1 (High)</td>
-<td>-87.63493248572952</td>
-<td>CHISOX BAR &amp; GRILL</td>
-<td>2023-06-20</td>
-<td>Pass</td>
-<td>Canvass</td>
-<td>320 W 35TH ST</td>
-<td>51. PLUMBING INSTALLED; PROPER BACKFLOW DEVICE...</td>
-<td>POINT (-87.63493 41.83101)</td>
-</tr>
-</tbody>
-</table>
-
-<p>2 rows × 21 columns</p>
-</div>
-</div>
-</div>
-<p>For some reason, Socrata adds on these four always-null location columns on to geospatial exports. I’m going to remove them.</p>
-<div class="cell" data-execution_count="5">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>location_cols <span class="op">=</span> [<span class="st">"location_state"</span>, <span class="st">"location_zip"</span>, <span class="st">"location_address"</span>, <span class="st">"location_city"</span>]</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with a non-null value in these location_xxx columns:"</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>display(full_food_inspection_gdf[location_cols].notnull().<span class="bu">sum</span>())</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf <span class="op">=</span> full_food_inspection_gdf.drop(columns<span class="op">=</span>location_cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows with a non-null value in these location_xxx columns:</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<pre><code>location_state      0
-location_zip        0
-location_address    0
-location_city       0
-dtype: int64</code></pre>
-</div>
-</div>
-<p>That column ordering is a bit chaotic, so I’ll reorder them (for readability).</p>
-<div class="cell" data-execution_count="6">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>col_order <span class="op">=</span> [</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"inspection_id"</span>, <span class="st">"inspection_date"</span>, <span class="st">"dba_name"</span>, <span class="st">"aka_name"</span>, <span class="st">"license_"</span>, <span class="st">"facility_type"</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"risk"</span>, <span class="st">"inspection_type"</span>, <span class="st">"results"</span>, <span class="st">"address"</span>, <span class="st">"city"</span>, <span class="st">"state"</span>, <span class="st">"zip"</span>, <span class="st">"violations"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"geometry"</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf <span class="op">=</span> full_food_inspection_gdf[col_order].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>I also want to break this into batches based on the dates, so I need to cast the <code>inspection_date</code> to a datetime type.</p>
-<div class="cell" data-execution_count="7">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf[<span class="st">"inspection_date"</span>] <span class="op">=</span> pd.to_datetime(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    full_food_inspection_gdf[<span class="st">"inspection_date"</span>]</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="8">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>full_food_inspection_gdf.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -444,8 +358,8 @@ dtype: int64</code></pre>
 <td>IL</td>
 <td>60638</td>
 <td>10. ADEQUATE HANDWASHING SINKS PROPERLY SUPPLI...</td>
-<td>-87.78197456162096</td>
-<td>41.79300598548857</td>
+<td>-87.781975</td>
+<td>41.793006</td>
 <td>POINT (-87.78197 41.79301)</td>
 </tr>
 <tr class="even">
@@ -464,8 +378,8 @@ dtype: int64</code></pre>
 <td>IL</td>
 <td>60616</td>
 <td>51. PLUMBING INSTALLED; PROPER BACKFLOW DEVICE...</td>
-<td>-87.63493248572952</td>
-<td>41.83100808816173</td>
+<td>-87.634932</td>
+<td>41.831008</td>
 <td>POINT (-87.63493 41.83101)</td>
 </tr>
 </tbody>
@@ -474,69 +388,44 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<p>In the (folded up) cell below, we split the dataset into batches and write each batch to file in this post’s <code>./data</code> directory.</p>
+<div class="cell" data-execution_count="43">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>month_start_dates <span class="op">=</span> full_food_inspection_gdf[<span class="st">"inspection_date"</span>].dt.to_period(<span class="st">"M"</span>).dt.to_timestamp().unique()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>month_start_dates.sort()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I want to split the data into 1-month batches, so I need to get the first day of the month</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   for every month between the earliest inspection and the month after the latest inspection</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   in our food inspection dataset.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>month_start_dates <span class="op">=</span> pd.date_range(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span>food_inspection_gdf[<span class="st">"inspection_date"</span>].<span class="bu">min</span>() <span class="op">+</span> pd.DateOffset(months<span class="op">=-</span><span class="dv">1</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span>food_inspection_gdf[<span class="st">"inspection_date"</span>].<span class="bu">max</span>() <span class="op">+</span> pd.DateOffset(months<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="st">"MS"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Here, we'll iterate through each of those month_start_dates, extract the batch of data,</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   format a filename containing the month_start_date, and write the batch to file.</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> month_start_date <span class="kw">in</span> month_start_dates:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    batch_period <span class="op">=</span> pd.to_datetime(month_start_date).strftime(<span class="st">"%Y_%m"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    batch_data <span class="op">=</span> food_inspection_gdf.loc[</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        food_inspection_gdf[<span class="st">"inspection_date"</span>].between(</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            left<span class="op">=</span>month_start_date,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>            right<span class="op">=</span>month_start_date <span class="op">+</span> pd.DateOffset(months<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    ].copy()</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    batch_file_path <span class="op">=</span> POST_DATA_DIR.joinpath(<span class="ss">f"food_inspection_batch_</span><span class="sc">{</span>batch_period<span class="sc">}</span><span class="ss">.parquet"</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> batch_file_path.is_file():</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        batch_data.to_parquet(batch_file_path, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="10">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data_file_names <span class="op">=</span> [dp.name <span class="cf">for</span> dp <span class="kw">in</span> POST_DATA_DIR.iterdir()]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>data_file_names.sort()</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>data_file_names[<span class="dv">0</span>:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>['full_food_inspections.geojson']</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="11">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> month_start_date <span class="kw">in</span> month_start_dates:</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    batch_period <span class="op">=</span> pd.to_datetime(month_start_date).strftime(<span class="st">"%Y_%m"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    batch_data <span class="op">=</span> full_food_inspection_gdf.loc[</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        full_food_inspection_gdf[<span class="st">"inspection_date"</span>].between(</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            left<span class="op">=</span>month_start_date,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            right<span class="op">=</span>month_start_date <span class="op">+</span> pd.DateOffset(months<span class="op">=</span><span class="dv">1</span>),</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    ].copy()</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    batch_file_path <span class="op">=</span> POST_DATA_DIR.joinpath(<span class="ss">f"food_inspection_batch_</span><span class="sc">{</span>batch_period<span class="sc">}</span><span class="ss">.parquet"</span>)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> batch_file_path.is_file():</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        batch_data.to_parquet(batch_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="12">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data_file_names <span class="op">=</span> [dp.name <span class="cf">for</span> dp <span class="kw">in</span> POST_DATA_DIR.iterdir()]</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>data_file_names.sort()</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>data_file_names[<span class="dv">0</span>:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>['food_inspection_batch_2010_01.parquet',
- 'food_inspection_batch_2010_02.parquet',
- 'food_inspection_batch_2010_03.parquet',
- 'food_inspection_batch_2010_04.parquet',
- 'food_inspection_batch_2010_05.parquet']</code></pre>
-</div>
-</div>
-</section>
-<section id="great-expectations-setup" class="level2">
-<h2 class="anchored" data-anchor-id="great-expectations-setup">Great Expectations Setup</h2>
-<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a conda env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
 </section>
 <section id="create-or-load-great-expectations-data-context" class="level2">
-<h2 class="anchored" data-anchor-id="create-or-load-great-expectations-data-context">Create or Load Great Expectations Data Context</h2>
+<h2 class="anchored" data-anchor-id="create-or-load-great-expectations-data-context">1. Create or Load Great Expectations Data Context</h2>
 <div class="cell" data-execution_count="13">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> great_expectations <span class="im">as</span> gx</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> great_expectations.data_context <span class="im">import</span> FileDataContext</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> FileDataContext.create(project_root_dir<span class="op">=</span>POST_DIR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> great_expectations <span class="im">as</span> gx</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> great_expectations.data_context <span class="im">import</span> FileDataContext</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> FileDataContext.create(project_root_dir<span class="op">=</span>POST_DIR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -545,17 +434,17 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="17">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>datasource_name <span class="op">=</span> <span class="st">"food_inspection_datasource"</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">any</span>(el[<span class="st">"name"</span>] <span class="op">==</span> datasource_name <span class="cf">for</span> el <span class="kw">in</span> context.list_datasources()):</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Datasource with name '</span><span class="sc">{</span>datasource_name<span class="sc">}</span><span class="ss">' found; loading now"</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    datasource <span class="op">=</span> context.get_datasource(datasource_name)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"No Datasource with name '</span><span class="sc">{</span>datasource_name<span class="sc">}</span><span class="ss">' found; creating now"</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    datasource <span class="op">=</span> context.sources.add_pandas_filesystem(</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>datasource_name,</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        base_directory<span class="op">=</span>POST_DATA_DIR</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>datasource_name <span class="op">=</span> <span class="st">"food_inspection_datasource"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">any</span>(el[<span class="st">"name"</span>] <span class="op">==</span> datasource_name <span class="cf">for</span> el <span class="kw">in</span> context.list_datasources()):</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Datasource with name '</span><span class="sc">{</span>datasource_name<span class="sc">}</span><span class="ss">' found; loading now"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    datasource <span class="op">=</span> context.get_datasource(datasource_name)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"No Datasource with name '</span><span class="sc">{</span>datasource_name<span class="sc">}</span><span class="ss">' found; creating now"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    datasource <span class="op">=</span> context.sources.add_pandas_filesystem(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>datasource_name,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        base_directory<span class="op">=</span>POST_DATA_DIR</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Datasource with name 'food_inspection_datasource' found; loading now</code></pre>
@@ -564,7 +453,7 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="16">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>True</code></pre>
@@ -573,7 +462,7 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="20">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(datasource) <span class="cf">if</span> el.startswith(<span class="st">"add_"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(datasource) <span class="cf">if</span> el.startswith(<span class="st">"add_"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <pre><code>['add_csv_asset',
@@ -595,16 +484,16 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="29">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>data_asset_name <span class="op">=</span> <span class="st">"food_inspections_asset"</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> data_asset_name <span class="kw">not</span> <span class="kw">in</span> datasource.get_asset_names():</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Creating data asset </span><span class="sc">{</span>data_asset_name<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    data_asset <span class="op">=</span> datasource.add_parquet_asset(</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>data_asset_name,</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        batching_regex <span class="op">=</span> <span class="vs">r"food_inspection_batch_(?P&lt;year&gt;\d</span><span class="sc">{4}</span><span class="vs">)_(?P&lt;month&gt;\d</span><span class="sc">{2}</span><span class="vs">)\.parquet"</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    data_asset <span class="op">=</span> datasource.get_asset(data_asset_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data_asset_name <span class="op">=</span> <span class="st">"food_inspections_asset"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> data_asset_name <span class="kw">not</span> <span class="kw">in</span> datasource.get_asset_names():</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Creating data asset </span><span class="sc">{</span>data_asset_name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    data_asset <span class="op">=</span> datasource.add_parquet_asset(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>data_asset_name,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        batching_regex <span class="op">=</span> <span class="vs">r"food_inspection_batch_(?P&lt;year&gt;\d</span><span class="sc">{4}</span><span class="vs">)_(?P&lt;month&gt;\d</span><span class="sc">{2}</span><span class="vs">)\.parquet"</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    data_asset <span class="op">=</span> datasource.get_asset(data_asset_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Creating data asset food_inspections_asset</code></pre>
@@ -614,14 +503,14 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="30">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>data_asset <span class="op">=</span> data_asset.add_sorters([<span class="st">"+year"</span>, <span class="st">"+month"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data_asset <span class="op">=</span> data_asset.add_sorters([<span class="st">"+year"</span>, <span class="st">"+month"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="31">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>batch_request <span class="op">=</span> data_asset.build_batch_request()</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>batches <span class="op">=</span> data_asset.get_batch_list_from_batch_request(batch_request)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>batch_request <span class="op">=</span> data_asset.build_batch_request()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>batches <span class="op">=</span> data_asset.get_batch_list_from_batch_request(batch_request)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -630,20 +519,20 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="35">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>expectation_suite_name <span class="op">=</span> <span class="st">"food_inspections_suite"</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>expectation_suite <span class="op">=</span> context.add_or_update_expectation_suite(</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    expectation_suite_name<span class="op">=</span>expectation_suite_name</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>expectation_suite_name <span class="op">=</span> <span class="st">"food_inspections_suite"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>expectation_suite <span class="op">=</span> context.add_or_update_expectation_suite(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    expectation_suite_name<span class="op">=</span>expectation_suite_name</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="36">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>data_assistant_result <span class="op">=</span> context.assistants.onboarding.run(</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    batch_request<span class="op">=</span>batch_request,</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    exclude_column_names<span class="op">=</span>[],</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data_assistant_result <span class="op">=</span> context.assistants.onboarding.run(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    batch_request<span class="op">=</span>batch_request,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    exclude_column_names<span class="op">=</span>[],</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code></code></pre>
@@ -1387,7 +1276,7 @@ dtype: int64</code></pre>
 <div class="cell" data-execution_count="47">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>data_assistant_result.plot_expectations_and_metrics(exclude_column_names<span class="op">=</span>[<span class="st">"inspection_date"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>data_assistant_result.plot_expectations_and_metrics(exclude_column_names<span class="op">=</span>[<span class="st">"inspection_date"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>62 Expectations produced, 9 Expectation and Metric plots implemented
@@ -1458,26 +1347,27 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 <div class="cell" data-execution_count="40">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>expectation_suite <span class="op">=</span> data_assistant_result.get_expectation_suite(</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    expectation_suite_name<span class="op">=</span>expectation_suite_name</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>expectation_suite <span class="op">=</span> data_assistant_result.get_expectation_suite(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    expectation_suite_name<span class="op">=</span>expectation_suite_name</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="48">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># expectation_suite.show_expectations_by_expectation_type()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># expectation_suite.show_expectations_by_expectation_type()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="50">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>saved_suite <span class="op">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op">=</span>expectation_suite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>saved_suite <span class="op">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op">=</span>expectation_suite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
 
 
+</section>
 </section>
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">

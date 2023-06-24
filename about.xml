@@ -6,20 +6,20 @@
       version="2.0">
 <channel>
 <title>Triano&#39;s Quarto Blog</title>
-<link>https://www.matttriano.net/about.html</link>
-<atom:link href="https://www.matttriano.net/about.xml" rel="self" type="application/rss+xml"/>
+<link>https://www.matttriano.dev/about.html</link>
+<atom:link href="https://www.matttriano.dev/about.xml" rel="self" type="application/rss+xml"/>
 <description>A blog by Matt Triano</description>
 <image>
-<url>https://www.matttriano.net/profile.jpg</url>
+<url>https://www.matttriano.dev/profile.jpg</url>
 <title>Triano&#39;s Quarto Blog</title>
-<link>https://www.matttriano.net/about.html</link>
+<link>https://www.matttriano.dev/about.html</link>
 </image>
-<generator>quarto-1.3.361</generator>
+<generator>quarto-1.3.427</generator>
 <lastBuildDate>Fri, 23 Jun 2023 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Data Quality Monitoring with Great Expectations</title>
   <dc:creator>Matt Triano</dc:creator>
-  <link>https://www.matttriano.net/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</link>
+  <link>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</link>
   <description><![CDATA[ 
 
 
@@ -57,9 +57,25 @@ font-style: inherit;">as</span> pd</span></code></pre></div>
 </details>
 </div>
 <p>Great Expectations is an open-source Python-based library that brings the idea of “testing” to your data. It enables you to define expectations for properties of your datasets (like records per batch, distribution of values in a column, columns in a table, etc) and check that the data meets those expectations when the data is updated.</p>
+<section id="workflow-overview" class="level1">
+<h1>Workflow Overview</h1>
+<p>The high-level <code>great_expectations</code> workflow follows this pattern:</p>
+<ol start="0" type="1">
+<li>Install <code>great_expectations</code>.</li>
+<li>Create (or load) a <a href="https://docs.greatexpectations.io/docs/guides/setup/configuring_data_contexts/instantiating_data_contexts/instantiate_data_context"><code>DataContext</code></a> for your project.</li>
+<li>Connect <a href="https://docs.greatexpectations.io/docs/guides/connecting_to_your_data/connect_to_data_lp/"><code>Datasources</code></a> (and their <code>DataAssets</code>) to your <code>DataContext</code>.</li>
+<li>Define <a href="https://docs.greatexpectations.io/docs/guides/expectations/expectations_lp"><code>Expectations</code></a> for your <code>DataAssets</code>.</li>
+<li>Set <a href="https://docs.greatexpectations.io/docs/guides/validation/validate_data_lp"><code>Checkpoints</code></a> to validate your <code>DataAssets</code>.</li>
+</ol>
+<p>In this post, I’ll demonstrate this workflow with local-file-based <code>DataAssets</code> in a local filesystem <code>DataContext</code> (although <code>great_expectations</code> also works with SQL-based and cloud-bucket-based <code>DataAssets</code>).</p>
+<section id="great-expectations-setup" class="level2">
+<h2 class="anchored" data-anchor-id="great-expectations-setup">0. Great Expectations Setup</h2>
+<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a conda env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
+</section>
 <section id="sample-data-collection-and-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="sample-data-collection-and-preparation">Sample Data Collection and Preparation</h2>
-<div class="cell" data-execution_count="2">
+<p>Many data pipelines process data in discrete, periodic batches. I’m going to simulate that situation by downloading a dataset, splitting it into 1-month batches (based on a datetime-like column), and then write each of those 1-month batches to file. I’m going to use the <a href="https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5">Food Inspection dataset</a> on Chicago’s public data portal.</p>
+<div class="cell" data-execution_count="4">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">POST_DIR <span class="op" style="color: #5E5E5E;
@@ -76,142 +92,42 @@ font-style: inherit;">"data"</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">True</span>)</span></code></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="3">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">url <span class="op" style="color: #5E5E5E;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># First, we need to download the data to our local machine.</span></span>
+<span id="cb2-6">url <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/4ijn-s7e5?method=export&amp;format=GeoJSON"</span></span>
-<span id="cb3-2">full_file_path <span class="op" style="color: #5E5E5E;
+<span id="cb2-7">full_file_path <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> POST_DATA_DIR.joinpath(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"full_food_inspections.geojson"</span>)</span>
-<span id="cb3-3"><span class="cf" style="color: #003B4F;
+<span id="cb2-8"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> full_file_path.is_file():</span>
-<span id="cb3-4">    urlretrieve(url<span class="op" style="color: #5E5E5E;
+<span id="cb2-9">    urlretrieve(url<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>url, filename<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>full_file_path)</span>
-<span id="cb3-5">full_food_inspection_gdf <span class="op" style="color: #5E5E5E;
+<span id="cb2-10">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> gpd.read_file(full_file_path)</span></code></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="4">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="bu" style="color: null;
+font-style: inherit;">=</span> gpd.read_file(full_file_path)</span>
+<span id="cb2-11"></span>
+<span id="cb2-12"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">print</span>(full_food_inspection_gdf.shape)</span>
-<span id="cb4-2">full_food_inspection_gdf.head(<span class="dv" style="color: #AD0000;
+font-style: inherit;"># For some reason, Socrata adds on these four always-null location columns on</span></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">2</span>)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>(255573, 21)</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">location_state</th>
-<th data-quarto-table-cell-role="th">facility_type</th>
-<th data-quarto-table-cell-role="th">city</th>
-<th data-quarto-table-cell-role="th">location_zip</th>
-<th data-quarto-table-cell-role="th">inspection_id</th>
-<th data-quarto-table-cell-role="th">license_</th>
-<th data-quarto-table-cell-role="th">latitude</th>
-<th data-quarto-table-cell-role="th">zip</th>
-<th data-quarto-table-cell-role="th">state</th>
-<th data-quarto-table-cell-role="th">location_address</th>
-<th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">aka_name</th>
-<th data-quarto-table-cell-role="th">risk</th>
-<th data-quarto-table-cell-role="th">longitude</th>
-<th data-quarto-table-cell-role="th">dba_name</th>
-<th data-quarto-table-cell-role="th">inspection_date</th>
-<th data-quarto-table-cell-role="th">results</th>
-<th data-quarto-table-cell-role="th">inspection_type</th>
-<th data-quarto-table-cell-role="th">address</th>
-<th data-quarto-table-cell-role="th">violations</th>
-<th data-quarto-table-cell-role="th">geometry</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>NaN</td>
-<td>Restaurant</td>
-<td>CHICAGO</td>
-<td>NaN</td>
-<td>2577546</td>
-<td>2808408</td>
-<td>41.79300598548857</td>
-<td>60638</td>
-<td>IL</td>
-<td>NaN</td>
-<td>...</td>
-<td>CIAO RAGAZZI</td>
-<td>Risk 1 (High)</td>
-<td>-87.78197456162096</td>
-<td>CIAO RAGAZZI</td>
-<td>2023-06-20</td>
-<td>Pass w/ Conditions</td>
-<td>Canvass</td>
-<td>5440 S NARRAGANSETT AVE</td>
-<td>10. ADEQUATE HANDWASHING SINKS PROPERLY SUPPLI...</td>
-<td>POINT (-87.78197 41.79301)</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>NaN</td>
-<td>Restaurant</td>
-<td>CHICAGO</td>
-<td>NaN</td>
-<td>2577553</td>
-<td>2078887</td>
-<td>41.83100808816173</td>
-<td>60616</td>
-<td>IL</td>
-<td>NaN</td>
-<td>...</td>
-<td>CHI SOX BAR &amp; GRILL</td>
-<td>Risk 1 (High)</td>
-<td>-87.63493248572952</td>
-<td>CHISOX BAR &amp; GRILL</td>
-<td>2023-06-20</td>
-<td>Pass</td>
-<td>Canvass</td>
-<td>320 W 35TH ST</td>
-<td>51. PLUMBING INSTALLED; PROPER BACKFLOW DEVICE...</td>
-<td>POINT (-87.63493 41.83101)</td>
-</tr>
-</tbody>
-</table>
-
-<p>2 rows × 21 columns</p>
-</div>
-</div>
-</div>
-<p>For some reason, Socrata adds on these four always-null location columns on to geospatial exports. I’m going to remove them.</p>
-<div class="cell" data-execution_count="5">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">location_cols <span class="op" style="color: #5E5E5E;
+font-style: inherit;">#   to geospatial exports. I'm going to remove them.</span></span>
+<span id="cb2-14">location_cols <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
 background-color: null;
@@ -222,39 +138,28 @@ background-color: null;
 font-style: inherit;">"location_address"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"location_city"</span>]</span>
-<span id="cb6-2"><span class="bu" style="color: null;
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+font-style: inherit;"># uncomment the lines below to confirm those columns are always empty</span></span>
+<span id="cb2-16"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">"Rows with a non-null value in these location_xxx columns:"</span>)</span>
-<span id="cb6-3">display(full_food_inspection_gdf[location_cols].notnull().<span class="bu" style="color: null;
+font-style: inherit;"># print("Rows with a non-null value in these location_xxx columns:")</span></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">sum</span>())</span>
-<span id="cb6-4">full_food_inspection_gdf <span class="op" style="color: #5E5E5E;
+font-style: inherit;"># display(food_inspection_gdf[location_cols].notnull().sum())</span></span>
+<span id="cb2-18">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> full_food_inspection_gdf.drop(columns<span class="op" style="color: #5E5E5E;
+font-style: inherit;">=</span> food_inspection_gdf.drop(columns<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span>location_cols)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows with a non-null value in these location_xxx columns:</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<pre><code>location_state      0
-location_zip        0
-location_address    0
-location_city       0
-dtype: int64</code></pre>
-</div>
-</div>
-<p>That column ordering is a bit chaotic, so I’ll reorder them (for readability).</p>
-<div class="cell" data-execution_count="6">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">col_order <span class="op" style="color: #5E5E5E;
+font-style: inherit;">=</span>location_cols)</span>
+<span id="cb2-19"></span>
+<span id="cb2-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># That column ordering is a bit chaotic, so I'll reorder them (for readability).</span></span>
+<span id="cb2-21">col_order <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [</span>
-<span id="cb9-2">    <span class="st" style="color: #20794D;
+<span id="cb2-22">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_id"</span>, <span class="st" style="color: #20794D;
 background-color: null;
@@ -267,7 +172,7 @@ background-color: null;
 font-style: inherit;">"license_"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"facility_type"</span>,</span>
-<span id="cb9-3">    <span class="st" style="color: #20794D;
+<span id="cb2-23">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"risk"</span>, <span class="st" style="color: #20794D;
 background-color: null;
@@ -284,42 +189,117 @@ background-color: null;
 font-style: inherit;">"zip"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"violations"</span>,</span>
-<span id="cb9-4">    <span class="st" style="color: #20794D;
+<span id="cb2-24">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"longitude"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"latitude"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"geometry"</span></span>
-<span id="cb9-5">]</span>
-<span id="cb9-6">full_food_inspection_gdf <span class="op" style="color: #5E5E5E;
+<span id="cb2-25">]</span>
+<span id="cb2-26">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> full_food_inspection_gdf[col_order].copy()</span></code></pre></div>
-</details>
-</div>
-<p>I also want to break this into batches based on the dates, so I need to cast the <code>inspection_date</code> to a datetime type.</p>
-<div class="cell" data-execution_count="7">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">full_food_inspection_gdf[<span class="st" style="color: #20794D;
+font-style: inherit;">=</span> food_inspection_gdf[col_order].copy()</span>
+<span id="cb2-27"></span>
+<span id="cb2-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># I also want to break this into batches based on the dates, so I need to cast</span></span>
+<span id="cb2-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#   the `inspection_date` to a datetime type.</span></span>
+<span id="cb2-30">food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.to_datetime(</span>
-<span id="cb10-2">    full_food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-31">    food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>]</span>
-<span id="cb10-3">)</span></code></pre></div>
+<span id="cb2-32">)</span>
+<span id="cb2-33"></span>
+<span id="cb2-34"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># I'll also cast string and numeric features to their proper dtypes.</span></span>
+<span id="cb2-35">food_inspection_gdf <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf.convert_dtypes()</span>
+<span id="cb2-36">food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inspection_id"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inspection_id"</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Int64"</span>)</span>
+<span id="cb2-37">food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"license_"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"license_"</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Int64"</span>)</span>
+<span id="cb2-38">food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"longitude"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"longitude"</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Float64"</span>)</span>
+<span id="cb2-39">food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"latitude"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"latitude"</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Float64"</span>)</span>
+<span id="cb2-40"></span>
+<span id="cb2-41"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># I'll also just make all string uppercase (to reduce cardinality)</span></span>
+<span id="cb2-42">str_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>(food_inspection_gdf.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>).select_dtypes(include<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"string"</span>).columns)</span>
+<span id="cb2-43">food_inspection_gdf[str_cols] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> food_inspection_gdf[str_cols].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: x.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.upper())</span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="8">
+<p>Here’s a sample of the dataset (after some light preprocessing and <code>dtype</code>setting).</p>
+<div class="cell" data-execution_count="25">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">full_food_inspection_gdf.head(<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(food_inspection_gdf.shape)</span>
+<span id="cb3-2">food_inspection_gdf.head(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>)</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>(255573, 17)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -363,8 +343,8 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 <td>IL</td>
 <td>60638</td>
 <td>10. ADEQUATE HANDWASHING SINKS PROPERLY SUPPLI...</td>
-<td>-87.78197456162096</td>
-<td>41.79300598548857</td>
+<td>-87.781975</td>
+<td>41.793006</td>
 <td>POINT (-87.78197 41.79301)</td>
 </tr>
 <tr class="even">
@@ -383,8 +363,8 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 <td>IL</td>
 <td>60616</td>
 <td>51. PLUMBING INSTALLED; PROPER BACKFLOW DEVICE...</td>
-<td>-87.63493248572952</td>
-<td>41.83100808816173</td>
+<td>-87.634932</td>
+<td>41.831008</td>
 <td>POINT (-87.63493 41.83101)</td>
 </tr>
 </tbody>
@@ -393,63 +373,81 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<p>In the (folded up) cell below, we split the dataset into batches and write each batch to file in this post’s <code>./data</code> directory.</p>
+<div class="cell" data-execution_count="43">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">month_start_dates <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> full_food_inspection_gdf[<span class="st" style="color: #20794D;
+font-style: inherit;"># I want to split the data into 1-month batches, so I need to get the first day of the month</span></span>
+<span id="cb5-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">"inspection_date"</span>].dt.to_period(<span class="st" style="color: #20794D;
+font-style: inherit;">#   for every month between the earliest inspection and the month after the latest inspection</span></span>
+<span id="cb5-3"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">"M"</span>).dt.to_timestamp().unique()</span>
-<span id="cb12-2">month_start_dates.sort()</span></code></pre></div>
-</details>
-</div>
-<div class="cell" data-execution_count="10">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">data_file_names <span class="op" style="color: #5E5E5E;
+font-style: inherit;">#   in our food inspection dataset.</span></span>
+<span id="cb5-4">month_start_dates <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> [dp.name <span class="cf" style="color: #003B4F;
+font-style: inherit;">=</span> pd.date_range(</span>
+<span id="cb5-5">    start<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">for</span> dp <span class="kw" style="color: #003B4F;
+font-style: inherit;">=</span>food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">in</span> POST_DATA_DIR.iterdir()]</span>
-<span id="cb13-2">data_file_names.sort()</span>
-<span id="cb13-3">data_file_names[<span class="dv" style="color: #AD0000;
+font-style: inherit;">"inspection_date"</span>].<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">0</span>:<span class="dv" style="color: #AD0000;
+font-style: inherit;">min</span>() <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">5</span>]</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>['full_food_inspections.geojson']</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="11">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="cf" style="color: #003B4F;
+font-style: inherit;">+</span> pd.DateOffset(months<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb5-6">    end<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>food_inspection_gdf[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"inspection_date"</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> pd.DateOffset(months<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb5-7">    freq<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MS"</span>,</span>
+<span id="cb5-8">)</span>
+<span id="cb5-9"></span>
+<span id="cb5-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Here, we'll iterate through each of those month_start_dates, extract the batch of data,</span></span>
+<span id="cb5-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#   format a filename containing the month_start_date, and write the batch to file.</span></span>
+<span id="cb5-12"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> month_start_date <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> month_start_dates:</span>
-<span id="cb15-2">    batch_period <span class="op" style="color: #5E5E5E;
+<span id="cb5-13">    batch_period <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.to_datetime(month_start_date).strftime(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"%Y_%m"</span>)</span>
-<span id="cb15-3">    batch_data <span class="op" style="color: #5E5E5E;
+<span id="cb5-14">    batch_data <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> full_food_inspection_gdf.loc[</span>
-<span id="cb15-4">        full_food_inspection_gdf[<span class="st" style="color: #20794D;
+font-style: inherit;">=</span> food_inspection_gdf.loc[</span>
+<span id="cb5-15">        food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>].between(</span>
-<span id="cb15-5">            left<span class="op" style="color: #5E5E5E;
+<span id="cb5-16">            left<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>month_start_date,</span>
-<span id="cb15-6">            right<span class="op" style="color: #5E5E5E;
+<span id="cb5-17">            right<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>month_start_date <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -458,13 +456,13 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>),</span>
-<span id="cb15-7">            inclusive<span class="op" style="color: #5E5E5E;
+<span id="cb5-18">            inclusive<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"left"</span>)</span>
-<span id="cb15-8">    ].copy()</span>
-<span id="cb15-9">    batch_file_path <span class="op" style="color: #5E5E5E;
+<span id="cb5-19">    ].copy()</span>
+<span id="cb5-20">    batch_file_path <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> POST_DATA_DIR.joinpath(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -475,61 +473,36 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">.parquet"</span>)</span>
-<span id="cb15-10">    <span class="cf" style="color: #003B4F;
+<span id="cb5-21">    <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> batch_file_path.is_file():</span>
-<span id="cb15-11">        batch_data.to_parquet(batch_file_path)</span></code></pre></div>
+<span id="cb5-22">        batch_data.to_parquet(batch_file_path, index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="12">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">data_file_names <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [dp.name <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> dp <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> POST_DATA_DIR.iterdir()]</span>
-<span id="cb16-2">data_file_names.sort()</span>
-<span id="cb16-3">data_file_names[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>:<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>]</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>['food_inspection_batch_2010_01.parquet',
- 'food_inspection_batch_2010_02.parquet',
- 'food_inspection_batch_2010_03.parquet',
- 'food_inspection_batch_2010_04.parquet',
- 'food_inspection_batch_2010_05.parquet']</code></pre>
-</div>
-</div>
-</section>
-<section id="great-expectations-setup" class="level2">
-<h2 class="anchored" data-anchor-id="great-expectations-setup">Great Expectations Setup</h2>
-<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a conda env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
 </section>
 <section id="create-or-load-great-expectations-data-context" class="level2">
-<h2 class="anchored" data-anchor-id="create-or-load-great-expectations-data-context">Create or Load Great Expectations Data Context</h2>
+<h2 class="anchored" data-anchor-id="create-or-load-great-expectations-data-context">1. Create or Load Great Expectations Data Context</h2>
 <div class="cell" data-execution_count="13">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="im" style="color: #00769E;
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> great_expectations <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> gx</span>
-<span id="cb18-2"><span class="im" style="color: #00769E;
+<span id="cb6-2"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> great_expectations.data_context <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> FileDataContext</span>
-<span id="cb18-3"></span>
-<span id="cb18-4">context <span class="op" style="color: #5E5E5E;
+<span id="cb6-3"></span>
+<span id="cb6-4">context <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> FileDataContext.create(project_root_dir<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -542,13 +515,13 @@ font-style: inherit;">=</span>POST_DIR)</span></code></pre></div>
 <div class="cell" data-execution_count="17">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">datasource_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">datasource_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspection_datasource"</span></span>
-<span id="cb19-2"></span>
-<span id="cb19-3"><span class="cf" style="color: #003B4F;
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="bu" style="color: null;
 background-color: null;
@@ -561,7 +534,7 @@ background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> context.list_datasources()):</span>
-<span id="cb19-4">    <span class="bu" style="color: null;
+<span id="cb7-4">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -572,13 +545,13 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">' found; loading now"</span>)</span>
-<span id="cb19-5">    datasource <span class="op" style="color: #5E5E5E;
+<span id="cb7-5">    datasource <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.get_datasource(datasource_name)</span>
-<span id="cb19-6"><span class="cf" style="color: #003B4F;
+<span id="cb7-6"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">else</span>:</span>
-<span id="cb19-7">    <span class="bu" style="color: null;
+<span id="cb7-7">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -589,16 +562,16 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">' found; creating now"</span>)</span>
-<span id="cb19-8">    datasource <span class="op" style="color: #5E5E5E;
+<span id="cb7-8">    datasource <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.sources.add_pandas_filesystem(</span>
-<span id="cb19-9">        name<span class="op" style="color: #5E5E5E;
+<span id="cb7-9">        name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>datasource_name,</span>
-<span id="cb19-10">        base_directory<span class="op" style="color: #5E5E5E;
+<span id="cb7-10">        base_directory<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>POST_DATA_DIR</span>
-<span id="cb19-11">    )</span></code></pre></div>
+<span id="cb7-11">    )</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Datasource with name 'food_inspection_datasource' found; loading now</code></pre>
@@ -607,7 +580,7 @@ font-style: inherit;">=</span>POST_DATA_DIR</span>
 <div class="cell" data-execution_count="16">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>True</code></pre>
@@ -616,7 +589,7 @@ font-style: inherit;">=</span>POST_DATA_DIR</span>
 <div class="cell" data-execution_count="20">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">[el <span class="cf" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">[el <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -648,20 +621,20 @@ font-style: inherit;">"add_"</span>)]</span></code></pre></div>
 <div class="cell" data-execution_count="29">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">data_asset_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">data_asset_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_asset"</span></span>
-<span id="cb25-2"></span>
-<span id="cb25-3"><span class="cf" style="color: #003B4F;
+<span id="cb13-2"></span>
+<span id="cb13-3"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> data_asset_name <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> datasource.get_asset_names():</span>
-<span id="cb25-4">    <span class="bu" style="color: null;
+<span id="cb13-4">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -672,13 +645,13 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span>
-<span id="cb25-5">    data_asset <span class="op" style="color: #5E5E5E;
+<span id="cb13-5">    data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> datasource.add_parquet_asset(</span>
-<span id="cb25-6">        name<span class="op" style="color: #5E5E5E;
+<span id="cb13-6">        name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>data_asset_name,</span>
-<span id="cb25-7">        batching_regex <span class="op" style="color: #5E5E5E;
+<span id="cb13-7">        batching_regex <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
 background-color: null;
@@ -691,11 +664,11 @@ background-color: null;
 font-style: inherit;">{2}</span><span class="vs" style="color: #20794D;
 background-color: null;
 font-style: inherit;">)\.parquet"</span></span>
-<span id="cb25-8">    )</span>
-<span id="cb25-9"><span class="cf" style="color: #003B4F;
+<span id="cb13-8">    )</span>
+<span id="cb13-9"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">else</span>:</span>
-<span id="cb25-10">    data_asset <span class="op" style="color: #5E5E5E;
+<span id="cb13-10">    data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> datasource.get_asset(data_asset_name)</span></code></pre></div>
 </details>
@@ -707,7 +680,7 @@ font-style: inherit;">=</span> datasource.get_asset(data_asset_name)</span></cod
 <div class="cell" data-execution_count="30">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">data_asset <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.add_sorters([<span class="st" style="color: #20794D;
 background-color: null;
@@ -719,10 +692,10 @@ font-style: inherit;">"+month"</span>])</span></code></pre></div>
 <div class="cell" data-execution_count="31">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">batch_request <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">batch_request <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.build_batch_request()</span>
-<span id="cb28-2">batches <span class="op" style="color: #5E5E5E;
+<span id="cb16-2">batches <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.get_batch_list_from_batch_request(batch_request)</span></code></pre></div>
 </details>
@@ -733,34 +706,34 @@ font-style: inherit;">=</span> data_asset.get_batch_list_from_batch_request(batc
 <div class="cell" data-execution_count="35">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">expectation_suite_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">expectation_suite_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_suite"</span></span>
-<span id="cb29-2"></span>
-<span id="cb29-3">expectation_suite <span class="op" style="color: #5E5E5E;
+<span id="cb17-2"></span>
+<span id="cb17-3">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(</span>
-<span id="cb29-4">    expectation_suite_name<span class="op" style="color: #5E5E5E;
+<span id="cb17-4">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb29-5">)</span></code></pre></div>
+<span id="cb17-5">)</span></code></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="36">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">data_assistant_result <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">data_assistant_result <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.assistants.onboarding.run(</span>
-<span id="cb30-2">    batch_request<span class="op" style="color: #5E5E5E;
+<span id="cb18-2">    batch_request<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>batch_request,</span>
-<span id="cb30-3">    exclude_column_names<span class="op" style="color: #5E5E5E;
+<span id="cb18-3">    exclude_column_names<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[],</span>
-<span id="cb30-4">)</span></code></pre></div>
+<span id="cb18-4">)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code></code></pre>
@@ -1504,7 +1477,7 @@ font-style: inherit;">=</span>[],</span>
 <div class="cell" data-execution_count="47">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1">data_assistant_result.plot_expectations_and_metrics(exclude_column_names<span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">data_assistant_result.plot_expectations_and_metrics(exclude_column_names<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
 background-color: null;
@@ -1579,19 +1552,19 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 <div class="cell" data-execution_count="40">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">expectation_suite <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_assistant_result.get_expectation_suite(</span>
-<span id="cb35-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
+<span id="cb23-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb35-3">)</span></code></pre></div>
+<span id="cb23-3">)</span></code></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="48">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># expectation_suite.show_expectations_by_expectation_type()</span></span></code></pre></div>
 </details>
@@ -1599,7 +1572,7 @@ font-style: inherit;"># expectation_suite.show_expectations_by_expectation_type(
 <div class="cell" data-execution_count="50">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">saved_suite <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">saved_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1610,6 +1583,7 @@ font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
 
 
 </section>
+</section>
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
@@ -1619,14 +1593,14 @@ font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
 No matching items
 </div>
 </div> ]]></description>
-  <guid>https://www.matttriano.net/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</guid>
+  <guid>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</guid>
   <pubDate>Fri, 23 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://www.matttriano.net/posts/006_great_expectations_setup/Census_TIGER.png" medium="image" type="image/png"/>
+  <media:content url="https://www.matttriano.dev/posts/006_great_expectations_setup/pip_setting_(up)_Great_Expectations.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Census TIGER Dataset Collector Dev</title>
   <dc:creator>Matt Triano</dc:creator>
-  <link>https://www.matttriano.net/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</link>
+  <link>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</link>
   <description><![CDATA[ 
 
 
@@ -3105,7 +3079,7 @@ background-color: null;
 font-style: inherit;">=</span>ax)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="https://www.matttriano.net/posts/004_census_tiger_dev/TIGER_data_collector_dev_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+<p><img src="https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 
@@ -3121,14 +3095,14 @@ font-style: inherit;">=</span>ax)</span></code></pre></div>
 No matching items
 </div>
 </div> ]]></description>
-  <guid>https://www.matttriano.net/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</guid>
+  <guid>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</guid>
   <pubDate>Wed, 14 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://www.matttriano.net/posts/004_census_tiger_dev/Census_TIGER.png" medium="image" type="image/png" height="144" width="144"/>
+  <media:content url="https://www.matttriano.dev/posts/004_census_tiger_dev/Census_TIGER.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Working with Notebooks</title>
   <dc:creator>Matt Triano</dc:creator>
-  <link>https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto.html</link>
+  <link>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</link>
   <description><![CDATA[ 
 
 
@@ -3195,7 +3169,7 @@ font-style: inherit;">True</span>)</span>
 <div class="cell-output cell-output-display">
 <div id="fig-polar" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto_files/figure-html/fig-polar-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto_files/figure-html/fig-polar-output-1.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Figure&nbsp;1: A line plot on a polar axis</figcaption>
 </figure>
 </div>
@@ -3237,9 +3211,9 @@ font-style: inherit;">user@hostname:~/...$</span> quarto preview quarto_blog/</s
 No matching items
 </div>
 </div> ]]></description>
-  <guid>https://www.matttriano.net/posts/002_notebook_test/jupyter_quarto.html</guid>
+  <guid>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</guid>
   <pubDate>Mon, 12 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://www.matttriano.net/posts/002_notebook_test/studious_robot.png" medium="image" type="image/png" height="144" width="144"/>
+  <media:content url="https://www.matttriano.dev/posts/002_notebook_test/studious_robot.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>
