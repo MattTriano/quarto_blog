@@ -1,6 +1,6 @@
 # My Quarto Blog
 
-I do a lot of my work in Jupyter Notebooks. Notebooks can integrate code with descriptive text, images, or $$\LaTeX$$ equations. Notebooks can be easily converted to `HTML`, which makes them an excellent vehicle for blog posts. I used to use Fast.ai's [fastpages](https://github.com/fastai/fastpages) notebook blogging platform, but Fast.ai deprecated `fastpages` after [Quarto](https://quarto.org/) (the successor to the R-markdown format) emerged. Quarto makes it very convenient to publish notebooks via GitHub-Pages.
+I do a lot of my work in Jupyter Notebooks. Notebooks can integrate code with descriptive text, images, or $\LaTeX$ equations. Notebooks can be easily converted to `HTML`, which makes them an excellent vehicle for blog posts. I used to use Fast.ai's [fastpages](https://github.com/fastai/fastpages) notebook blogging platform, but Fast.ai deprecated `fastpages` after [Quarto](https://quarto.org/) (the successor to the R-markdown format) emerged. Quarto makes it very convenient to publish notebooks via GitHub-Pages.
 
 ## Previewing work locally
 
