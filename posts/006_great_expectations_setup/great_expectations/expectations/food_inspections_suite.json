@@ -1,0 +1,2348 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "food_inspections_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "max_value": 2306,
+        "min_value": 649
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {},
+            "metric_name": "table.row_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_table_columns_to_match_set",
+      "kwargs": {
+        "column_set": [
+          "risk",
+          "dba_name",
+          "inspection_date",
+          "results",
+          "state",
+          "address",
+          "inspection_id",
+          "latitude",
+          "geometry",
+          "aka_name",
+          "violations",
+          "city",
+          "zip",
+          "longitude",
+          "license_",
+          "facility_type",
+          "inspection_type"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "dba_name"
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "dba_name"
+            },
+            "metric_name": "column_values.nonnull.unexpected_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "inspection_type"
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "inspection_type"
+            },
+            "metric_name": "column_values.nonnull.unexpected_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "results"
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "results"
+            },
+            "metric_name": "column_values.nonnull.unexpected_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "address"
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "address"
+            },
+            "metric_name": "column_values.nonnull.unexpected_count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "longitude",
+        "max_value": -87.5250941359867,
+        "min_value": -87.91442843927047,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_values_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "longitude"
+              },
+              "metric_name": "column.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_values_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "longitude"
+              },
+              "metric_name": "column.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_quantile_values_to_be_between",
+      "kwargs": {
+        "allow_relative_error": false,
+        "column": "longitude",
+        "quantile_ranges": {
+          "quantiles": [
+            0.25,
+            0.5,
+            0.75
+          ],
+          "value_ranges": [
+            [
+              -87.72182580739543,
+              -87.69252480242115
+            ],
+            [
+              -87.67809097304217,
+              -87.65687914281855
+            ],
+            [
+              -87.64773750079577,
+              -87.62821812644587
+            ]
+          ]
+        }
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "longitude"
+            },
+            "metric_name": "column.quantile_values",
+            "metric_value_kwargs": {
+              "allow_relative_error": false,
+              "quantiles": [
+                0.25,
+                0.5,
+                0.75
+              ]
+            }
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_median_to_be_between",
+      "kwargs": {
+        "column": "longitude",
+        "max_value": -87.65687914281855,
+        "min_value": -87.67809097304217,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "longitude"
+            },
+            "metric_name": "column.median",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_mean_to_be_between",
+      "kwargs": {
+        "column": "longitude",
+        "max_value": -87.66715399501845,
+        "min_value": -87.68704044700375,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "longitude"
+            },
+            "metric_name": "column.mean",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_stdev_to_be_between",
+      "kwargs": {
+        "column": "longitude",
+        "max_value": 0.07184712136629247,
+        "min_value": 0.048976374310445346,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "longitude"
+            },
+            "metric_name": "column.standard_deviation",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "latitude",
+        "max_value": 42.02106424782547,
+        "min_value": 41.64467013219805,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_values_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "latitude"
+              },
+              "metric_name": "column.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_values_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "latitude"
+              },
+              "metric_name": "column.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_quantile_values_to_be_between",
+      "kwargs": {
+        "allow_relative_error": false,
+        "column": "latitude",
+        "quantile_ranges": {
+          "quantiles": [
+            0.25,
+            0.5,
+            0.75
+          ],
+          "value_ranges": [
+            [
+              41.78517098599124,
+              41.87759408077344
+            ],
+            [
+              41.880463147078466,
+              41.910729292099305
+            ],
+            [
+              41.92451794921585,
+              41.96108232127343
+            ]
+          ]
+        }
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "latitude"
+            },
+            "metric_name": "column.quantile_values",
+            "metric_value_kwargs": {
+              "allow_relative_error": false,
+              "quantiles": [
+                0.25,
+                0.5,
+                0.75
+              ]
+            }
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_median_to_be_between",
+      "kwargs": {
+        "column": "latitude",
+        "max_value": 41.910729292099305,
+        "min_value": 41.880463147078466,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "latitude"
+            },
+            "metric_name": "column.median",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_mean_to_be_between",
+      "kwargs": {
+        "column": "latitude",
+        "max_value": 41.900088275593966,
+        "min_value": 41.864732472693234,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "latitude"
+            },
+            "metric_name": "column.mean",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_stdev_to_be_between",
+      "kwargs": {
+        "column": "latitude",
+        "max_value": 0.09471684045168652,
+        "min_value": 0.06957300298075893,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "latitude"
+            },
+            "metric_name": "column.standard_deviation",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "dba_name",
+        "max_value": 79,
+        "min_value": 1,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "dba_name"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "dba_name"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "dba_name",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0005360503652576759,
+            "-?\\d+": 0.09187590238405466,
+            "-?\\d+(?:\\.\\d*)?": 0.09187590238405466,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.09187590238405466,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "aka_name",
+        "max_value": 79,
+        "min_value": 2,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "aka_name"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "aka_name"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "aka_name",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0003635142343481439,
+            "-?\\d+": 0.07874824663650552,
+            "-?\\d+(?:\\.\\d*)?": 0.07874824663650552,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.07874824663650552,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "license_",
+        "max_value": 7,
+        "min_value": 1,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "license_"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "license_"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "license_",
+        "mostly": 1.0,
+        "regex": "-?\\d+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.7995030618433666,
+            "-?\\d+": 1.0,
+            "-?\\d+(?:\\.\\d*)?": 1.0,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 1.0,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "facility_type",
+        "max_value": 47,
+        "min_value": 3,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "facility_type"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "facility_type"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "facility_type",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 0.03029165901524164,
+            "-?\\d+(?:\\.\\d*)?": 0.03029165901524164,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.03029165901524164,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "risk",
+        "max_value": 15,
+        "min_value": 3,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "risk"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "risk"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "risk",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 0.9997612505773039,
+            "-?\\d+(?:\\.\\d*)?": 0.9997612505773039,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.9997612505773039,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "inspection_type",
+        "max_value": 41,
+        "min_value": 3,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "inspection_type"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "inspection_type"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "inspection_type",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 0.0012207910099697932,
+            "-?\\d+(?:\\.\\d*)?": 0.0012207910099697932,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.0012207910099697932,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "results",
+        "max_value": 20,
+        "min_value": 4,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "results"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "results"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "results",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 0.0,
+            "-?\\d+(?:\\.\\d*)?": 0.0,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.0,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "address",
+        "max_value": 52,
+        "min_value": 1,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "address"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "address"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "city",
+        "max_value": 20,
+        "min_value": 5,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "city"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "city"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "city",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 1.1746602295286088e-05,
+            "-?\\d+(?:\\.\\d*)?": 1.1746602295286088e-05,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 1.1746602295286088e-05,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "state",
+        "max_value": 2,
+        "min_value": 2,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "state"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "state"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "state",
+        "mostly": 1.0,
+        "regex": "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 0.0,
+            "-?\\d+(?:\\.\\d*)?": 0.0,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 0.0,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "zip",
+        "max_value": 5,
+        "min_value": 5,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "zip"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "zip"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "zip",
+        "mostly": 1.0,
+        "regex": "-?\\d+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.0,
+            "-?\\d+": 1.0,
+            "-?\\d+(?:\\.\\d*)?": 1.0,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 1.0,
+            "\\s+$": 0.0,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "violations",
+        "max_value": 11620,
+        "min_value": 30,
+        "mostly": 1.0,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "column_max_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "violations"
+              },
+              "metric_name": "column_values.length.max",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          },
+          "column_min_length_range_estimator": {
+            "metric_configuration": {
+              "domain_kwargs": {
+                "column": "violations"
+              },
+              "metric_name": "column_values.length.min",
+              "metric_value_kwargs": null
+            },
+            "num_batches": 162
+          }
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "kwargs": {
+        "column": "violations",
+        "mostly": 1.0,
+        "regex": "-?\\d+"
+      },
+      "meta": {
+        "profiler_details": {
+          "evaluated_regexes": {
+            "(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})(?:.(?:25[0-5]|2[0-4]\\d|[01]\\d{2}|\\d{1,2})){3}": 0.41933731083123965,
+            "-?\\d+": 1.0,
+            "-?\\d+(?:\\.\\d*)?": 1.0,
+            "<\\/?(?:p|a|b|img)(?: \\/)?>": 0.0,
+            "[A-Za-z0-9\\.,;:!?()\\\"'%\\-]+": 1.0,
+            "\\b[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-\\b[0-9a-fA-F]{12}\\b ": 0.0,
+            "\\d+": 1.0,
+            "\\s+$": 0.1840713582491836,
+            "^\\s+": 0.0,
+            "https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,255}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#()?&//=]*)": 0.0
+          },
+          "success_ratio": 1.0
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "facility_type",
+        "mostly": 1.0,
+        "value_set": [
+          "GROCERY(SUSHI PREP)",
+          "(GAS STATION)",
+          "COFFEE  SHOP",
+          "RETAIL",
+          "HEALTH CENTER",
+          "KIDS CAFE'",
+          "LIVE POULTRY",
+          "GROCERY& RESTAURANT",
+          "PANTRY",
+          "RESTAURANT",
+          "GOLF COURSE CONNCESSION STAND",
+          "BEVERAGE/SILVERWARE WAREHOUSE",
+          "DELI/BAKERY",
+          "FARMER'S MARKET",
+          "ALTERNATIVE SCHOOL",
+          "WEIGHT LOSS PROGRAM",
+          "EVENT CENTER",
+          "SUPPORTIVE LIVING",
+          "TOBACCO STORE",
+          "DAY CARE COMBO (1586)",
+          "SPECIAL EVENT",
+          "GROCERY STORE/DELI",
+          "NAVY PIER KIOSK",
+          "PUSH CARTS",
+          "RESTAURANT(PROTEIN SHAKE BAR)",
+          "REST/ROOFTOP",
+          "CULINARY SCHOOL",
+          "CHURCH (SPECIAL EVENTS)",
+          "SERVICE BAR/THEATRE",
+          "CANDY",
+          "CATERING/BANQUET",
+          "POPCORN CORN",
+          "AFTER SCHOOL CARE",
+          "GELATO SHOP",
+          "RESTAURANT/GROCERY STORE",
+          "GROCERY & LIQUOR STORE",
+          "BOWLING LANES/BANQUETS",
+          "YOUTH HOUSING",
+          "MOBILE FROZEN DESSERTS VENDOR",
+          "CULINARY ARTS SCHOOL",
+          "HERBAL LIFE",
+          "KIDS CAFE",
+          "BAKERY/GROCERY",
+          "CONVENIENT STORE",
+          "1023 CHILDREN'S SERVICES FACILITY",
+          "BAKERY",
+          "RIVERWALK CAFE",
+          "LIQOUR BREWERY TASTING",
+          "CHINESE HERBS",
+          "1023",
+          "BUTCHER SHOP",
+          "REST/GYM",
+          "LINITED BUSINESS",
+          "GROCERY & RESTAURANT",
+          "HOOKA LOUNGE",
+          "RESTAURANT AND LIQUOR",
+          "NUTRITION STORE",
+          "GROCERY/LIQUOR STORE",
+          "1475 LIQUOR",
+          "15 MONTS TO 5 YEARS OLD",
+          "GROCERY STORE / GAS STATION",
+          "TAVERN/LIQUOR",
+          "LIVE BUTCHER",
+          "CHILDERN ACTIVITY FACILITY",
+          "DAY CARE FACILITY",
+          "ICE CREAM PARLOR",
+          "LOUNGE",
+          "COOKING CLASS",
+          "FOOD PANTRY/CHURCH",
+          "ICE CREAM SHOP",
+          "RESTAURANT/BAR/THEATER",
+          "RESTAURANT/HOSPITAL",
+          "MASSAGE BAR",
+          "LONG TERM CARE",
+          "COMMIASARY",
+          "COLD STORAGE FACILITY",
+          "DAYCARE 2 YRS TO 12 YRS",
+          "HEALTH CARE STORE",
+          "SCHOOL",
+          "HERBALIFE/ZUMBA",
+          "GAS STATION/ GROCERY STORE",
+          "VENDING MACHINE",
+          "SHARED KITCHEN USER (LONG TREM)",
+          "MOBIL FOOD PREPARED",
+          "ART GALLERY",
+          "GENERAL STORE",
+          "GAS STATION/STORE",
+          "HERBAL DRINKS",
+          "PUSHCART",
+          "GROCERY/BUTCHER",
+          "DRUG STORE/GROCERY",
+          "ASSISTED LIVING",
+          "CANDY/GELATO",
+          "CATERED EVENTS",
+          "GROCERY/DRUG STORE",
+          "CONVENIENCE STORE",
+          "COFFEE",
+          "WATERMELON HOUSE",
+          "LIQUOR",
+          "PRIVATE EVENT SPACE",
+          "HOT DOG STATION",
+          "THEATER/BAR",
+          "PREP INSIDE SCHOOL",
+          "CHILDERN'S SERVICES  FACILITY",
+          "BANQUETS/ROOM SERVICE",
+          "MOBILE FROZEN DESSERT VENDOR",
+          "CATERING",
+          "NP-KIOSK",
+          "UNUSED STORAGE",
+          "GOLF COURSE",
+          "SHUFFLEBOARD CLUB WITH BAR",
+          "CATERING AND WHOLESALE",
+          "POP-UP ESTABLISHMENT HOST-TIER II",
+          "GAS STATION/GROCERY",
+          "RETAIL STORE",
+          "MEXICAN CANDY STORE",
+          "DAY CARE",
+          "RESTUARANT AND BAR",
+          "1005 NURSING HOME",
+          "COFFEE VENDING MACHINE",
+          "TEST KITCHEN/ STORAGE",
+          "HERBALIFE NUTRITION",
+          "CELL PHONE STORE",
+          "HERBAL REMEDY",
+          "TEA STORE",
+          "CHARTER SCHOOL",
+          "EVENT VENU",
+          "GAS STATION/MINI MART",
+          "1023-CHILDREN'S SERVICES FACILITY",
+          "RESTAURANT/BAKERY",
+          "PRIVATE CLUB",
+          "BANQUET FACILITY",
+          "HEALTH CLUB",
+          "BAKERY/DELI",
+          "CANDY STORE",
+          "GROCERY/BAKERY",
+          "INTERNET CAFE",
+          "MOBILE FOOD TRUCK",
+          "POOL",
+          "MFD TRUCK",
+          "NORTHERLY ISLAND",
+          "NOT-FOR-PROFIT CLUB",
+          "RESTAURANT/BAR",
+          "FLEA MARKET",
+          "GROCERY/DELI",
+          "POP-UP FOOD ESTABLISHMENT USER-TIER II",
+          "SHELTER",
+          "CHARTER SCHOOL CAFETERIA",
+          "COLLEGE",
+          "MUSIC VENUE",
+          "RELIGIOUS",
+          "CHURCH/SPECIAL EVENTS",
+          "RESTAURANT.BANQUET HALLS",
+          "WHOLESALE",
+          "ROOFTOPS",
+          "CATERED LIQUOR",
+          "ASSISSTED LIVING",
+          "KITCHEN",
+          "PALETERIA",
+          "REST/GROCERY",
+          "PACKAGED FOOD DISTRIBUTION",
+          "RETAIL WINE/WINE BAR",
+          "LOUNGE/BANQUET HALL",
+          "GROCERY STORE",
+          "NIGHT CLUB",
+          "HOSPITAL",
+          "PACKAGED LIQUOR",
+          "UNIVERSITY CAFETERIA",
+          "BAKERY/ RESTAURANT",
+          "MOVIE THEATER",
+          "CAFE",
+          "COFFEE SHOP",
+          "TENT RSTAURANT",
+          "CHURCH KITCHEN",
+          "HEALTH FOOD STORE",
+          "CHILDRENS SERVICES FACILITY",
+          "GAS/MINI MART",
+          "CHARTER SCHOOL/CAFETERIA",
+          "MILK TEA",
+          "FITNESS STUDIO",
+          "BANQUET ROOMS",
+          "DAYCARE COMBO",
+          "FISH MARKET",
+          "DRUG STORE",
+          "DAYCARE",
+          "TAVERN/PACKAGED GOODS",
+          "EXERCISE AND NUTRITION BAR",
+          "MEAT MARKET",
+          "MOBILE PREPARED FOOD VENDOR",
+          "EMPLOYEE KITCHEN",
+          "CHICAGO PARK DISTRICT",
+          "CHURCH/DAY CARE",
+          "DRUG/FOOD STORE",
+          "TAVERN/BAR",
+          "BLOCKBUSTER VIDEO",
+          "CHARTER",
+          "PRIVATE SCHOOL",
+          "SOUP KITCHEN",
+          "COMMISARY",
+          "GROCERY/SERVICE GAS STATION",
+          "DISTRIBUTION CENTER",
+          "OTHER",
+          "GIFT SHOP",
+          "CONVENIENCE",
+          "THEATRE",
+          "CHARITY AID KITCHEN",
+          "HELICOPTER TERMINAL",
+          "POPCORN SHOP",
+          "PRODUCE STAND",
+          "FOOD BOOTH",
+          "MEAT PACKING",
+          "BANQUET ROOM",
+          "GAS STATION/STORE GROCERY",
+          "SMOOTHIE BAR",
+          "DAYCARE (UNDER 2 YEARS)",
+          "FRENCH MARKET SPACE",
+          "BANQUET",
+          "A-NOT-FOR-PROFIT CHEF TRAINING PROGRAM",
+          "RESTAURANT/GROCERY",
+          "RETAIL FOOD",
+          "CUSTOM POULTRY SLAUGHTER",
+          "PROTEIN SHAKE BAR",
+          "RETAIL FOOD/GAS STATION",
+          "HIGH SCHOOL KITCHEN",
+          "PHARMACY",
+          "WHOLESALE BAKERY",
+          "LONG-TERM CARE FACILITY",
+          "NON-FOR PROFIT BASEMENT KIT",
+          "NAIL SHOP",
+          "VIDEO STORE",
+          "VFW HALL",
+          "ROOF TOPS",
+          "PACKAGED HEALTH FOODS",
+          "HOTEL",
+          "MAIN KITCHEN",
+          "DAYCARE (2 - 6 YEARS)",
+          "DAYCARE ABOVE AND UNDER 2 YEARS",
+          "HERBALIFE",
+          "JUICE BAR/GROCERY",
+          "INCUBATOR",
+          "GROCERY/TAQUERIA",
+          "FITNESS CENTER",
+          "SERVICE GAS STATION",
+          "DAY CARE 1023",
+          "SUMMER FEEDING PREP AREA",
+          "ART GALLERY W/WINE AND BEER",
+          "SHARED KITCHEN USER (LONG TERM)",
+          "GROCERY/GAS STATION",
+          "NURSING HOME",
+          "PALETERIA /ICECREAM SHOP",
+          "KITCHEN DEMO",
+          "MOBILE DESSERT CART",
+          "ADULT FAMILY CARE CENTER",
+          "MOBILE FROZEN DESSERTS DISPENSER-NON-MOTORIZED",
+          "CONVNIENCE STORE",
+          "GROCERY",
+          "RIVERWALK",
+          "COFFEE CART",
+          "HERBAL LIFE SHOP",
+          "DISTRIBUTOR",
+          "GYM STORE",
+          "ROOFTOP PATIO",
+          "MOBIL FOOD 1315",
+          "DAYCARE 2-6, UNDER 6",
+          "BOYS AND GIRLS CLUB",
+          "PREPACKAGE MEAL DISTRIBUTOR (1006 RETAIL)",
+          "RETAIL SALES",
+          "TAP ROOM/TAVERN/LIQUOR STORE",
+          "REHAB CENTER",
+          "MOBILE DESSERTS VENDOR",
+          "MOBILE DESSERT VENDOR",
+          "LIQUORE STORE/BAR",
+          "TAVERN/1006",
+          "SNACK SHOP",
+          "FURNITURE STORE",
+          "MOBILE FOOD",
+          "BEFORE AND AFTER SCHOOL PROGRAM",
+          "BANQUET/KITCHEN",
+          "MOBILE FROZEN DESSERTS DISPENSER-NON- MOTORIZED",
+          "BANQUET HALL",
+          "SCHOOL CAFETERIA",
+          "1023 CHILDERN'S SERVICES FACILITY",
+          "GAS STATION FOOD STORE",
+          "GYM",
+          "ADULT DAYCARE",
+          "HERABALIFE",
+          "PRE PACKAGED",
+          "DELI",
+          "WAREHOUSE",
+          "HOOKA BAR",
+          "HOSTEL",
+          "ILLEGAL VENDOR",
+          "BOOK STORE",
+          "OUTREACH CULINARY KITCHEN",
+          "DOLLAR & GROCERY STORE",
+          "MOBILE FOOD DESSERTS VENDOR",
+          "LIQUOR/GROCERY STORE/BAR",
+          "SHAKES/TEAS",
+          "GROCERY(GAS STATION)",
+          "BREWERY",
+          "GROCERY STORE/TAQUERIA",
+          "NOT FOR PROFIT",
+          "DAYCARE NIGHT",
+          "PUBLIC SHCOOL",
+          "GAS STATION /GROCERY",
+          "STADIUM",
+          "CATERING/CAFE",
+          "WHOLESALE & RETAIL",
+          "PEDDLER",
+          "FOOD VENDING MACHINES",
+          "GROCERY STORE/GAS STATION",
+          "DAYCARE (2 YEARS)",
+          "LAUNDROMAT",
+          "CONVENIENCE/GAS STATION",
+          "PASTRY SCHOOL",
+          "TAVERN/RESTAURANT",
+          "HOT DOG CART",
+          "CAR WASH",
+          "DOLLAR STORE WITH GROCERY",
+          "ANIMAL SHELTER CAFE PERMIT",
+          "COOKING SCHOOL",
+          "CHILDREN'S SERVICES FACILITY",
+          "HAIR SALON",
+          "DONUT SHOP",
+          "LIQUOR STORE",
+          "PRODUCE VENDOR",
+          "MOBILE FROZEN DESSERTS DISPENSER-NON-MOTOR",
+          "GROCERY STORE/ RESTAURANT",
+          "POULTRY SLAUGHTER",
+          "DINING HALL",
+          "KIOSK",
+          "CAFETERIA",
+          "DAYCARE 6 WKS-5YRS",
+          "TAVERN",
+          "NON -PROFIT",
+          "(CONVENIENCE STORE)",
+          "WINE TASTING BAR",
+          "GAS STATION",
+          "BANQUET HALL/CATERING",
+          "HERBAL",
+          "NEWSSTAND",
+          "NUTRITION/HERBALIFE",
+          "TEACHING SCHOOL",
+          "SMOKEHOUSE",
+          "POP-UP ESTABLISHMENT HOST-TIER III",
+          "CAFE/STORE",
+          "AFTER SCHOOL PROGRAM",
+          "DRUG STORE/W/ FOOD",
+          "CAT/LIQUOR",
+          "CHURCH",
+          "NUTRITION..SMOOTHIES/SHAKES",
+          "BAR",
+          "ART CENTER",
+          "DOLLAR STORE",
+          "PREPACAKAGED FOODS",
+          "MOBILE FROZEN DESSERT DISP/NON-MOTORIZED",
+          "SENIOR DAY CARE",
+          "MOBILE FOOD DISPENSER",
+          "LONG-TERM CARE",
+          "SLAUGHTER HOUSE/ GROCERY",
+          "BANQUET DINING",
+          "TAVERN-LIQUOR",
+          "UNLICENSED FACILITY",
+          "ROOF TOP",
+          "SUSHI COUNTER",
+          "SOCIAL CLUB",
+          "MOVIE THEATRE",
+          "GROCERY STORE/COOKING SCHOOL",
+          "GOLDEN DINER",
+          "CLOTHING STORE",
+          "COFFEE/TEA",
+          "LIQUOR/COFFEE KIOSK",
+          "LIQUOR CONSUMPTION ON PREMISES.",
+          "EVENT SPACE",
+          "FROZEN DESSERTS DISPENSER-NON-MOTORIZED",
+          "STORE",
+          "MOBILE FOOD PREPARER",
+          "CHURCH/SPECIAL EVENT",
+          "GROCERY/CAFE",
+          "COFFEE ROASTER",
+          "HEALTH CENTER/NUTRITION CLASSES",
+          "TEMPORARY KIOSK",
+          "MOBILE PUSH CART",
+          "FROZEN DESSERTS DISPENSER -NON MOTORIZED",
+          "GROCERY/ RESTAURANT",
+          "MUSEUM/GALLERY",
+          "BANQUETS",
+          "DISTILLERY WITH TASTING ROOM",
+          "URBAN FARM",
+          "MOBILE FROZEN DESSERT DISPENSER_NON  MOTORIZED.",
+          "MOBILPREPARED FOOD VENDOR",
+          "GROCERY STORE/BAKERY",
+          "REPACKAGING PLANT",
+          "RETAIL STORE OFFERS COOKING CLASSES",
+          "ASSISTED LIVING SENIOR CARE",
+          "AIRPORT LOUNGE",
+          "LONG TERM CARE FACILITY",
+          "SUMMER FEEDING",
+          "SHARED KITCHEN USER (SHORT TERM)",
+          "GAS STATION/CONVENIENCE STORE",
+          "CHILDERN'S SERVICE FACILITY",
+          "SPA",
+          "CANDY SHOP",
+          "COFFEE KIOSK",
+          "DAYCARE 1586",
+          "SHARED KITCHEN",
+          "VENDING COMMISSARY",
+          "TRUCK",
+          "RESTAURANT/LIQUOR",
+          "REGULATED BUSINESS",
+          "COMMISSARY FOR SOFT SERVE ICE CREAM TRUCKS",
+          "CHURCH/AFTER SCHOOL PROGRAM",
+          "JUICE AND SALAD BAR",
+          "HERBAL MEDICINE",
+          "POP-UP FOOD ESTABLISHMENT USER-TIER I",
+          "FOOD PANTRY",
+          "HERBALIFE STORE",
+          "ROOM SERVICE",
+          "1023 CHILDERN'S SERVICE S FACILITY",
+          "DAYCARE COMBO 1586",
+          "BREWPUB",
+          "ARCHDIOCESE",
+          "GAS STATION/RESTAURANT",
+          "DAY CARE 2-14",
+          "HERBALCAL",
+          "ICE CREAM",
+          "BAKERY/RESTAURANT",
+          "GROCERY/RESTAURANT",
+          "COMMISSARY",
+          "CITY OF CHICAGO COLLEGE",
+          "GAS STATION STORE",
+          "NUTRITION SHAKES",
+          "FROZEN DESSERT PUSHCARTS",
+          "GAS STATION/FOOD",
+          "DOLLAR TREE",
+          "GAS STATION /SUBWAY MINI MART.",
+          "WINE STORE",
+          "JUICE BAR",
+          "GROCERY/DOLLAR STORE",
+          "DRUG TREATMENT FACILITY",
+          "WRIGLEY ROOFTOP",
+          "GROCERY/LIQUOR",
+          "BAR/GRILL",
+          "CANDY MAKER",
+          "GROCERY STORE /PHARMACY",
+          "CONVENIENCE/DRUG STORE",
+          "HERBAL STORE",
+          "THEATER",
+          "LIVE POULTRY SLAUGHTER FACILITY",
+          "COLD/FROZEN FOOD STORAGE",
+          "1584-DAY CARE ABOVE 2 YEARS",
+          "DAY SPA",
+          "GREENHOUSE",
+          "GROCERY AND BUTCHER",
+          "ROOFTOP",
+          "WRIGLEY ROOF TOP",
+          "CULINARY CLASS ROOMS"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "facility_type"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "facility_type",
+        "max_value": 54,
+        "min_value": 24,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "facility_type"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "facility_type",
+        "max_value": 0.04538341158059468,
+        "min_value": 0.015822784810126583,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "facility_type"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "risk",
+        "mostly": 1.0,
+        "value_set": [
+          "RISK 2 (MEDIUM)",
+          "RISK 3 (LOW)",
+          "RISK 1 (HIGH)",
+          "ALL"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "risk"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "risk",
+        "max_value": 4,
+        "min_value": 3,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "risk"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "risk",
+        "max_value": 0.0061633281972265025,
+        "min_value": 0.0013009540329575022,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "risk"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "inspection_type",
+        "mostly": 1.0,
+        "value_set": [
+          "LICENSE RENEWAL INSPECTION FOR DAYCARE",
+          "COMPLAINT-FIRE",
+          "TASK FORCE LIQUOR CATERING",
+          "LICENSE REQUEST",
+          "TASK FORCE PACKAGE LIQUOR",
+          "TASK FORCE(1470) LIQUOR TAVERN",
+          "RE-INSPECTION OF CLOSE-UP",
+          "KIDS CAFE'",
+          "TASK FORCE LIQUOR 1474",
+          "CONSULTATION",
+          "SUSPECTED FOOD POISONING RE-INSPECTION",
+          "CLOSE-UP/COMPLAINT REINSPECTION",
+          "CANVAS",
+          "ERROR SAVE",
+          "HACCP QUESTIONAIRE",
+          "PRE-LICENSE CONSULTATION",
+          "TWO PEOPLE ATE AND GOT SICK.",
+          "SFP/COMPLAINT",
+          "LICENSE CANCELED BY OWNER",
+          "POSSIBLE FBI",
+          "FIRE",
+          "COVID COMPLAINT",
+          "CITF",
+          "LICENSE RE-INSPECTION",
+          "CANVASS SCHOOL/SPECIAL EVENT",
+          "RECENT INSPECTION",
+          "BUSINESS NOT LOCATED",
+          "SUSPECTED FOOD POISONING",
+          "NON-INSPECTION",
+          "COMPLAINT",
+          "RECALL INSPECTION",
+          "KITCHEN CLOSED FOR RENOVATION",
+          "CANVASS",
+          "CHANGED COURT DATE",
+          "COMPLAINT-FIRE RE-INSPECTION",
+          "LICENSE CONSULTATION",
+          "FINISH COMPLAINT INSPECTION FROM 5-18-10",
+          "COMPLAINT RE-INSPECTION",
+          "LICENSE RENEWAL FOR DAYCARE",
+          "TASK FORCE LIQUOR 1470",
+          "CITATION RE-ISSUED",
+          "OWNER SUSPENDED OPERATION/LICENSE",
+          "REINSPECTION",
+          "SFP RECENTLY INSPECTED",
+          "OUT OFBUSINESS",
+          "TASK FORCE LIQUOR (1481)",
+          "TASKFORCE",
+          "LIQUOR CATERING",
+          "LICENSE-TASK FORCE",
+          "NOT READY",
+          "TAG REMOVAL",
+          "KIDS CAFE",
+          "SMOKING COMPLAINT",
+          "LICENSE TASK 1474",
+          "SUMMER FEEDING",
+          "SHORT FORM COMPLAINT",
+          "TASK FORCE NIGHT",
+          "LICENSE WRONG ADDRESS",
+          "SHORT FORM FIRE-COMPLAINT",
+          "TASK FORCE LIQUOR 1475",
+          "PACKAGE LIQUOR 1474",
+          "FIRE COMPLAINT",
+          "TAVERN 1470",
+          "FIRE/COMPLAIN",
+          "1315 LICENSE REINSPECTION",
+          "REINSPECTION OF 48 HOUR NOTICE",
+          "OUT OF BUSINESS",
+          "TASK FORCE PACKAGE GOODS 1474",
+          "TASK FORCE",
+          "SFP",
+          "LICENSE",
+          "NO ENTRY",
+          "NO ENTRY-SHORT COMPLAINT)",
+          "CANVASS FOR RIB FEST",
+          "LICENSE TASK FORCE / NOT -FOR-PROFIT CLU",
+          "LIQOUR TASK FORCE NOT READY",
+          "SPECIAL TASK FORCE",
+          "CANVASS RE INSPECTION OF CLOSE UP",
+          "CANVASS RE-INSPECTION",
+          "SAMPLE COLLECTION",
+          "ADDENDUM",
+          "LICENSE TASK FORCE / NOT -FOR-PROFIT CLUB",
+          "TASK FORCE NOT READY",
+          "ILLEGAL OPERATION",
+          "SPECIAL EVENTS (FESTIVALS)",
+          "EXPANSION",
+          "O.B.",
+          "TASK FORCE LIQUOR INSPECTION 1474",
+          "DUPLICATED",
+          "CORRECTIVE ACTION",
+          "TASK FORCE FOR LIQUOR 1474",
+          "CANVASS SPECIAL EVENTS",
+          "LICENSE/NOT READY",
+          "DAY CARE LICENSE RENEWAL",
+          "TASTE OF CHICAGO",
+          "LICENSE DAYCARE 1586",
+          "CANVASS/SPECIAL EVENT"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "inspection_type"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "inspection_type",
+        "max_value": 30,
+        "min_value": 7,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "inspection_type"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "inspection_type",
+        "max_value": 0.022658610271903322,
+        "min_value": 0.004199720018665422,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "inspection_type"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "results",
+        "mostly": 1.0,
+        "value_set": [
+          "PASS",
+          "OUT OF BUSINESS",
+          "NOT READY",
+          "BUSINESS NOT LOCATED",
+          "NO ENTRY",
+          "PASS W/ CONDITIONS",
+          "FAIL"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "results"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "results",
+        "max_value": 7,
+        "min_value": 3,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "results"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "results",
+        "max_value": 0.009244992295839754,
+        "min_value": 0.002144388849177984,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "results"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "city",
+        "mostly": 1.0,
+        "value_set": [
+          "BRIDGEVIEW",
+          "LANSING",
+          "NILES NILES",
+          "LAKE ZURICH",
+          "CICERO",
+          "EVANSTON",
+          "CHICAGOBEDFORD PARK",
+          "CHARLES A HAYES",
+          "OOLYMPIA FIELDS",
+          "FRANKFORT",
+          "GLENCOE",
+          "OAK PARK",
+          "BANNOCKBURNDEERFIELD",
+          "SKOKIE",
+          "LAKE BLUFF",
+          "ALGONQUIN",
+          "TORRANCE",
+          "312CHICAGO",
+          "CHICAGOC",
+          "TINLEY PARK",
+          "ROSEMONT",
+          "ALSIP",
+          "WILMETTE",
+          "GRIFFITH",
+          "OAK LAWN",
+          "WORTH",
+          "CHCHICAGO",
+          "INACTIVE",
+          "BOLINGBROOK",
+          "COUNTRY CLUB HILLS",
+          "SCHILLER PARK",
+          "EAST HAZEL CREST",
+          "CHICAGOCHICAGO",
+          "WHITING",
+          "MAYWOOD",
+          "NEW YORK",
+          "ELMHURST",
+          "PLAINFIELD",
+          "WESTMONT",
+          "CHICAGO.",
+          "BLOOMINGDALE",
+          "WHEATON",
+          "ELK GROVE VILLAGE",
+          "OLYMPIA FIELDS",
+          "CHICAGO",
+          "GLEN ELLYN",
+          "HIGHLAND PARK",
+          "LOS ANGELES",
+          "MERRIVILLE",
+          "NORRIDGE",
+          "CHICAGOI",
+          "SUMMIT",
+          "SCHAUMBURG",
+          "BURNHAM",
+          "CCHICAGO",
+          "EVERGREEN PARK",
+          "WADSWORTH",
+          "NEW HOLSTEIN",
+          "LOMBARD",
+          "MORTON GROVE",
+          "BERWYN",
+          "NAPERVILLE",
+          "PALOS PARK",
+          "CHICAGOO",
+          "BROADVIEW",
+          "DES PLAINES",
+          "CALUMET CITY",
+          "CHCICAGO",
+          "JUSTICE",
+          "CHICAGO HEIGHTS",
+          "BLUE ISLAND",
+          "STREAMWOOD"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "city"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "city",
+        "max_value": 10,
+        "min_value": 1,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "city"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "city",
+        "max_value": 0.006024096385542169,
+        "min_value": 0.0004666355576294914,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "city"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "state",
+        "mostly": 1.0,
+        "value_set": [
+          "IN",
+          "CA",
+          "WI",
+          "NY",
+          "IL"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "state"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "state",
+        "max_value": 3,
+        "min_value": 1,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "state"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "state",
+        "max_value": 0.0018083182640144665,
+        "min_value": 0.0004336513443191674,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "state"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "zip",
+        "mostly": 1.0,
+        "value_set": [
+          "60661",
+          "60189",
+          "60482",
+          "60625",
+          "60402",
+          "60647",
+          "60083",
+          "60202",
+          "60053",
+          "60601",
+          "60707",
+          "60585",
+          "60624",
+          "60645",
+          "60607",
+          "60453",
+          "60627",
+          "90504",
+          "60440",
+          "60477",
+          "60622",
+          "60478",
+          "60015",
+          "60626",
+          "60805",
+          "60608",
+          "60611",
+          "60613",
+          "60630",
+          "60618",
+          "60464",
+          "60628",
+          "90067",
+          "60631",
+          "60406",
+          "60637",
+          "60617",
+          "60438",
+          "60035",
+          "60126",
+          "60022",
+          "60623",
+          "60649",
+          "46394",
+          "60108",
+          "60803",
+          "60646",
+          "60423",
+          "60644",
+          "60629",
+          "60652",
+          "60605",
+          "60827",
+          "60429",
+          "60654",
+          "60621",
+          "60458",
+          "10014",
+          "60540",
+          "60641",
+          "60651",
+          "60176",
+          "60666",
+          "53061",
+          "60603",
+          "60411",
+          "60148",
+          "60634",
+          "60706",
+          "60642",
+          "60173",
+          "60461",
+          "60559",
+          "46319",
+          "60653",
+          "60044",
+          "60604",
+          "60714",
+          "60155",
+          "60091",
+          "60606",
+          "60643",
+          "60632",
+          "60633",
+          "60047",
+          "60640",
+          "60302",
+          "60612",
+          "60610",
+          "60619",
+          "60455",
+          "60602",
+          "60616",
+          "60107",
+          "60639",
+          "60636",
+          "60077",
+          "60614",
+          "60609",
+          "46410",
+          "60656",
+          "60193",
+          "60657",
+          "60620",
+          "60201",
+          "60409",
+          "60655",
+          "60102",
+          "60153",
+          "60804",
+          "60137",
+          "60638",
+          "60018",
+          "60615",
+          "60076",
+          "60660",
+          "60659",
+          "60501",
+          "60007"
+        ]
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "zip"
+            },
+            "metric_name": "column.distinct_values",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162,
+          "parse_strings_as_datetimes": false
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_unique_value_count_to_be_between",
+      "kwargs": {
+        "column": "zip",
+        "max_value": 65,
+        "min_value": 51,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "zip"
+            },
+            "metric_name": "column.distinct_values.count",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    },
+    {
+      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
+      "kwargs": {
+        "column": "zip",
+        "max_value": 0.07919254658385093,
+        "min_value": 0.02515177797051171,
+        "strict_max": false,
+        "strict_min": false
+      },
+      "meta": {
+        "profiler_details": {
+          "metric_configuration": {
+            "domain_kwargs": {
+              "column": "zip"
+            },
+            "metric_name": "column.unique_proportion",
+            "metric_value_kwargs": null
+          },
+          "num_batches": 162
+        }
+      }
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2023-06-27T23:51:43.248362Z",
+        "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
+      }
+    ],
+    "great_expectations_version": "0.17.0"
+  }
+}
