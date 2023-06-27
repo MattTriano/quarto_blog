@@ -2,22 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2023-06-25T03:16:30.923Z</lastmod>
+    <lastmod>2023-06-27T04:48:08.819Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</loc>
-    <lastmod>2023-06-25T03:16:29.587Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/about.html</loc>
-    <lastmod>2023-06-25T03:16:24.303Z</lastmod>
+    <lastmod>2023-06-27T04:48:07.403Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/index.html</loc>
-    <lastmod>2023-06-25T03:16:23.383Z</lastmod>
+    <lastmod>2023-06-27T04:48:00.323Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/about.html</loc>
+    <lastmod>2023-06-27T04:48:01.399Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</loc>
+    <lastmod>2023-06-27T04:48:06.303Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
-    <lastmod>2023-06-25T03:16:30.519Z</lastmod>
+    <lastmod>2023-06-27T04:48:08.411Z</lastmod>
   </url>
 </urlset>

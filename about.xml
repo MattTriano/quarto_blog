@@ -14,7 +14,7 @@
 <title>Triano&#39;s Quarto Blog</title>
 <link>https://www.matttriano.dev/about.html</link>
 </image>
-<generator>quarto-1.3.427</generator>
+<generator>quarto-1.3.433</generator>
 <lastBuildDate>Fri, 23 Jun 2023 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Data Quality Monitoring with Great Expectations</title>
@@ -30,37 +30,42 @@
 <summary>Imports and path-definition</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
+font-style: inherit;">from</span> collections <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Counter</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
 font-style: inherit;">import</span> datetime <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> dt</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
+<span id="cb1-3"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> pathlib <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> Path</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
+<span id="cb1-4"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> urllib.request <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> urlretrieve</span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> geopandas <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> gpd</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
+<span id="cb1-7"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> pd</span>
-<span id="cb1-7"></span>
-<span id="cb1-8">PROJECT_DIR <span class="op" style="color: #5E5E5E;
+<span id="cb1-8"></span>
+<span id="cb1-9">PROJECT_DIR <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> Path(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"."</span>).resolve()</span>
-<span id="cb1-9">PROJECT_DATA_DIR <span class="op" style="color: #5E5E5E;
+<span id="cb1-10">PROJECT_DATA_DIR <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> PROJECT_DIR.joinpath(<span class="st" style="color: #20794D;
 background-color: null;
@@ -1433,14 +1438,21 @@ font-style: inherit;">"inspection_date"</span>],</span>
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
+<p>The profiler will sequentially generate a lot of progress bars (like these) as it profiles dataset features.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_profiler_profiling.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Profiler output</figcaption>
+</figure>
+</div>
+<div class="cell" data-execution_count="51">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">data_assistant_result.plot_expectations_and_metrics(exclude_column_names<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>])</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>66 Expectations produced, 23 Expectation and Metric plots implemented
+<pre><code>62 Expectations produced, 9 Expectation and Metric plots implemented
 Use DataAssistantResult.show_expectations_by_domain_type() or
 DataAssistantResult.show_expectations_by_expectation_type() to show all produced Expectations</code></pre>
 </div>
@@ -1498,44 +1510,47 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"987eebe078314a098dda4a1d628963f1","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"40c27e8de48e479aa51a783274f8b6f0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="51">
 <pre><code></code></pre>
 </div>
 </div>
-<p>The profiler will sequentially generate a lot of progress bars (like these) as it profiles dataset features.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_profiler_profiling.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Profiler output</figcaption>
-</figure>
-</div>
-<section id="data-assistant-plot-inspector-plots" class="level4">
-<h4 class="anchored" data-anchor-id="data-assistant-plot-inspector-plots">Data Assistant Plot Inspector plots</h4>
+<section id="data-assistant-plot-inspector-plots" class="level3">
+<h3 class="anchored" data-anchor-id="data-assistant-plot-inspector-plots">Data Assistant Plot Inspector plots</h3>
 <p>After the Data Assistant finishes profiling, it outputs results to a variable we named <code>data_assistant_result</code>, and you can explore the results across batches by calling <code>data_assistant_result.plot_expectations_and_metrics()</code> and selecting the expectation and column you’re interested in.</p>
 <p><img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_result_row_count_across_batches.png" class="img-fluid" alt="Total row count per batch"> <img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_result_unique_facility_type_values.png" class="img-fluid" alt="Unique facility_type values per batch"> <img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_result_unique_inspection_type_values.png" class="img-fluid" alt="Unique inspection_type values per batch"> <img src="https://www.matttriano.dev/posts/006_great_expectations_setup/gx_data_assistant_result_unique_results_values.png" class="img-fluid" alt="Unique result values per batch"></p>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">expectation_suite <span class="op" style="color: #5E5E5E;
+</section>
+<section id="extracting-optionally-editing-and-committing-our-expectation-suite-to-our-datacontext" class="level3">
+<h3 class="anchored" data-anchor-id="extracting-optionally-editing-and-committing-our-expectation-suite-to-our-datacontext">Extracting, [optionally] Editing, and Committing our <code>Expectation Suite</code> to our <code>DataContext</code></h3>
+<p>If we’re content with the <code>Expectations</code> generated by the Data Assistant’s profiler, we can simply extract the <code>Expectations</code> and add them to our <code>context</code> via</p>
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_assistant_result.get_expectation_suite(</span>
 <span id="cb21-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb21-3">)</span></code></pre></div>
-</div>
+<span id="cb21-3">)</span>
+<span id="cb21-4">saved_suite <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
+<p>In a future post I’ll go into further depth on methods for editing <code>Expectations</code>, but here I’ll show how to inspect and remove <code>Expectations</code>.</p>
 <div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="im" style="color: #00769E;
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">from</span> collections <span class="im" style="color: #00769E;
+font-style: inherit;">=</span> data_assistant_result.get_expectation_suite(</span>
+<span id="cb22-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">import</span> Counter</span>
-<span id="cb22-2"></span>
-<span id="cb22-3">expecs <span class="op" style="color: #5E5E5E;
+font-style: inherit;">=</span>expectation_suite_name</span>
+<span id="cb22-3">)</span>
+<span id="cb22-4"></span>
+<span id="cb22-5">expecs <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_expectation_type()</span>
-<span id="cb22-4">Counter([ex._expectation_type <span class="cf" style="color: #003B4F;
+<span id="cb22-6">Counter([ex._expectation_type <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> ex <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -1558,8 +1573,286 @@ font-style: inherit;">in</span> expecs])</span></code></pre></div>
          'expect_table_row_count_to_be_between': 1})</code></pre>
 </div>
 </div>
+<div class="cell" data-execution_count="70">
+<details>
+<summary>Expectation-related methods on our expectation_suite</summary>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">[el <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dir</span>(expectation_suite) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_expectation"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> el]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="70">
+<pre><code>['_add_expectation',
+ '_get_expectations_by_domain_using_accessor_method',
+ '_validate_expectation_configuration_before_adding',
+ 'add_expectation',
+ 'add_expectation_configurations',
+ 'append_expectation',
+ 'find_expectation_indexes',
+ 'find_expectations',
+ 'get_column_expectations',
+ 'get_column_pair_expectations',
+ 'get_grouped_and_ordered_expectations_by_column',
+ 'get_grouped_and_ordered_expectations_by_domain_type',
+ 'get_grouped_and_ordered_expectations_by_expectation_type',
+ 'get_multicolumn_expectations',
+ 'get_table_expectations',
+ 'patch_expectation',
+ 'remove_all_expectations_of_type',
+ 'remove_expectation',
+ 'replace_expectation',
+ 'show_expectations_by_domain_type',
+ 'show_expectations_by_expectation_type']</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="66">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">?expectation_suite.find_expectation_indexes</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span>
+expectation_suite<span class="ansi-blue-fg">.</span>find_expectation_indexes<span class="ansi-blue-fg">(</span>
+    expectation_configuration<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[ExpectationConfiguration]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    match_type<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'str'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">'domain'</span><span class="ansi-blue-fg">,</span>
+    ge_cloud_id<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[str]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">'List[int]'</span>
+<span class="ansi-red-fg">Docstring:</span>
+Find indexes of Expectations matching the given ExpectationConfiguration on the given match_type.
+If a ge_cloud_id is provided, match_type is ignored and only indexes of Expectations
+with matching ge_cloud_id are returned.
+Args:
+    expectation_configuration: A potentially incomplete (partial) Expectation Configuration to match against to
+        find the index of any matching Expectation Configurations on the suite.
+    match_type: This determines what kwargs to use when matching. Options are 'domain' to match based
+        on the data evaluated by that expectation, 'success' to match based on all configuration parameters
+         that influence whether an expectation succeeds based on a given batch of data, and 'runtime' to match
+         based on all configuration parameters
+    ge_cloud_id: Great Expectations Cloud id
+Returns: A list of indexes of matching ExpectationConfiguration
+Raises:
+    InvalidExpectationConfigurationError
+<span class="ansi-red-fg">File:</span>      ~/miniconda3/envs/gx_env/lib/python3.10/site-packages/great_expectations/core/expectation_suite.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="64">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">?expectation_suite.remove_expectation</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span>
+expectation_suite<span class="ansi-blue-fg">.</span>remove_expectation<span class="ansi-blue-fg">(</span>
+    expectation_configuration<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[ExpectationConfiguration]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    match_type<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'str'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">'domain'</span><span class="ansi-blue-fg">,</span>
+    remove_multiple_matches<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'bool'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    ge_cloud_id<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[Union[str, uuid.UUID]]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">'List[ExpectationConfiguration]'</span>
+<span class="ansi-red-fg">Docstring:</span>
+--Public API--Remove an ExpectationConfiguration from the ExpectationSuite.
+Args:
+    expectation_configuration: A potentially incomplete (partial) Expectation Configuration to match against.
+    match_type: This determines what kwargs to use when matching. Options are 'domain' to match based
+        on the data evaluated by that expectation, 'success' to match based on all configuration parameters
+        that influence whether an expectation succeeds based on a given batch of data, and 'runtime' to match
+        based on all configuration parameters.
+    remove_multiple_matches: If True, will remove multiple matching expectations.
+    ge_cloud_id: Great Expectations Cloud id for an Expectation.
+Returns:
+    The list of deleted ExpectationConfigurations.
+Raises:
+    TypeError: Must provide either expectation_configuration or ge_cloud_id.
+    ValueError: No match or multiple matches found (and remove_multiple_matches=False).
+<span class="ansi-red-fg">File:</span>      ~/miniconda3/envs/gx_env/lib/python3.10/site-packages/great_expectations/core/expectation_suite.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="62">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">expectation_suite.remove_all_expectations_of_type(</span>
+<span id="cb28-2">    expectation_types<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[</span>
+<span id="cb28-3">        </span>
+<span id="cb28-4">    ]</span>
+<span id="cb28-5">)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span>
+expectation_suite<span class="ansi-blue-fg">.</span>remove_all_expectations_of_type<span class="ansi-blue-fg">(</span>
+    expectation_types<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Union[List[str], str]'</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">'List[ExpectationConfiguration]'</span>
+<span class="ansi-red-fg">Docstring:</span> &lt;no docstring&gt;
+<span class="ansi-red-fg">Source:</span>   
+    <span class="ansi-green-fg">def</span> remove_all_expectations_of_type<span class="ansi-blue-fg">(</span>
+        self<span class="ansi-blue-fg">,</span> expectation_types<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>List<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">]</span>
+    <span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> List<span class="ansi-blue-fg">[</span>ExpectationConfiguration<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">:</span>
+        <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>expectation_types<span class="ansi-blue-fg">,</span> str<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+            expectation_types <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>expectation_types<span class="ansi-blue-fg">]</span>
+        removed_expectations <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>
+            expectation
+            <span class="ansi-green-fg">for</span> expectation <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>expectations
+            <span class="ansi-green-fg">if</span> expectation<span class="ansi-blue-fg">.</span>expectation_type <span class="ansi-green-fg">in</span> expectation_types
+        <span class="ansi-blue-fg">]</span>
+        self<span class="ansi-blue-fg">.</span>expectations <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>
+            expectation
+            <span class="ansi-green-fg">for</span> expectation <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>expectations
+            <span class="ansi-green-fg">if</span> expectation<span class="ansi-blue-fg">.</span>expectation_type <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">in</span> expectation_types
+        <span class="ansi-blue-fg">]</span>
+        <span class="ansi-green-fg">return</span> removed_expectations
+<span class="ansi-red-fg">File:</span>      ~/miniconda3/envs/gx_env/lib/python3.10/site-packages/great_expectations/core/expectation_suite.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="59">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">??expectation_suite.add_expectation</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span>
+expectation_suite<span class="ansi-blue-fg">.</span>add_expectation<span class="ansi-blue-fg">(</span>
+    expectation_configuration<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'ExpectationConfiguration'</span><span class="ansi-blue-fg">,</span>
+    send_usage_event<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'bool'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+    match_type<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'str'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">'domain'</span><span class="ansi-blue-fg">,</span>
+    overwrite_existing<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'bool'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">'ExpectationConfiguration'</span>
+<span class="ansi-red-fg">Docstring:</span>
+--Public API--Upsert specified ExpectationConfiguration into this ExpectationSuite.
+Args:
+    expectation_configuration: The ExpectationConfiguration to add or update.
+    send_usage_event: Whether to send a usage_statistics event. When called through ExpectationSuite class'
+        public add_expectation() method, this is set to `True`.
+    match_type: The criteria used to determine whether the Suite already has an ExpectationConfiguration
+        and so whether we should add or replace.
+    overwrite_existing: If the expectation already exists, this will overwrite if True and raise an error if
+        False.
+Returns:
+    The ExpectationConfiguration to add or replace.
+Raises:
+    ValueError: More than one match
+    DataContextError: One match if overwrite_existing = False
+# noqa: DAR402
+<span class="ansi-red-fg">Source:</span>   
+    <span class="ansi-blue-fg">@</span>public_api
+    <span class="ansi-green-fg">def</span> add_expectation<span class="ansi-blue-fg">(</span>
+        self<span class="ansi-blue-fg">,</span>
+        expectation_configuration<span class="ansi-blue-fg">:</span> ExpectationConfiguration<span class="ansi-blue-fg">,</span>
+        send_usage_event<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+        match_type<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">"domain"</span><span class="ansi-blue-fg">,</span>
+        overwrite_existing<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+    <span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> ExpectationConfiguration<span class="ansi-blue-fg">:</span>
+        <span class="ansi-blue-fg">"""Upsert specified ExpectationConfiguration into this ExpectationSuite.</span>
+<span class="ansi-blue-fg">        Args:</span>
+<span class="ansi-blue-fg">            expectation_configuration: The ExpectationConfiguration to add or update.</span>
+<span class="ansi-blue-fg">            send_usage_event: Whether to send a usage_statistics event. When called through ExpectationSuite class'</span>
+<span class="ansi-blue-fg">                public add_expectation() method, this is set to `True`.</span>
+<span class="ansi-blue-fg">            match_type: The criteria used to determine whether the Suite already has an ExpectationConfiguration</span>
+<span class="ansi-blue-fg">                and so whether we should add or replace.</span>
+<span class="ansi-blue-fg">            overwrite_existing: If the expectation already exists, this will overwrite if True and raise an error if</span>
+<span class="ansi-blue-fg">                False.</span>
+<span class="ansi-blue-fg">        Returns:</span>
+<span class="ansi-blue-fg">            The ExpectationConfiguration to add or replace.</span>
+<span class="ansi-blue-fg">        Raises:</span>
+<span class="ansi-blue-fg">            ValueError: More than one match</span>
+<span class="ansi-blue-fg">            DataContextError: One match if overwrite_existing = False</span>
+<span class="ansi-blue-fg">        # noqa: DAR402</span>
+<span class="ansi-blue-fg">        """</span>
+        self<span class="ansi-blue-fg">.</span>_validate_expectation_configuration_before_adding<span class="ansi-blue-fg">(</span>
+            expectation_configuration
+        <span class="ansi-blue-fg">)</span>
+        <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>_add_expectation<span class="ansi-blue-fg">(</span>
+            expectation_configuration<span class="ansi-blue-fg">=</span>expectation_configuration<span class="ansi-blue-fg">,</span>
+            send_usage_event<span class="ansi-blue-fg">=</span>send_usage_event<span class="ansi-blue-fg">,</span>
+            match_type<span class="ansi-blue-fg">=</span>match_type<span class="ansi-blue-fg">,</span>
+            overwrite_existing<span class="ansi-blue-fg">=</span>overwrite_existing<span class="ansi-blue-fg">,</span>
+        <span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">File:</span>      ~/miniconda3/envs/gx_env/lib/python3.10/site-packages/great_expectations/core/expectation_suite.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="58">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">??expectation_suite.replace_expectation</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span>
+expectation_suite<span class="ansi-blue-fg">.</span>replace_expectation<span class="ansi-blue-fg">(</span>
+    new_expectation_configuration<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Union[ExpectationConfiguration, dict]'</span><span class="ansi-blue-fg">,</span>
+    existing_expectation_configuration<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[ExpectationConfiguration]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    match_type<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'str'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">'domain'</span><span class="ansi-blue-fg">,</span>
+    ge_cloud_id<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">'Optional[str]'</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">'None'</span>
+<span class="ansi-red-fg">Source:</span>   
+    <span class="ansi-green-fg">def</span> replace_expectation<span class="ansi-blue-fg">(</span>
+        self<span class="ansi-blue-fg">,</span>
+        new_expectation_configuration<span class="ansi-blue-fg">:</span> Union<span class="ansi-blue-fg">[</span>ExpectationConfiguration<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+        existing_expectation_configuration<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>ExpectationConfiguration<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+        match_type<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">"domain"</span><span class="ansi-blue-fg">,</span>
+        ge_cloud_id<span class="ansi-blue-fg">:</span> Optional<span class="ansi-blue-fg">[</span>str<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    <span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+        <span class="ansi-blue-fg">"""</span>
+<span class="ansi-blue-fg">        Find Expectations matching the given ExpectationConfiguration on the given match_type.</span>
+<span class="ansi-blue-fg">        If a ge_cloud_id is provided, match_type is ignored and only Expectations with matching</span>
+<span class="ansi-blue-fg">        ge_cloud_id are returned.</span>
+<span class="ansi-blue-fg">        Args:</span>
+<span class="ansi-blue-fg">            expectation_configuration: A potentially incomplete (partial) Expectation Configuration to match against to</span>
+<span class="ansi-blue-fg">                find the index of any matching Expectation Configurations on the suite.</span>
+<span class="ansi-blue-fg">            match_type: This determines what kwargs to use when matching. Options are 'domain' to match based</span>
+<span class="ansi-blue-fg">                on the data evaluated by that expectation, 'success' to match based on all configuration parameters</span>
+<span class="ansi-blue-fg">                 that influence whether an expectation succeeds based on a given batch of data, and 'runtime' to match</span>
+<span class="ansi-blue-fg">                 based on all configuration parameters</span>
+<span class="ansi-blue-fg">            ge_cloud_id: Great Expectations Cloud id</span>
+<span class="ansi-blue-fg">        Returns: A list of matching ExpectationConfigurations</span>
+<span class="ansi-blue-fg">        """</span>
+        <span class="ansi-green-fg">if</span> existing_expectation_configuration <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">and</span> ge_cloud_id <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">raise</span> TypeError<span class="ansi-blue-fg">(</span>
+                <span class="ansi-blue-fg">"Must provide either existing_expectation_configuration or ge_cloud_id"</span>
+            <span class="ansi-blue-fg">)</span>
+        <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>new_expectation_configuration<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+            new_expectation_configuration <span class="ansi-blue-fg">=</span> expectationConfigurationSchema<span class="ansi-blue-fg">.</span>load<span class="ansi-blue-fg">(</span>
+                new_expectation_configuration
+            <span class="ansi-blue-fg">)</span>
+        found_expectation_indexes <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>find_expectation_indexes<span class="ansi-blue-fg">(</span>
+            existing_expectation_configuration<span class="ansi-blue-fg">,</span> match_type<span class="ansi-blue-fg">,</span> ge_cloud_id
+        <span class="ansi-blue-fg">)</span>
+        <span class="ansi-green-fg">if</span> len<span class="ansi-blue-fg">(</span>found_expectation_indexes<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span>
+                <span class="ansi-blue-fg">"More than one matching expectation was found. Please be more specific with your search "</span>
+                <span class="ansi-blue-fg">"criteria"</span>
+            <span class="ansi-blue-fg">)</span>
+        <span class="ansi-green-fg">elif</span> len<span class="ansi-blue-fg">(</span>found_expectation_indexes<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">==</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">:</span>
+            <span class="ansi-green-fg">raise</span> ValueError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"No matching Expectation was found."</span><span class="ansi-blue-fg">)</span>
+        self<span class="ansi-blue-fg">.</span>expectations<span class="ansi-blue-fg">[</span>found_expectation_indexes<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> new_expectation_configuration  <span class="ansi-red-fg"># type: ignore[assignment]</span>
+<span class="ansi-red-fg">File:</span>      ~/miniconda3/envs/gx_env/lib/python3.10/site-packages/great_expectations/core/expectation_suite.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<p>After reviewing and editing <code>Expectations</code>, the <code>Expectation Suite</code> must be committed to the <code>DataContext</code>.</p>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">saved_suite <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">saved_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1573,34 +1866,34 @@ font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
 <div class="cell" data-execution_count="13">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">checkpoint_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1">checkpoint_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_checkpoint"</span></span>
-<span id="cb25-2"></span>
-<span id="cb25-3">checkpoint <span class="op" style="color: #5E5E5E;
+<span id="cb32-2"></span>
+<span id="cb32-3">checkpoint <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gx.checkpoint.SimpleCheckpoint(</span>
-<span id="cb25-4">    name<span class="op" style="color: #5E5E5E;
+<span id="cb32-4">    name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>checkpoint_name,</span>
-<span id="cb25-5">    data_context<span class="op" style="color: #5E5E5E;
+<span id="cb32-5">    data_context<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>context,</span>
-<span id="cb25-6">    validations<span class="op" style="color: #5E5E5E;
+<span id="cb32-6">    validations<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[</span>
-<span id="cb25-7">        {</span>
-<span id="cb25-8">            <span class="st" style="color: #20794D;
+<span id="cb32-7">        {</span>
+<span id="cb32-8">            <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"batch_request"</span>: batch_request,</span>
-<span id="cb25-9">            <span class="st" style="color: #20794D;
+<span id="cb32-9">            <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"expectation_suite_name"</span>: expectation_suite_name,</span>
-<span id="cb25-10">        },</span>
-<span id="cb25-11">    ],</span>
-<span id="cb25-12">)</span></code></pre></div>
+<span id="cb32-10">        },</span>
+<span id="cb32-11">    ],</span>
+<span id="cb32-12">)</span></code></pre></div>
 </details>
 </div>
 
@@ -3240,6 +3533,120 @@ No matching items
   <guid>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</guid>
   <pubDate>Mon, 12 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://www.matttriano.dev/posts/002_notebook_test/studious_robot.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
+<item>
+  <title>Setting up Conda</title>
+  <dc:creator>Matt Triano</dc:creator>
+  <link>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="conda" class="level1">
+<h1>Conda</h1>
+<p><code>conda</code> is a language-agnostic package manager and environment management system. <code>conda</code>’s environment management functionality makes it possible for a user to easily switch between environments (where an environment consists of the hardware and software used to execute code) and makes it possible to export a specification of that environment that can be used to reproduce that environment on another system.</p>
+<p>In this post, I’ll show my opinionated <code>conda</code> installation and configuration process.</p>
+<section id="conda-installation" class="level2">
+<h2 class="anchored" data-anchor-id="conda-installation">Conda Installation</h2>
+<p><code>conda</code> is primarily installable via two distributions; the Anaconda distribution, which includes the <code>conda</code> executable along with over 700 additional conda packages from the Anaconda repository, and the Miniconda distribution, which consists of the <code>conda</code> executable with the minimal number of packages needed for <code>conda</code> to run. Install a miniconda distribution.</p>
+<ol type="1">
+<li>Download a <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> installer, copy the corresponding SHA256 hash, calculate the SHA256 hash of the downloaded file, and compare that value to the one copied from the download link page. If the values match exactly, proceed in installation.
+<ul>
+<li>For the miniconda version downloaded below, the SHA256 sum should be aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651</li>
+</ul></li>
+</ol>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>curl <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>o Miniconda3<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>py310_23<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.3.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>Linux<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>x86_64.sh https:<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">//</span>repo.anaconda.com<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>miniconda<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>Miniconda3<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>py310_23<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.3.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>Linux<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>x86_64.sh</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 69.7M  100 69.7M    0     0  75.9M      0 --:--:-- --:--:-- --:--:-- 75.8M</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>sha256sum Miniconda3<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>py310_23<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.3.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>Linux<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>x86_64.sh</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651  Miniconda3-py310_23.3.1-0-Linux-x86_64.sh</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Execute the installer.</li>
+</ol>
+
+
+
+</section>
+</section>
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div> ]]></description>
+  <category>conda</category>
+  <category>setup</category>
+  <category>tutorial</category>
+  <guid>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</guid>
+  <pubDate>Fri, 22 Jul 2022 00:00:00 GMT</pubDate>
+  <media:content url="https://www.matttriano.dev/posts/000_setting_up_miniconda/interested_conda.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>
