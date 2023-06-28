@@ -1,12 +1,12 @@
 ---
-title: "quarto_blog"
+title: "Experiments, how-tos, and gifts to my future self"
 listing:
   contents: posts
   sort: "date desc"
   type: default
   categories: true
-  sort-ui: false
-  filter-ui: false
+  sort-ui: true
+  filter-ui: true
   feed: true
 page-layout: full
 title-block-banner: true

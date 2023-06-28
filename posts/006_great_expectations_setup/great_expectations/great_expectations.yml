@@ -95,7 +95,7 @@ data_docs_sites:
       class_name: DefaultSiteIndexBuilder
 
 anonymous_usage_statistics:
-  data_context_id: 84fbcba4-b920-44b8-a844-72adefbea103
+  data_context_id: 6bfe1914-6cfd-42f9-be78-a494763b42f3
   enabled: false
 fluent_datasources:
   food_inspection_datasource:
@@ -105,8 +105,8 @@ fluent_datasources:
         type: parquet
         batching_regex: food_inspection_batch_(?P<year>\d{4})_(?P<month>\d{2})\.parquet
     base_directory: /home/matt/projects/blogs/quarto_blog/posts/006_great_expectations_setup/data
+notebooks:
 include_rendered_content:
   expectation_suite: false
-  globally: false
   expectation_validation_result: false
-notebooks:
+  globally: false

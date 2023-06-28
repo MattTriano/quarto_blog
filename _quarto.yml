@@ -2,9 +2,9 @@ project:
   type: website
 
 website:
-  title: "Triano's Quarto Blog"
+  title: "Matt Triano"
   site-url: https://www.matttriano.dev
-  description: "A blog by Matt Triano"
+  description: "Experiments, walkthroughs past-me would have liked, and gifts to future me"
   navbar:
     right:
       - about.qmd
