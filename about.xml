@@ -5,13 +5,13 @@
       xmlns:dc="http://purl.org/dc/elements/1.1/" 
       version="2.0">
 <channel>
-<title>Triano&#39;s Quarto Blog</title>
+<title>Matt Triano</title>
 <link>https://www.matttriano.dev/about.html</link>
 <atom:link href="https://www.matttriano.dev/about.xml" rel="self" type="application/rss+xml"/>
-<description>A blog by Matt Triano</description>
+<description>Experiments, walkthroughs past-me would have liked, and gifts to future me</description>
 <image>
 <url>https://www.matttriano.dev/profile.jpg</url>
-<title>Triano&#39;s Quarto Blog</title>
+<title>Matt Triano</title>
 <link>https://www.matttriano.dev/about.html</link>
 </image>
 <generator>quarto-1.3.433</generator>
@@ -72,23 +72,6 @@ background-color: null;
 font-style: inherit;">"data"</span>)</span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="39">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span>rm {PROJECT_DATA_DIR.joinpath(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"food_inspection*"</span>)}</span>
-<span id="cb2-2"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span>rm <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>r {PROJECT_DIR.joinpath(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"great_expectations"</span>)}</span></code></pre></div>
-</details>
-</div>
 <p>Great Expectations (or GX for short) is an open-source Python-based library that brings the idea of “testing” to your data. It enables you to define expectations for properties of your datasets (like records per batch, distribution of values in a column, columns in a table, etc) and check that the data meets those expectations when the data is updated.</p>
 <section id="workflow-overview" class="level1">
 <h1>Workflow Overview</h1>
@@ -108,50 +91,51 @@ font-style: inherit;">"great_expectations"</span>)}</span></code></pre></div>
 </section>
 <section id="step-0-great-expectations-setup" class="level2">
 <h2 class="anchored" data-anchor-id="step-0-great-expectations-setup">Step 0: Great Expectations Setup</h2>
-<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a conda env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
+<p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a <code>conda</code> env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
+<p>If you don’t have <code>conda</code> but would like to, check out my <a href="../../posts/000_setting_up_miniconda/Setting_up_Miniconda.html">opinionated conda install and configuration</a> post.</p>
 <div class="cell" data-execution_count="2">
 <details>
 <summary>Collecting and preprocessing sample data for this post</summary>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">PROJECT_DATA_DIR.mkdir(exist_ok<span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">PROJECT_DATA_DIR.mkdir(exist_ok<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">True</span>)</span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># First, we need to download the data to our local machine.</span></span>
-<span id="cb3-4">url <span class="op" style="color: #5E5E5E;
+<span id="cb2-4">url <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/4ijn-s7e5?method=export&amp;format=GeoJSON"</span></span>
-<span id="cb3-5">full_file_path <span class="op" style="color: #5E5E5E;
+<span id="cb2-5">full_file_path <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> PROJECT_DATA_DIR.joinpath(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"full_food_inspections.geojson"</span>)</span>
-<span id="cb3-6"><span class="cf" style="color: #003B4F;
+<span id="cb2-6"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> full_file_path.is_file():</span>
-<span id="cb3-7">    urlretrieve(url<span class="op" style="color: #5E5E5E;
+<span id="cb2-7">    urlretrieve(url<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>url, filename<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>full_file_path)</span>
-<span id="cb3-8">food_inspection_gdf <span class="op" style="color: #5E5E5E;
+<span id="cb2-8">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gpd.read_file(full_file_path)</span>
-<span id="cb3-9"></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># For some reason, Socrata adds on these four always-null location columns on</span></span>
-<span id="cb3-11"><span class="co" style="color: #5E5E5E;
+<span id="cb2-11"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#   to geospatial exports. I'm going to remove them.</span></span>
-<span id="cb3-12">location_cols <span class="op" style="color: #5E5E5E;
+<span id="cb2-12">location_cols <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
 background-color: null;
@@ -162,28 +146,28 @@ background-color: null;
 font-style: inherit;">"location_address"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"location_city"</span>]</span>
-<span id="cb3-13"><span class="co" style="color: #5E5E5E;
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># uncomment the lines below to confirm those columns are always empty</span></span>
-<span id="cb3-14"><span class="co" style="color: #5E5E5E;
+<span id="cb2-14"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># print("Rows with a non-null value in these location_xxx columns:")</span></span>
-<span id="cb3-15"><span class="co" style="color: #5E5E5E;
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># display(food_inspection_gdf[location_cols].notnull().sum())</span></span>
-<span id="cb3-16">food_inspection_gdf <span class="op" style="color: #5E5E5E;
+<span id="cb2-16">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> food_inspection_gdf.drop(columns<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>location_cols)</span>
-<span id="cb3-17"></span>
-<span id="cb3-18"><span class="co" style="color: #5E5E5E;
+<span id="cb2-17"></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># That column ordering is a bit chaotic, so I'll reorder them (for readability).</span></span>
-<span id="cb3-19">col_order <span class="op" style="color: #5E5E5E;
+<span id="cb2-19">col_order <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [</span>
-<span id="cb3-20">    <span class="st" style="color: #20794D;
+<span id="cb2-20">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_id"</span>, <span class="st" style="color: #20794D;
 background-color: null;
@@ -196,7 +180,7 @@ background-color: null;
 font-style: inherit;">"license_"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"facility_type"</span>,</span>
-<span id="cb3-21">    <span class="st" style="color: #20794D;
+<span id="cb2-21">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"risk"</span>, <span class="st" style="color: #20794D;
 background-color: null;
@@ -213,41 +197,41 @@ background-color: null;
 font-style: inherit;">"zip"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"violations"</span>,</span>
-<span id="cb3-22">    <span class="st" style="color: #20794D;
+<span id="cb2-22">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"longitude"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"latitude"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"geometry"</span></span>
-<span id="cb3-23">]</span>
-<span id="cb3-24">food_inspection_gdf <span class="op" style="color: #5E5E5E;
+<span id="cb2-23">]</span>
+<span id="cb2-24">food_inspection_gdf <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> food_inspection_gdf[col_order].copy()</span>
-<span id="cb3-25"></span>
-<span id="cb3-26"><span class="co" style="color: #5E5E5E;
+<span id="cb2-25"></span>
+<span id="cb2-26"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># I also want to break this into batches based on the dates, so I need to cast</span></span>
-<span id="cb3-27"><span class="co" style="color: #5E5E5E;
+<span id="cb2-27"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#   the `inspection_date` to a datetime type.</span></span>
-<span id="cb3-28">food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-28">food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.to_datetime(</span>
-<span id="cb3-29">    food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-29">    food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>]</span>
-<span id="cb3-30">)</span>
-<span id="cb3-31"></span>
-<span id="cb3-32"><span class="co" style="color: #5E5E5E;
+<span id="cb2-30">)</span>
+<span id="cb2-31"></span>
+<span id="cb2-32"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># I'll also cast string and numeric features to their proper dtypes.</span></span>
-<span id="cb3-33"><span class="co" style="color: #5E5E5E;
+<span id="cb2-33"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># food_inspection_gdf = food_inspection_gdf.convert_dtypes()</span></span>
-<span id="cb3-34">food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-34">food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_id"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -256,7 +240,7 @@ background-color: null;
 font-style: inherit;">"inspection_id"</span>].astype(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Int64"</span>)</span>
-<span id="cb3-35">food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-35">food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"longitude"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -265,7 +249,7 @@ background-color: null;
 font-style: inherit;">"longitude"</span>].astype(<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">float</span>)</span>
-<span id="cb3-36">food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb2-36">food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"latitude"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -274,11 +258,11 @@ background-color: null;
 font-style: inherit;">"latitude"</span>].astype(<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">float</span>)</span>
-<span id="cb3-37"></span>
-<span id="cb3-38"><span class="co" style="color: #5E5E5E;
+<span id="cb2-37"></span>
+<span id="cb2-38"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># I'll also just make all string uppercase (to reduce cardinality)</span></span>
-<span id="cb3-39">str_cols <span class="op" style="color: #5E5E5E;
+<span id="cb2-39">str_cols <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="bu" style="color: null;
 background-color: null;
@@ -289,7 +273,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"object"</span>).columns)</span>
-<span id="cb3-40">food_inspection_gdf[str_cols] <span class="op" style="color: #5E5E5E;
+<span id="cb2-40">food_inspection_gdf[str_cols] <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> food_inspection_gdf[str_cols].<span class="bu" style="color: null;
 background-color: null;
@@ -304,19 +288,19 @@ font-style: inherit;">str</span>.upper())</span></code></pre></div>
 <div class="cell" data-execution_count="3">
 <details>
 <summary>And here we split the dataset into batches and write each batch to file in this post’s <code>./data</code> directory.</summary>
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># I want to split the data into 1-month batches, so I need to get the first day of the month</span></span>
-<span id="cb4-2"><span class="co" style="color: #5E5E5E;
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#   for every month between the earliest inspection and the month after the latest inspection</span></span>
-<span id="cb4-3"><span class="co" style="color: #5E5E5E;
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#   in our food inspection dataset.</span></span>
-<span id="cb4-4">month_start_dates <span class="op" style="color: #5E5E5E;
+<span id="cb3-4">month_start_dates <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.date_range(</span>
-<span id="cb4-5">    start<span class="op" style="color: #5E5E5E;
+<span id="cb3-5">    start<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
@@ -329,46 +313,46 @@ background-color: null;
 font-style: inherit;">=-</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>),</span>
-<span id="cb4-6">    end<span class="op" style="color: #5E5E5E;
+<span id="cb3-6">    end<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>].<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">max</span>(),</span>
-<span id="cb4-7">    freq<span class="op" style="color: #5E5E5E;
+<span id="cb3-7">    freq<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"MS"</span>,</span>
-<span id="cb4-8">)</span>
-<span id="cb4-9"></span>
-<span id="cb4-10"><span class="co" style="color: #5E5E5E;
+<span id="cb3-8">)</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Here, we'll iterate through each of those month_start_dates, extract the batch of data,</span></span>
-<span id="cb4-11"><span class="co" style="color: #5E5E5E;
+<span id="cb3-11"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#   format a filename containing the month_start_date, and write the batch to file.</span></span>
-<span id="cb4-12"><span class="cf" style="color: #003B4F;
+<span id="cb3-12"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> month_start_date <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> month_start_dates:</span>
-<span id="cb4-13">    batch_period <span class="op" style="color: #5E5E5E;
+<span id="cb3-13">    batch_period <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.to_datetime(month_start_date).strftime(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"%Y_%m"</span>)</span>
-<span id="cb4-14">    batch_data <span class="op" style="color: #5E5E5E;
+<span id="cb3-14">    batch_data <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> food_inspection_gdf.loc[</span>
-<span id="cb4-15">        food_inspection_gdf[<span class="st" style="color: #20794D;
+<span id="cb3-15">        food_inspection_gdf[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>].between(</span>
-<span id="cb4-16">            left<span class="op" style="color: #5E5E5E;
+<span id="cb3-16">            left<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>month_start_date,</span>
-<span id="cb4-17">            right<span class="op" style="color: #5E5E5E;
+<span id="cb3-17">            right<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>month_start_date <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -377,13 +361,13 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>),</span>
-<span id="cb4-18">            inclusive<span class="op" style="color: #5E5E5E;
+<span id="cb3-18">            inclusive<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"left"</span>)</span>
-<span id="cb4-19">    ].copy()</span>
-<span id="cb4-20">    batch_file_path <span class="op" style="color: #5E5E5E;
+<span id="cb3-19">    ].copy()</span>
+<span id="cb3-20">    batch_file_path <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> PROJECT_DATA_DIR.joinpath(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -394,12 +378,12 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">.parquet"</span>)</span>
-<span id="cb4-21">    <span class="cf" style="color: #003B4F;
+<span id="cb3-21">    <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> batch_file_path.is_file():</span>
-<span id="cb4-22">        batch_data.to_parquet(batch_file_path, index<span class="op" style="color: #5E5E5E;
+<span id="cb3-22">        batch_data.to_parquet(batch_file_path, index<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
@@ -412,18 +396,18 @@ font-style: inherit;">False</span>)</span></code></pre></div>
 <p>A <a href="https://docs.greatexpectations.io/docs/terms/data_context/"><code>DataContext</code></a> is your primary tool for configuring your project and accessing project resources or GX methods. When you first create a <code>DataContext</code> for your project, GX will create a directory named <code>/great_expectations</code> in the <code>project_root_dir</code> directory.</p>
 <p>The code below will create a new <code>DataContext</code> if one doesn’t already exist in the <code>PROJECT_DIR</code> directory, and then load a <code>DataContext</code> instance from that <code>PROJECT_DIR</code>. Great Expectations defaults to collecting <a href="https://docs.greatexpectations.io/docs/reference/usage_statistics/">anonymized usage statistics</a>, but you can disable that for your context by setting <code>usage_statistics_enabled=False</code>.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> great_expectations <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> gx</span>
-<span id="cb5-2"><span class="im" style="color: #00769E;
+<span id="cb4-2"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> great_expectations.data_context <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> FileDataContext</span>
-<span id="cb5-3"></span>
-<span id="cb5-4">context <span class="op" style="color: #5E5E5E;
+<span id="cb4-3"></span>
+<span id="cb4-4">context <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> FileDataContext.create(project_root_dir<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -437,7 +421,7 @@ font-style: inherit;">False</span>)</span></code></pre></div>
 <div class="cell" data-execution_count="5">
 <details>
 <summary>Kinds of <code>DataContext</code>s</summary>
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">[el <span class="cf" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">[el <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -464,13 +448,13 @@ font-style: inherit;">"Context"</span>)]</span></code></pre></div>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/datasource/"><code>Datasource</code></a> connects you to a source of data and gives you methods to define and access <code>DataAssets</code>.</p>
 <p>The code below will check the <code>DataContext</code> <code>context</code> for a <code>Datasource</code> with the given <code>datasource_name</code>, and either load or create a local filesystem <code>Datasource</code> instance.</p>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1">datasource_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1">datasource_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspection_datasource"</span></span>
-<span id="cb8-2"></span>
-<span id="cb8-3"><span class="cf" style="color: #003B4F;
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="bu" style="color: null;
 background-color: null;
@@ -483,7 +467,7 @@ background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> context.list_datasources()):</span>
-<span id="cb8-4">    <span class="bu" style="color: null;
+<span id="cb7-4">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -494,13 +478,13 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">' found; loading now"</span>)</span>
-<span id="cb8-5">    datasource <span class="op" style="color: #5E5E5E;
+<span id="cb7-5">    datasource <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.get_datasource(datasource_name)</span>
-<span id="cb8-6"><span class="cf" style="color: #003B4F;
+<span id="cb7-6"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">else</span>:</span>
-<span id="cb8-7">    <span class="bu" style="color: null;
+<span id="cb7-7">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -511,16 +495,16 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">' found; creating now"</span>)</span>
-<span id="cb8-8">    datasource <span class="op" style="color: #5E5E5E;
+<span id="cb7-8">    datasource <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.sources.add_pandas_filesystem(</span>
-<span id="cb8-9">        name<span class="op" style="color: #5E5E5E;
+<span id="cb7-9">        name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>datasource_name,</span>
-<span id="cb8-10">        base_directory<span class="op" style="color: #5E5E5E;
+<span id="cb7-10">        base_directory<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>PROJECT_DATA_DIR</span>
-<span id="cb8-11">    )</span></code></pre></div>
+<span id="cb7-11">    )</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No Datasource with name 'food_inspection_datasource' found; creating now</code></pre>
 </div>
@@ -528,7 +512,7 @@ font-style: inherit;">=</span>PROJECT_DATA_DIR</span>
 <div class="cell" data-execution_count="7">
 <details>
 <summary>Other kinds of GX <code>Datasource</code>s</summary>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">[el <span class="cf" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">[el <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -572,20 +556,20 @@ font-style: inherit;">in</span> el]</span></code></pre></div>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/data_asset/"><code>DataAsset</code></a> specifies a collection of records in a <code>Datasource</code> and the method for accessing those records.</p>
 <p>The code below checks if a <code>DataAsset</code> with the given name exists in the <code>datasource</code>, loading it if it exists, or specifying it if not. In the part that specifies the <code>DataAsset</code>, note that we set the name of the asset, specify that the data is in parquet files, and provide a regex pattern for the file_names and also defines variable-names for the <code>year</code> and <code>month</code> parts each file_name. We can use those <code>year</code> and <code>month</code> variables to specify how <code>DataAssets</code> should be split into batches and the order of those batches.</p>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1">data_asset_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1">data_asset_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_asset"</span></span>
-<span id="cb12-2"></span>
-<span id="cb12-3"><span class="cf" style="color: #003B4F;
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> data_asset_name <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> datasource.get_asset_names():</span>
-<span id="cb12-4">    <span class="bu" style="color: null;
+<span id="cb11-4">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -596,13 +580,13 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span>
-<span id="cb12-5">    data_asset <span class="op" style="color: #5E5E5E;
+<span id="cb11-5">    data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> datasource.add_parquet_asset(</span>
-<span id="cb12-6">        name<span class="op" style="color: #5E5E5E;
+<span id="cb11-6">        name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>data_asset_name,</span>
-<span id="cb12-7">        batching_regex <span class="op" style="color: #5E5E5E;
+<span id="cb11-7">        batching_regex <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
 background-color: null;
@@ -615,14 +599,14 @@ background-color: null;
 font-style: inherit;">{2}</span><span class="vs" style="color: #20794D;
 background-color: null;
 font-style: inherit;">)\.parquet"</span></span>
-<span id="cb12-8">    )</span>
-<span id="cb12-9"><span class="cf" style="color: #003B4F;
+<span id="cb11-8">    )</span>
+<span id="cb11-9"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">else</span>:</span>
-<span id="cb12-10">    data_asset <span class="op" style="color: #5E5E5E;
+<span id="cb11-10">    data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> datasource.get_asset(data_asset_name)</span>
-<span id="cb12-11">data_asset <span class="op" style="color: #5E5E5E;
+<span id="cb11-11">data_asset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.add_sorters([<span class="st" style="color: #20794D;
 background-color: null;
@@ -636,7 +620,7 @@ font-style: inherit;">"+month"</span>])</span></code></pre></div>
 <div class="cell" data-execution_count="9">
 <details>
 <summary>Other data file formats GX supports</summary>
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">[el <span class="cf" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">[el <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -672,45 +656,45 @@ font-style: inherit;">"add_"</span>)]</span></code></pre></div>
 <p>GX supports hundreds of different <code>Expectations</code> and catalogs them in the <a href="https://greatexpectations.io/expectations/">Expectation Gallery</a> (although not all <code>Expectations</code> are implemented for all kinds of <code>Datasources</code>). GX also provides tools to aid in several <a href="https://docs.greatexpectations.io/docs/guides/expectations/create_expectations_overview">workflows</a> for defining suites of <code>Expectations</code>, including the GX <a href="https://docs.greatexpectations.io/docs/terms/data_assistant/"><strong>Data Assistant</strong></a> workflow (used below), which builds a suite of <code>Expectations</code> by profiling batches of data.</p>
 <p>In the code below, we create a new <code>Expectation</code> suite (on lines 3-5), organize batches of data (on lines 6-7), and use the data assistant to profile the <code>DataAsset</code> based on our batches of data (on lines 8-11).</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1">expectation_suite_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1">expectation_suite_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_suite"</span></span>
-<span id="cb16-2"></span>
-<span id="cb16-3">expectation_suite <span class="op" style="color: #5E5E5E;
+<span id="cb15-2"></span>
+<span id="cb15-3">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(</span>
-<span id="cb16-4">    expectation_suite_name<span class="op" style="color: #5E5E5E;
+<span id="cb15-4">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb16-5">)</span>
-<span id="cb16-6">batch_request <span class="op" style="color: #5E5E5E;
+<span id="cb15-5">)</span>
+<span id="cb15-6">batch_request <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.build_batch_request()</span>
-<span id="cb16-7">batches <span class="op" style="color: #5E5E5E;
+<span id="cb15-7">batches <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_asset.get_batch_list_from_batch_request(batch_request)</span>
-<span id="cb16-8">data_assistant_result <span class="op" style="color: #5E5E5E;
+<span id="cb15-8">data_assistant_result <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.assistants.onboarding.run(</span>
-<span id="cb16-9">    batch_request<span class="op" style="color: #5E5E5E;
+<span id="cb15-9">    batch_request<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>batch_request,</span>
-<span id="cb16-10">    exclude_column_names<span class="op" style="color: #5E5E5E;
+<span id="cb15-10">    exclude_column_names<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"inspection_date"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"geometry"</span>],</span>
-<span id="cb16-11">)</span></code></pre></div>
+<span id="cb15-11">)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code></code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b282aeeac53545bfac8f8dd025b91003","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"11db1ea0639d43b2a42eb35da7d97a67","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
@@ -720,62 +704,37 @@ font-style: inherit;">"geometry"</span>],</span>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"519aa97159554150bfb9c3c251a99a76","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"31507452bbc347cbb40cb3e251a29dce","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"11957d59a91c4e5aa14f210bc6198013","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"1623455d058345f1b3c2da849fbbf50e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"027d83e0f4004768bcdbf4901cc0dc99","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"295e87146d9248459083698088582933","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"0aec9c35d05543c0b2c9ce8f7b68eca4","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d725938cfecf438eab055b655b85f502","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"39cc44d222624a66b2c2c056905446fb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f73d8b6d3978411d92ea7181a21d1d7c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f43e90f3074945b6a1cde3090651bbc6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"806294d12a6b4bb9a328fce1b72baa34","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c2a3d7827a574958ad7b6fe3c1e8c3e5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"542ce2b1215b4b289bb0df1e7cf1b02d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"14f15482785f414a9f4b9ab7deca9121","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"017fc0d3447e4d959dce03342363c456","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"30a0c41b9a8e47019d2240e989b5dc31","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"fc53e71d915440ae97022e2a0f64b7db","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
@@ -785,117 +744,22 @@ font-style: inherit;">"geometry"</span>],</span>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"2e0c94da6e224be892e5ed3a521b64ab","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"1fa77d075490414e839ebfa4ab9e1284","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6c7caf40314f4af593b769aa7c830230","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"7b86d129222c4822b302970303d5f58f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e3021156913d417197191d969b4c7cdc","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f8fbc8ead6c3487baa2c088cc6be826b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fc07c19700894ec2b53a670a9fa31e0f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"900996f3d50e446a8818d2181d1745fb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ec9ade2274154cc3baf953fcc46acfb8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"034a4a39d6e64d83a21ee1bbb197c07f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"67434d222135483190edf0d1da9d0dcb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"595bb603cbb14951a1b7afefe10a7926","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b722f11be0834428b9491d314f1b360c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"7df7be1d7ed342d8adeeff51b040293e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a816fee9b7e243a9a859f270f5b8ebfc","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"dbfecac81567489ba0d2b29c0fca6abb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"17f01fe12577478789b9d3e724c119f6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"50cf15e3e26e4fb380b4df8c98164f35","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d8f9040188b74237aa47f612118a3bf5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"5a99858992c14199b30cee5b26718cfb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a879a6e98c0a40f0818187996bbdab29","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"660d6777005c4f3f80eafa32d3838326","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"cb2378c933af43b481b66a8ae6669b6e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a92c29f2458f420baa84459630a5db2c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"19497d6fef75450fb180d17598ab38b7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"9f0ffa062420418b92a592c4a327b516","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
@@ -905,102 +769,22 @@ font-style: inherit;">"geometry"</span>],</span>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d94bfc6ae66440feb2fa2796b70e7ea6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"e8b4db53158d4554ab3997db941a1366","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a6ff0bb9c5ab42a48576569aaf80c8d9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f3ee87ed95e24cbfbc6be174a0773bf2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"bba67eeb8f6a4a18b8f2e1b3b6804584","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"1a1e69c5d26f4e4f8ff09d43e07ad227","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"85dae75e3df24bb19ddd4a7350c2ee20","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c330e89dc0c34c0595e678edc09f0819","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"1cd02a1e6cb94a63bf5348abe20754f2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"5caee3189e4748078919f2e03056f2ec","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6b8e59dbc3bd4558a8975efc8cd10527","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"10af0765182c4753b66dfde779694662","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ccbfb823c8ed466a99a2def3a8c35a79","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d4ba775595494c0e879a5952f593ae85","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a8da1836582e4caebf3127cafb6e636b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4f9aa9084a5e4f9fa16803922968b3d3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f968c24557c447b4b70614e79c97187e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"018ce09e0edf4692acf0fac6994e3b58","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fc39fdfa7bba497cb7e82e3faddf6165","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f58aa4928f544a33934c67ab827b01fe","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"63770344ab1c4c8695e215a37c6b292e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e5514718b1234c2a893f161ecfa93015","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a81357446a7e4a6c8ebcf41a1592868b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"05b16b968043402c834b96ade67f9173","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
@@ -1010,272 +794,92 @@ font-style: inherit;">"geometry"</span>],</span>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"329aaa8681b148daa419f5b3512ec66b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"6fa41c8b0d834a37aff4a7c7fd9e4806","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6d7885cbc28f4a1599390bb016fc99f8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"8087453abe4a489d820043cc30f78cdf","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"5ba48b2419b84027a4e2ad665dcba3fb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a20866fa50fc4aeb996ea38a1f3eb11b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d93d86caad9845359b57516da22e1502","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"062bd9203b484d77bdd0bb3080e0af4b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"053ab09acbc74779a1a6880cf53cf35d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d92c30010ff44b56a0d650c844f23dc6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"08e25ae0eca241b4b439c43767ca39a0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c9141dd71c0c43a9821ca6530bab4680","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"5b65dc193ab946db94172518eaf11a1e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"2343cfa75e75476d8d76aaf4c46126b4","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"fd2e58f0d7b1410ea7960d65c6c90a5d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"0554ced719c5417ca842d77359171e2b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"3f4194f64b8e4de4a9f8fc46f12c33d2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d627d64d465443979ea2d620db4bb7c9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"e57d2b3d81ac40e5aab3157c18bdf3ae","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"26d25f8dfe364058acc718b64bcf5498","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b903a3020d7e48caabf7da69ffa4afb0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ee9bba75e5ba4ba8a232e05effd99e5a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"76288fce1fe744e595ba92ecffa5bd4e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"79378a1db6614083af5bf582975d9d8c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"26ff2003db6d4752990aba0b41a34470","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"da667c5db2854a4d9ad3774497e3b730","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"7268da074e47438ca770a7b22f26da3b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d7de3fc53ab74f85a1a6048e680d731b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"4764ad86713042c490b3edf60ac33fb7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4a62556dfed340608d6b6bef0edc128b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"1aab8423e859457d82df47bf99aa41dc","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"95eccb2b30f54679b6149292397e0782","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b67393cf14174efcabd36d4bf4aa870c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"7f1edcb5aa7f4055bec9985c04977e8b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f05f9ecd5b5247bf991394811992c1f5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"94f7fa75c38d426c9b8cd74ea8031710","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"620c8b61b70e4980a12165b883d20934","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b76e7d2e667446fcba719c5e6fe67df3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"64c8e3b96c0e4c14999cffbe5692f0df","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"0729088db9e345d7b5c8a65ddee939d2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ab93b5f82c724bdc9b44167498a36e18","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"1c5ce5e00a3d4a57845eb9d3c8b8b9da","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fc3bdac4092d4fc3be58f59e871cbba4","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b1aa32ef166347228ee12c141beab7fd","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"566e57de20114689909748d9b64a69d6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"244a956193684d92a9a5536f8f0adb37","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ed17c76324944a15b7160ce7ec45a656","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fa745097a9f448bf90e00a5a4195b2a2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"05bb925c01904462a7690950fce09c62","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"118fefdba2e241aa84b7aface78be1f9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"28c7012e5bcf4f2b8d74e395e7cb6fe9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6c372dd88531403a9a0b3c5937cd363b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6a538370e1df40cf96b560c8acb36a70","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d87d7895de434f9fab96a0d72e9b3dfb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"7ba9538c1d8f4b0686728c6ac6fe21d3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"aedc93a1b5bb441695dc1b7a7fdcd385","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"26907dfe2e304f139edc1eddb82cee23","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c5f95cab50f44111ab8aabef3136c8cf","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"aa24a4eed0de47b5852f6d50d4a0514f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"33e300345b4946d586eb52dd02ba9620","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"9f1ae5bbd2fc4f27aab577d2046e174e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b8a70d01ea62490db7006893e3dd1969","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a0c831609b5b4ca3a7a75f769495b4df","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"3607b7e7941146e69bd0c19a4030a737","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fcc948e9be804ccd9fd98ba1b4e6d6b2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"06be2a64a23a42a4b077409bd72dfe7e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"1f5b3c94c1d240fc90428767017509d6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"395b4e7aafbf4bbb8eb50a08011d05ca","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"7f904b9fe15d4444b5103c7f244ec813","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"12f87bb762b548f9bd7fc121c570ba12","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"aa6fcf5077594c4a975c5d5dfc31d6d8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
@@ -1285,142 +889,522 @@ font-style: inherit;">"geometry"</span>],</span>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"32541a72cea74de69772a87f679709a8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"30eea499c344484d8f8125fa4f1eeb0a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"3b4c72f75f7f45398c14bbac5719ef81","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f144ccbe88c54079ab0147791877ba76","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"3032eb060b4f4e8e9c02701efcce4735","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d20de5af95b94863851880aba66a904e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e5a60c17db674182b51b463aae7f5524","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"2623b1c948c0478a90aa3665c87c5d08","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4991a34e13fd43219dde37dcdf577752","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"3333762ba9de4568a89bffe60fd21390","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c29b2cfc1e3f4c1086660df345365e73","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"89afd24ea8a0436891ad73b116fdd6fb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fd182cdb2dc845e09fa5b1be3ac951d3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"02f91c3a8ef84cd8a3e065364588162f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"28247bba932b455ebda657c0e9db9a90","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"55ffccea131b48d6b442070bce007d89","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4ea5070c02304f6ca646457e09e3f2c3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"513ba6a1158b4a289b26ec44239cfc1e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"c1eb6abff24346fa97dbcb3cf544fb95","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b0875f593ca740b5a720eb991a511330","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4bcc2b8875bb4402a79099ddb5839f8b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"06db7af1cd4f4263b59b349fe74f75f7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"8a1aa91604614a75b186fc549028e78e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"0b53c66c7a854c548be6aed7c71997c8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"07ab18bc65c14c1dbc57888d397102eb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d155c4434b724a4e99ab91d70615d727","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"bed0eb621e6c44759f8ae1e3d7247c00","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"61ab18ce765b4504939560360640717e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e91e1302764c498195a0475b5365228c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d87b54fc5a144a42b6ba8e52668a68af","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4e5f37eae1dd491bab74ec50f0a515cb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"e9a870970d1f4b06af47bf4b04d03864","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"fb5c84a8d2024ef9903dca7bdb16961c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f5f5c47f967447548af3209219f5646d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e72aba9d19774a3c8c4fafe6e479068d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b751c028817d4268b496d683054b0415","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"91d68514161d49f18dd75ffa7ef0ab9b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"ef72af3bcba1424ea68b84366c37359d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"7f8d8710570640e4901c93ded0a54d9a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"c2c2bf7b7523487e8e9b5a80ad27ecf9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"2a3cb4734f8f4448a46d8a5b03bd8f9e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"8ac79733e1bd44b79c7687da54c5efdb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"a9f6d1a917cd4975afdc1ed1263f1f3d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"83ddca85d9f4492c9d5f2d4c2575b997","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b0bb51efc72249c9928e8f5fa8c2132f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"5e520d9e72414f689de72a37d83c339a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"4833b142b8d640a5bafbe835ea124e03","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"28e3b9709f4f42b8b94c40dd2877ab6d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"84b6e6c170994b99ae64d3a08f536093","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"c18d4c82fe2d404d8c86c53e165d2109","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"cea2c8534e374a1fbe916b1a1e5901dd","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"896348d89b9044cd90b3ae9b6dfeb05c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"a57f4e2c2f29473fbef739994cb643a2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"ac1418d3fcfa491084921304613186a1","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"035a75fe77824715a121164e48614404","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f3c97d49d4c44c2d9efdd480db6a5295","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f601e48243574888b0c60d51f4d5a46f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fe6f4531c7654b4eb06aee2c3c8da245","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"52893003e5144a93a99cc282ce002e5d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fa47c251a6644af192d7cc1f4ce1c693","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"623a1284211644d0868c032f90bd1a50","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"99d45ab5e44f4b61b25604d8801b5485","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"095feed8119e40769ac6eda826a7371b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7bd8d8e65f614f8dbac2a4cb7769ec13","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"444e677423d24ba4922247e1776054c5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f2f59e46d7504aefa4862912fa6da4d5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"59bc4f16983349baa74c05aa18296c81","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fe7cd61424b8483993b1a5facb3eb904","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"857194450aab4ae281637fbd6a53dea9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4fb0ce0191e749bea07198dfae24fd03","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"72fa0c8dccc841a8968aaa655945e01e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b69625d1ecf54b62b7fa9495f1553fe7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c3abb841471a4a7a8296fb530b1eae8a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ad5c7b024eeb452faa155b7c3a7e9eeb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"afca8d3e8b214b9dad7e486fefd71585","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b0e8c5a3194c4ae3b7dd15461717408d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"2768d8c7587c440fbb3847a19ab982c5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e2399b1d0f6546bca86c6b1dd9deb6ca","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4e331b8935ef4ea984a2c83c41c8dd13","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"510b10209e494196968d25f33d9ac586","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4e9562da963e4d78b87f4a492632e568","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1c322acf2f6d487f9e054810a6577467","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1b041d86bbfb4de7b202b612cb79ab3f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e0b369ce2ae94772b65c5cf8c239fd29","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"cfc7b730739b48f1b8d7abf52e7a82b6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"19f3dfaa34754f718451af01979a1e46","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"cc74a81834c7467aa9a69517e278a7cb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"26a64014bb3a46e0bf644c6f3d607543","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fe04ee27283a48fe916a973a67cf8118","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1bdb6742a01143a7be03ed4539810601","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7b4708b103b14219a893bb169d8d1040","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4cbb4865b8994ce9a9eb2e6f496636ac","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"757c05f73d694a82a2d197adccc48950","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"5270702d520f465fa06508e2d6d106be","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"383980d4259e42659e29d03f690d5c8e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c543090a5e624abbaced4a6c8d1d5950","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"6057cc61aaed4154a38a0c803283de6a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"20f69e13108e45d7808d943f59276c97","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b1c46344582045de80093e6c1fc0267e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e468402f04a14ae68ee2f75d5937e372","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"247f5d6755f5419da5fc3fb93b2f4e65","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"98d25feb56484425980905ea57c7b69b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4ed5695c652e4c97bb1cb10dfe2b0526","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a9a3b5375d89422a96fc0d539e8f648b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b4ca1107a0804e8797de14fb38c18e86","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"3f1907a25f944c25bf6ce64499787a36","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f441bd3b55254a8e8aec34df1eebdc7b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"480552198770413098b0c9e018a26b05","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"bb8f45c4c0b4437caeb432212b5677a3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"df5d75dcb9d64473bc3160920fb76a7e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"0f4fd1ee44a34a96877877eeccba85be","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"6b8d7f99af8e4af7a9ba21172ad61723","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"40f82676a5354795ace117f885a78998","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"0c7250293de4418a908cc1f25477ea21","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9ef51bb2a00d43c99bd69df933a4627b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a55ad83d7fea4774898544ec9be7b4c7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d84432c8ba9d4d0d883e8b1178fb5a9b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b0f9d5a4828b4d25ab40390411df2eab","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b0c5613924a14ba890f911e95d302955","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a95a102c2bc349bfaf2cdee7268e5261","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e4fe50d428ea4fe7800ff52d87e7fad4","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"48e41675063e4ad6bbe6a591ea864aa5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c97e42025098406ba41e4cae5bf2a6c9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"220d4bafd698441ca7a11ba5eb16e2eb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"91aa8cfa7b1a406a8fabbf54cdb1c89d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"eaf14c015d5e4e259029b36142061f6f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ecda6b74910a47a19d037a62a8472694","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d2d4ad4d50e744b2aec5800756fdfb72","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d543afd6c9904d2bbf5d2e337e46c7ea","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
@@ -1432,7 +1416,7 @@ font-style: inherit;">"geometry"</span>],</span>
 </figure>
 </div>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">data_assistant_result.plot_expectations_and_metrics()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">data_assistant_result.plot_expectations_and_metrics()</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>64 Expectations produced, 23 Expectation and Metric plots implemented
 Use DataAssistantResult.show_expectations_by_domain_type() or
@@ -1492,7 +1476,7 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"07bb5afcfe6b4b4e9dd9d840f80d2023","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"4d088681de56442486962b97209f6168","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="11">
@@ -1507,87 +1491,47 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 <section id="extracting-optionally-editing-and-committing-our-expectation-suite-to-our-datacontext" class="level3">
 <h3 class="anchored" data-anchor-id="extracting-optionally-editing-and-committing-our-expectation-suite-to-our-datacontext">Extracting, [optionally] Editing, and Committing our <code>Expectation Suite</code> to our <code>DataContext</code></h3>
 <p>If we’re content with the <code>Expectations</code> generated by the Data Assistant’s profiler, we can simply extract the <code>Expectations</code> and add them to our <code>context</code> via</p>
-<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">expectation_suite <span class="op" style="color: #5E5E5E;
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_assistant_result.get_expectation_suite(</span>
-<span id="cb21-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
+<span id="cb20-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb21-3">)</span>
-<span id="cb21-4">saved_suite <span class="op" style="color: #5E5E5E;
+<span id="cb20-3">)</span>
+<span id="cb20-4">saved_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
 <p>In a future post I’ll go into further depth on methods for editing <code>Expectations</code>, but here I’ll show how to inspect and remove <code>Expectations</code>.</p>
 <div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">expectation_suite <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">expectation_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data_assistant_result.get_expectation_suite(</span>
-<span id="cb22-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
+<span id="cb21-2">    expectation_suite_name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_suite_name</span>
-<span id="cb22-3">)</span></code></pre></div>
+<span id="cb21-3">)</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="13">
 <details>
-<summary>Counts of Expectations by Column</summary>
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="bu" style="color: null;
+<summary>Counts of Expectations by Type</summary>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">f"Counts of Expectations by Expectation-type:"</span>)</span>
-<span id="cb23-2">expecs_by_type <span class="op" style="color: #5E5E5E;
+<span id="cb22-2">expecs_by_type <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_expectation_type()</span>
-<span id="cb23-3">display(Counter([ex._expectation_type <span class="cf" style="color: #003B4F;
+<span id="cb22-3">display(Counter([ex._expectation_type <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> ex <span class="kw" style="color: #003B4F;
 background-color: null;
-font-style: inherit;">in</span> expecs_by_type]))</span>
-<span id="cb23-4"></span>
-<span id="cb23-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">\n\n</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Counts of Expectations by Column-name:"</span>)</span>
-<span id="cb23-6">expecs_by_col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_column()</span>
-<span id="cb23-7">expec_count_by_col <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {col: <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(col_expecs) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> col, col_expecs <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> expecs_by_col[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].items()}</span>
-<span id="cb23-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sorted</span>(expec_count_by_col.items(), key<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">lambda</span> x: x[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>], reverse<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span></code></pre></div>
+font-style: inherit;">in</span> expecs_by_type]))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Counts of Expectations by Expectation-type:
-
-
-Counts of Expectations by Column-name:</code></pre>
+<pre><code>Counts of Expectations by Expectation-type:</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>Counter({'expect_column_value_lengths_to_be_between': 12,
@@ -1606,7 +1550,47 @@ Counts of Expectations by Column-name:</code></pre>
          'expect_table_columns_to_match_set': 1,
          'expect_table_row_count_to_be_between': 1})</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+</div>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Counts of Expectations by Column</summary>
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Counts of Expectations by Column-name:"</span>)</span>
+<span id="cb25-2">expecs_by_col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_column()</span>
+<span id="cb25-3">expec_count_by_col <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {col: <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(col_expecs) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> col, col_expecs <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> expecs_by_col[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].items()}</span>
+<span id="cb25-4">display(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sorted</span>(expec_count_by_col.items(), key<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>], reverse<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Counts of Expectations by Column-name:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
 <pre><code>[('longitude', 7),
  ('latitude', 7),
  ('inspection_type', 6),
@@ -1624,10 +1608,10 @@ Counts of Expectations by Column-name:</code></pre>
  ('violations', 2)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="15">
 <details>
 <summary>Expectation-related methods on our expectation_suite</summary>
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">[el <span class="cf" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">[el <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> el <span class="kw" style="color: #003B4F;
 background-color: null;
@@ -1641,7 +1625,7 @@ font-style: inherit;">"_expectation"</span> <span class="kw" style="color: #003B
 background-color: null;
 font-style: inherit;">in</span> el]</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>['_add_expectation',
  '_get_expectations_by_domain_using_accessor_method',
  '_validate_expectation_configuration_before_adding',
@@ -1665,15 +1649,15 @@ font-style: inherit;">in</span> el]</span></code></pre></div>
  'show_expectations_by_expectation_type']</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="16">
 <details>
 <summary>Inspecting Expectation types for a given column</summary>
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">col_name <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">col_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"longitude"</span></span>
-<span id="cb29-2">[ex[<span class="st" style="color: #20794D;
+<span id="cb30-2">[ex[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"expectation_type"</span>] <span class="cf" style="color: #003B4F;
 background-color: null;
@@ -1689,7 +1673,7 @@ font-style: inherit;">"column"</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> col_name]</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>['expect_column_min_to_be_between',
  'expect_column_max_to_be_between',
  'expect_column_values_to_be_between',
@@ -1700,30 +1684,30 @@ font-style: inherit;">==</span> col_name]</span></code></pre></div>
 </div>
 </div>
 <p>Some <code>Expectations</code> are redundant, such as <code>expect_column_min_to_be_between</code> and <code>expect_column_max_to_be_between</code>. I’ll remove them.</p>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">col_name <span class="op" style="color: #5E5E5E;
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1">col_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"longitude"</span></span>
-<span id="cb31-2">expectation_types_to_remove <span class="op" style="color: #5E5E5E;
+<span id="cb32-2">expectation_types_to_remove <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [</span>
-<span id="cb31-3">    <span class="st" style="color: #20794D;
+<span id="cb32-3">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"expect_column_min_to_be_between"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"expect_column_max_to_be_between"</span></span>
-<span id="cb31-4">]</span>
-<span id="cb31-5">col_expectations_w_type <span class="op" style="color: #5E5E5E;
+<span id="cb32-4">]</span>
+<span id="cb32-5">col_expectations_w_type <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [</span>
-<span id="cb31-6">    ex <span class="cf" style="color: #003B4F;
+<span id="cb32-6">    ex <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> ex <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> expectation_suite.get_column_expectations()</span>
-<span id="cb31-7">    <span class="cf" style="color: #003B4F;
+<span id="cb32-7">    <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> (ex[<span class="st" style="color: #20794D;
 background-color: null;
@@ -1738,15 +1722,15 @@ background-color: null;
 font-style: inherit;">"expectation_type"</span>] <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> expectation_types_to_remove)</span>
-<span id="cb31-8">]</span>
-<span id="cb31-9">col_expectations_w_type</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>[{"meta": {"profiler_details": {"metric_configuration": {"metric_name": "column.min", "domain_kwargs": {"column": "longitude"}, "metric_value_kwargs": null}, "num_batches": 162}}, "expectation_type": "expect_column_min_to_be_between", "kwargs": {"column": "longitude", "max_value": -87.81649552747085, "strict_min": false, "strict_max": false, "min_value": -87.91442843927047}},
- {"meta": {"profiler_details": {"metric_configuration": {"metric_name": "column.max", "domain_kwargs": {"column": "longitude"}, "metric_value_kwargs": null}, "num_batches": 162}}, "expectation_type": "expect_column_max_to_be_between", "kwargs": {"column": "longitude", "max_value": -87.5250941359867, "strict_min": false, "strict_max": false, "min_value": -87.5510612280602}}]</code></pre>
+<span id="cb32-8">]</span>
+<span id="cb32-9">col_expectations_w_type</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>[{"kwargs": {"column": "longitude", "strict_min": false, "min_value": -87.91442843927047, "strict_max": false, "max_value": -87.81649552747085}, "meta": {"profiler_details": {"metric_configuration": {"metric_name": "column.min", "domain_kwargs": {"column": "longitude"}, "metric_value_kwargs": null}, "num_batches": 162}}, "expectation_type": "expect_column_min_to_be_between"},
+ {"kwargs": {"column": "longitude", "strict_min": false, "min_value": -87.5510612280602, "strict_max": false, "max_value": -87.5250941359867}, "meta": {"profiler_details": {"metric_configuration": {"metric_name": "column.max", "domain_kwargs": {"column": "longitude"}, "metric_value_kwargs": null}, "num_batches": 162}}, "expectation_type": "expect_column_max_to_be_between"}]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="bu" style="color: null;
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -1759,15 +1743,15 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span>
-<span id="cb33-2"><span class="cf" style="color: #003B4F;
+<span id="cb34-2"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> expectation_to_remove <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> col_expectations_w_type:</span>
-<span id="cb33-3">    removed_expec <span class="op" style="color: #5E5E5E;
+<span id="cb34-3">    removed_expec <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> expectation_suite.remove_expectation(expectation_to_remove)</span>
-<span id="cb33-4"><span class="bu" style="color: null;
+<span id="cb34-4"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -1786,18 +1770,18 @@ Expectations after removal:    62</code></pre>
 </div>
 </div>
 <p>We can also get rid of every instance of an <code>Expectation</code> type.</p>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="bu" style="color: null;
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">f"Removing Expectation types:"</span>)</span>
-<span id="cb35-2"><span class="cf" style="color: #003B4F;
+<span id="cb36-2"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> expec_type <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">in</span> expectation_types_to_remove:</span>
-<span id="cb35-3">    <span class="bu" style="color: null;
+<span id="cb36-3">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -1808,7 +1792,7 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span>
-<span id="cb35-4"><span class="bu" style="color: null;
+<span id="cb36-4"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -1821,12 +1805,12 @@ background-color: null;
 font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span>
-<span id="cb35-5">removed_expecs <span class="op" style="color: #5E5E5E;
+<span id="cb36-5">removed_expecs <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> expectation_suite.remove_all_expectations_of_type(expectation_types<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>expectation_types_to_remove)</span>
-<span id="cb35-6"><span class="bu" style="color: null;
+<span id="cb36-6"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
@@ -1848,8 +1832,8 @@ Expectations after removal:    60</code></pre>
 </div>
 </div>
 <p>After reviewing and editing <code>Expectations</code>, the <code>Expectation Suite</code> must be committed to the <code>DataContext</code>.</p>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">saved_suite <span class="op" style="color: #5E5E5E;
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">saved_suite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1862,57 +1846,57 @@ font-style: inherit;">=</span>expectation_suite)</span></code></pre></div>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/checkpoint"><code>Checkpoint</code></a> configures the validation process for an <code>Expectation Suite</code>.</p>
 <p>Specifically, a <code>Checkpoint</code> defines: * the <code>Expectation Suite</code> to evaluate, * the data Batches to evaluate against, and * the actions to take after evaluation.</p>
 <p>We’ll take the actions of compiling a report of results and committing our <code>Checkpoint</code> to our <code>DataContext</code>, but you can also configure a <code>Checkpoint</code> to send results via a <a href="https://docs.greatexpectations.io/docs/guides/validation/validation_actions/actions_lp">email or Slack notification</a>.</p>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb38-1">checkpoint_name <span class="op" style="color: #5E5E5E;
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1">checkpoint_name <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_checkpoint"</span></span>
-<span id="cb38-2"></span>
-<span id="cb38-3">checkpoint <span class="op" style="color: #5E5E5E;
+<span id="cb39-2"></span>
+<span id="cb39-3">checkpoint <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gx.checkpoint.SimpleCheckpoint(</span>
-<span id="cb38-4">    name<span class="op" style="color: #5E5E5E;
+<span id="cb39-4">    name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>checkpoint_name,</span>
-<span id="cb38-5">    data_context<span class="op" style="color: #5E5E5E;
+<span id="cb39-5">    data_context<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>context,</span>
-<span id="cb38-6">    validations<span class="op" style="color: #5E5E5E;
+<span id="cb39-6">    validations<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[</span>
-<span id="cb38-7">        {</span>
-<span id="cb38-8">            <span class="st" style="color: #20794D;
+<span id="cb39-7">        {</span>
+<span id="cb39-8">            <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"batch_request"</span>: batch_request,</span>
-<span id="cb38-9">            <span class="st" style="color: #20794D;
+<span id="cb39-9">            <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"expectation_suite_name"</span>: expectation_suite_name,</span>
-<span id="cb38-10">        },</span>
-<span id="cb38-11">    ],</span>
-<span id="cb38-12">)</span>
-<span id="cb38-13">checkpoint_result <span class="op" style="color: #5E5E5E;
+<span id="cb39-10">        },</span>
+<span id="cb39-11">    ],</span>
+<span id="cb39-12">)</span>
+<span id="cb39-13">checkpoint_result <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> checkpoint.run()</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"8a3a69ed6a0b45f495df4f832f74629d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"0a22e12b43ef4f55845a492d39b17cd5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">context.build_data_docs()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1">context.build_data_docs()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>{'local_site': 'file:///home/matt/projects/blogs/quarto_blog/posts/006_great_expectations_setup/great_expectations/uncommitted/data_docs/local_site/index.html'}</code></pre>
 </div>
 </div>
 <p>To view the generated validation report (or <strong>Data Docs</strong>), open the file <code>.../great_expectations/uncommitted/data_docs/local_site/index.html</code> and select the validation run you want to review. You may have to click <code>Trust HTML</code> (upper left corner in Jupyterlab) to navigate the document.</p>
 <p><img src="https://www.matttriano.dev/posts/006_great_expectations_setup/data_docs_index.png" class="img-fluid" alt="Data docs index"> <img src="https://www.matttriano.dev/posts/006_great_expectations_setup/validation_run_data_docs_sample.png" class="img-fluid" alt="Sample view of a validation report"></p>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1">context.add_checkpoint(checkpoint<span class="op" style="color: #5E5E5E;
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1">context.add_checkpoint(checkpoint<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>checkpoint)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="23">
 <pre><code>{
   "action_list": [
     {
@@ -1956,48 +1940,48 @@ font-style: inherit;">=</span>checkpoint)</span></code></pre></div>
 </div>
 </div>
 <p>You can easily integrate a defined <code>Checkpoint</code> into a pipeline with just a few lines of code (and another dependency).</p>
-<div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb43-1"><span class="im" style="color: #00769E;
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb44-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> great_expectations <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> gx</span>
-<span id="cb43-2"></span>
-<span id="cb43-3">context <span class="op" style="color: #5E5E5E;
+<span id="cb44-2"></span>
+<span id="cb44-3">context <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gx.get_context(context_root_dir<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>PROJECT_DIR.joinpath(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"great_expectations"</span>))</span>
-<span id="cb43-4">retrieved_checkpoint <span class="op" style="color: #5E5E5E;
+<span id="cb44-4">retrieved_checkpoint <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> context.get_checkpoint(name<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"food_inspections_checkpoint"</span>)</span>
-<span id="cb43-5">retrieved_checkpoint_result <span class="op" style="color: #5E5E5E;
+<span id="cb44-5">retrieved_checkpoint_result <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> retrieved_checkpoint.run()</span>
-<span id="cb43-6"><span class="cf" style="color: #003B4F;
+<span id="cb44-6"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">not</span> retrieved_checkpoint_result[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"success"</span>]:</span>
-<span id="cb43-7">    <span class="bu" style="color: null;
+<span id="cb44-7">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">f"Failed Validation Checkpoint!"</span>)</span>
-<span id="cb43-8">    <span class="co" style="color: #5E5E5E;
+<span id="cb44-8">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># or raise Exception("if you'd rather handle validation failures that way")</span></span></code></pre></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ca5b46ec17f24040b23f9c2e405d54b3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"5893b105cdc145c5999fd752d2bfa2d7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>

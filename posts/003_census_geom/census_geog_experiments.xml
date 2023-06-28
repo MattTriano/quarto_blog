@@ -5,16 +5,16 @@
       xmlns:dc="http://purl.org/dc/elements/1.1/" 
       version="2.0">
 <channel>
-<title>Triano&#39;s Quarto Blog</title>
+<title>Matt Triano</title>
 <link>https://www.matttriano.dev/posts/003_census_geom/census_geog_experiments.html</link>
 <atom:link href="https://www.matttriano.dev/posts/003_census_geom/census_geog_experiments.xml" rel="self" type="application/rss+xml"/>
 <description>How to develop a post in a notebook</description>
 <image>
 <url>https://www.matttriano.dev/studious_robot.png</url>
-<title>Triano&#39;s Quarto Blog</title>
+<title>Matt Triano</title>
 <link>https://www.matttriano.dev/posts/003_census_geom/census_geog_experiments.html</link>
 </image>
 <generator>quarto-1.3.433</generator>
-<lastBuildDate>Tue, 27 Jun 2023 23:56:46 GMT</lastBuildDate>
+<lastBuildDate>Wed, 28 Jun 2023 00:24:11 GMT</lastBuildDate>
 </channel>
 </rss>
