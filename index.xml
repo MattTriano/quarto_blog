@@ -3643,15 +3643,12 @@ No matching items
 <section id="conda-installation" class="level2">
 <h2 class="anchored" data-anchor-id="conda-installation">Conda Installation</h2>
 <p><code>conda</code> is primarily installable via two distributions; the Anaconda distribution, which includes the <code>conda</code> executable along with over 700 additional conda packages from the Anaconda repository, and the Miniconda distribution, which consists of the <code>conda</code> executable with the minimal number of packages needed for <code>conda</code> to run. Install a miniconda distribution.</p>
-<ol type="1">
-<li>Download a <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> installer, copy the corresponding SHA256 hash, calculate the SHA256 hash of the downloaded file, and compare that value to the one copied from the download link page. If the values match exactly, proceed in installation.
-<ul>
-<li>For the miniconda version downloaded below, the SHA256 sum should be aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651</li>
-</ul></li>
-</ol>
+</section>
+</section>
+<section id="step-1.-download-a-miniconda-installer" class="level1">
+<h1>Step 1. Download a miniconda installer</h1>
+<p>Download a <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> installer, copy the corresponding SHA256 hash, calculate the SHA256 hash of the downloaded file, and compare that value to the one copied from the download link page. If the values match exactly, proceed in installation. * For the miniconda version downloaded below, the SHA256 sum should be aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651</p>
 <div class="cell" data-execution_count="1">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span>curl <span class="op" style="color: #5E5E5E;
@@ -3687,16 +3684,13 @@ background-color: null;
 font-style: inherit;">-</span>Linux<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span>x86_64.sh</span></code></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 69.7M  100 69.7M    0     0  75.9M      0 --:--:-- --:--:-- --:--:-- 75.8M</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="2">
-<details>
-<summary>Code</summary>
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span>sha256sum Miniconda3<span class="op" style="color: #5E5E5E;
@@ -3712,18 +3706,64 @@ background-color: null;
 font-style: inherit;">-</span>Linux<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span>x86_64.sh</span></code></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651  Miniconda3-py310_23.3.1-0-Linux-x86_64.sh</code></pre>
 </div>
 </div>
-<ol start="2" type="1">
-<li>Execute the installer.</li>
-</ol>
-
-
-
+<p>If the calculated hash matches the hash published on the miniconda installer link page, proceed.</p>
 </section>
+<section id="step-2.-execute-the-installer" class="level1">
+<h1>Step 2. Execute the installer</h1>
+<p>Run the installer via</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bash</span> Miniconda3-py310_23.3.1-0-Linux-x86_64.sh <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">(</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">or</span> whatever your version is<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div>
+<p>and respond to prompts as appropriate (go with defaults). After running <code>conda init</code>, run the command <code>source ~/.bashrc</code> to add the path to <code>conda</code> to your <code>$PATH</code> (or you can just open a new terminal window, <code>~/.bashrc</code> runs whenever you open a terminal).</p>
+</section>
+<section id="step-3.-install-the-libmamba-solver-and-set-it-as-the-default" class="level1">
+<h1>Step 3. Install the <code>libmamba</code> solver and set it as the default</h1>
+<p>The <code>libmamba</code> dependency solver is far faster than the regular <code>conda</code> solver, and in my experience, it has succeeded at nearly instantly resolving envs that the regular <code>conda</code> solver failed to resolve in hours. It’s great.</p>
+<p>Install it via</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> install <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> base conda-libmamba-solver</span></code></pre></div>
+<p>and set it as the default solver via</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--set</span> solver libmamba</span></code></pre></div>
+</section>
+<section id="step-4.-configure-conda-forge-as-the-priority-channel" class="level1">
+<h1>Step 4. Configure <strong>conda-forge</strong> as the priority channel</h1>
+<p>Conda-forge is the most complete channel and doesn’t allow package versions to be removed (so an env made purely of packages from the conda-forge channel will be reproducible).</p>
+<p>Run these commands to 1) prioritize the conda-forge channel and 2) force conda to only download packages from the highest priority channel.</p>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--add</span> channels conda-forge</span>
+<span id="cb8-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> config <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--set</span> channel_priority strict</span></code></pre></div>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This process should take no more than 5 minutes and it will give you a <code>conda</code> setup that avoids the common complaints (e.g., slow, unreproducible).</p>
+<p>To learn more about how <code>conda</code> installs packages, read <a href="https://conda.io/projects/conda/en/latest/user-guide/concepts/conda-performance.html#how-a-package-is-installed">this</a>.</p>
+
+
+
 </section>
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
