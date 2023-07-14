@@ -15,7 +15,551 @@
 <link>https://www.matttriano.dev/about.html</link>
 </image>
 <generator>quarto-1.3.433</generator>
-<lastBuildDate>Sat, 01 Jul 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 13 Jul 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>How to Manually Reproduce a Conda Env</title>
+  <dc:creator>Matt Triano</dc:creator>
+  <link>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="overview" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
+<p>This post will demonstrate how to reproduce an old conda env (that wasn’t exported to an <code>environment.yml</code> file at the time of analysis/usage) needed to rerun old analysis<sup>1</sup>.</p>
+</section>
+<section id="steps" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Steps</h1>
+<section id="step-0.-configure-conda" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="step-0.-configure-conda"><span class="header-section-number">2.1</span> Step 0. Configure conda</h2>
+<p>Install conda and configure it as shown in steps 3 &amp; 4 <a href="../../posts/000_setting_up_miniconda/Setting_up_Miniconda.html">here</a>.</p>
+</section>
+<section id="step-1.-determine-packages-used-in-the-old-work" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="step-1.-determine-packages-used-in-the-old-work"><span class="header-section-number">2.2</span> Step 1. Determine packages used in the old work</h2>
+<p>Look at the old analysis and any available metadata to determine:</p>
+<ol type="1">
+<li>When was the analysis run?</li>
+<li>What packages were used?</li>
+</ol>
+<p>For this demonstration, I’m reproducing an env I used to analyze crime and prison data back in 2018. Specifically, I want to produce an env that enables me to rerun these notebooks:</p>
+<ul>
+<li><a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part1.ipynb">Crime and Prisons part 1</a></li>
+<li><a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part2.ipynb">Crime and Prisons part 2</a></li>
+<li><a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part3.ipynb">Crime and Prisons part 3</a></li>
+</ul>
+<section id="determining-when-the-analysis-was-run" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="determining-when-the-analysis-was-run"><span class="header-section-number">2.2.1</span> Determining when the analysis was run</h3>
+<p>Looking at the latest commits for these notebooks, we can set an upper bound on versions used. The latest commits for these notebooks are:</p>
+<ul>
+<li>Part 1: June 26, 2018</li>
+<li>Part 2: Aug 16, 2018</li>
+<li>Part 3: June 15, 2018</li>
+</ul>
+<p>From the sidequest described in Section&nbsp;4.1.1, I’ve decided on using June 15, 2018 as the upper-bound date for analysis.</p>
+</section>
+<section id="determining-used-packages" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="determining-used-packages"><span class="header-section-number">2.2.2</span> Determining used packages</h3>
+<p>For this, I simply look at the <code>import</code> statements, which are compiled below.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> seaborn <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> sns</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.ticker <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> ticker</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.core.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> display, HTML</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.sampledata.us_states <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> data <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> states</span>
+<span id="cb1-9"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.plotting <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> figure, show, output_notebook</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.models <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> HoverTool, ColumnDataSource</span>
+<span id="cb1-11"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.models <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> LinearColorMapper, ColorBar, BasicTicker</span></code></pre></div>
+<p>This boils down to [<code>pandas</code>, <code>numpy</code>, <code>seaborn</code>, <code>matplotlib</code>, <code>IPython</code>, and <code>bokeh</code>] (there’s also <code>os</code>, but that’s a python built-in).</p>
+</section>
+</section>
+<section id="step-2.-determine-max-versions-at-analysis-time" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="step-2.-determine-max-versions-at-analysis-time"><span class="header-section-number">2.3</span> Step 2. Determine max versions at analysis-time</h2>
+<p>First, I want to determine the version of python to use. Looking at the <a href="https://en.wikipedia.org/wiki/History_of_Python#Table_of_versions">release dates</a> of python versions, we see that python v3.6 was released on 2016-12-23 and python v3.7 was released on 2018-06-27, so the it’s most likely that python v3.6 was used.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Corroboration">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Corroboration
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Looking at the <a href="https://raw.githubusercontent.com/MattTriano/personal_site_public/master/Crime_and_Prisons_part2.ipynb">raw file</a>, specifically a few lines from the very bottom of the document, the <code>metadata</code> block indicates the kernel used python v3.6.4</p>
+</div>
+</div>
+</div>
+<p>Next, I want to determine max versions for <code>pandas</code>, <code>numpy</code>, <code>seaborn</code>, <code>matplotlib</code>, <code>IPython</code>, and <code>bokeh</code>. I know <code>pandas</code> uses <code>numpy</code> and <code>seaborn</code> uses <code>matplotlib</code>, so I can ignore <code>numpy</code> and <code>matplotlib</code>.</p>
+<p>I’ll look at each package’s <strong>releases</strong> page to see the last version before the cutoff date.</p>
+<ul>
+<li><a href="https://github.com/pandas-dev/pandas/releases"><code>pandas</code></a>: <a href="https://github.com/pandas-dev/pandas/releases/tag/v0.24.2">v0.24.2</a></li>
+<li><a href="https://github.com/mwaskom/seaborn/releases"><code>seaborn</code></a>: <a href="https://github.com/mwaskom/seaborn/releases/tag/v0.8.1">v0.8.1</a></li>
+<li><a href="https://github.com/bokeh/bokeh/tags"><code>bokeh</code></a>: <a href="https://github.com/bokeh/bokeh/releases/tag/0.12.16">v0.12.16</a></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Corroboration">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Corroboration
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Looking at the <a href="https://raw.githubusercontent.com/MattTriano/personal_site_public/master/Crime_and_Prisons_part2.ipynb">raw file</a>, specifically by ctrl+f searching “version”, we see that bokeh v0.12.16 was used.</p>
+</div>
+</div>
+</div>
+<p>Also, <code>IPython</code> was included as it’s a dependency of the (jupyter) <code>notebook</code> package (which I used to develop the notebooks). There will probably be several other infrastructural</p>
+<ul>
+<li><a href="https://github.com/jupyter/notebook/releases">jupyter <code>notebook</code></a>: <a href="https://github.com/jupyter/notebook/releases/tag/5.5.0">v5.5.0</a></li>
+</ul>
+</section>
+<section id="step-3.-create-the-env-and-register-it-as-a-notebook-kernel" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="step-3.-create-the-env-and-register-it-as-a-notebook-kernel"><span class="header-section-number">2.4</span> Step 3. Create the env and register it as a notebook kernel</h2>
+<p>From the prior step, we determined the following version constraints.</p>
+<ul>
+<li><code>python=3.6.4</code></li>
+<li><code>pandas&lt;=0.24.2</code></li>
+<li><code>seaborn&lt;=0.8.1</code></li>
+<li><code>bokeh==0.12.16</code></li>
+<li><code>notebook&lt;=5.5.0</code></li>
+</ul>
+<p>I’ll run the command below to create a conda env named <strong>prisons_post_env</strong> that meets those constraints.</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> create <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--name</span> prisons_post_env <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"python=3.6.4"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pandas&lt;=0.24.2"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"seaborn&lt;=0.8.1"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bokeh=0.12.16"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"notebook&lt;=5.5.0"</span></span></code></pre></div>
+<p>Activate that conda env</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> activate prisons_post_env</span></code></pre></div>
+<p>and register that conda env as a <a href="https://stackoverflow.com/questions/39604271/conda-environments-not-showing-up-in-jupyter-notebook">notebook kernel</a></p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">(</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">prisons_post_env</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">)</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">...$</span> python <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> ipykernel install <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--user</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--name</span> prisons_post_env <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--display-name</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(prisons_post_env)"</span></span></code></pre></div>
+</section>
+<section id="step-4.-attempt-to-reproduce-prior-results-and-troubleshoot-issues" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="step-4.-attempt-to-reproduce-prior-results-and-troubleshoot-issues"><span class="header-section-number">2.5</span> Step 4. Attempt to reproduce prior results and troubleshoot issues</h2>
+<p>Now you can start up a notebook server (I’ve specified a port number as I’m already running a jupyterlab server on the default port, <code>8888</code>)</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">jupyter</span> notebook <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--port</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>9494</span></code></pre></div>
+<section id="troubleshooting-1" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="troubleshooting-1"><span class="header-section-number">2.5.1</span> Troubleshooting 1</h3>
+<p>While trying to open up the part 2 notebook, the connection attempt hung and the terminal showed an error.</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">...</span>
+<span id="cb6-2"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~/</span>miniconda3<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>envs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>prisons_post_env<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>lib<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>python3<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.6</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>site<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>packages<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>notebook<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>base<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>zmqhandlers.py:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">284</span>:  <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">RuntimeWarning</span>: coroutine <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'WebSocketHandler.get'</span> was never awaited</span></code></pre></div>
+<p>Googling the error took me to a <a href="https://stackoverflow.com/questions/54963043/jupyter-notebook-no-connection-to-server-because-websocket-connection-fails">Stack Overflow question</a> that indicates package <code>tornado</code> v6+ caused the issue, so let’s downgrade <code>tornado</code> in our env</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">(</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">prisons_post_env</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">)</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">...$</span> conda install <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-c</span> conda-forge <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tornado&lt;6"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--freeze-installed</span></span></code></pre></div>
+<p>then restart our notebook server (press ctrl+c in the terminal, shut it down, then start it back up with the earlier <code>jupyter notebook</code> command). When you reopen the <code>Crime_and_Prisons_part2.ipynb</code> notebook, you should find that it successfully connects to the kernel and you can run through cells. At least up until cell that calls the <code>plot_male_v_female_by_state_sea()</code> function.</p>
+</section>
+<section id="troubleshooting-2" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="troubleshooting-2"><span class="header-section-number">2.5.2</span> Troubleshooting 2</h3>
+<p>Upon attempting to run that cell, you will see another error message.</p>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~/</span>miniconda3<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>envs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>prisons_post_env<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>lib<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>python3<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.6</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>site<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>packages<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>matplotlib<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>artist.py <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> update(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>, props)</span>
+<span id="cb8-2">...</span>
+<span id="cb8-3"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">AttributeError</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rectangle'</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">object</span> has no <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">property</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'normed'</span></span></code></pre></div>
+<p>After a few minutes of googling the error message along with the word <strong>matplotlib</strong>, I’ve determined that the problem is that the installed <strong>seaborn</strong> version’s <code>distplot()</code> function calls matplotlib’s <code>hist()</code> plotter function using a keyword argument, <code>normed</code>, that was <a href="https://matplotlib.org/3.2.0/api/api_changes.html#removals">changed</a> in the matplotlib v3.2.0 release. And by running this</p>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib</span>
+<span id="cb9-2">matplotlib.__version__</span></code></pre></div>
+<p>I see this env has matplotlib v3.3.2 installed. So let’s downgrade matplotlib.</p>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">(</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">prisons_post_env</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">)</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">...$</span> conda install <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-c</span> conda-forge <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"matplotlib&lt;3.2"</span></span></code></pre></div>
+<p>Looking at the installation plan, I see that conda wants to upgrade a lot of packages in violation of the earlier constraints. I also tried adding the <code>--freeze-installed</code> option, but conda still wanted to make updates including these.</p>
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">bokeh</span>                                      0.12.16-py36_0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 2.3.3-py36h5fab9bb_0</span>
+<span id="cb11-2">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">notebook</span>                                     5.5.0-py36_0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 6.3.0-py36h5fab9bb_0</span>
+<span id="cb11-3">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">pandas</span>                              0.24.2-py36hb3f55d8_1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 1.1.5-py36h284efc9_0</span>
+<span id="cb11-4">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">python</span>                                            3.6.4-0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 3.6.15-hb7a2778_0_cpython</span>
+<span id="cb11-5">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">seaborn</span>                                        0.8.1-py_1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 0.11.2-hd8ed1ab_0</span>
+<span id="cb11-6">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tornado</span>                           5.1.1-py36h14c3975_1000 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> 6.1-py36h8f6f2f9_1</span>
+<span id="cb11-7">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">...</span></span></code></pre></div>
+<p>So let’s just completely remove and remake the env with all of our constraints, old and new.</p>
+<p>After shutting down the jupyter notebook server and ensuring the env is not activated in any open terminal, remove the env directory</p>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-r</span> ~/miniconda3/envs/prisons_post_env/</span></code></pre></div>
+<p>then recreate the env with our additional constraints. Through a fair bit of trial and error, I determined that one of my preferred configs (namely prioritizing the conda-forge channel) was making it impossible to reconcile these constraints, so I overrode the configured channels in favor of the default channel that I was probably using 5 years ago. I’ll also add on the <code>xlrd</code> package, as the part3 notebook loads a <code>.xls</code> file.</p>
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> create <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--name</span> prisons_post_env <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--override-channels</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--channel</span> defaults <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"python=3.6.4"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pandas&lt;=0.24.2"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"seaborn&lt;=0.8.1"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bokeh=0.12.16"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"notebook&lt;=5.5.0"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tornado&lt;6"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"matplotlib=2.2.2"</span> xlrd</span></code></pre></div>
+<p>Then activate and re-register the env</p>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> activate prisons_post_env</span>
+<span id="cb14-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">(</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">prisons_post_env</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">)</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">...$</span> python <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> ipykernel install <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--user</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--name</span> prisons_post_env <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--display-name</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(prisons_post_env)"</span></span></code></pre></div>
+<p>and restart the notebook server.</p>
+<p>Now all three of those old notebooks can be run successfully (after collecting and locating the data in the right places).</p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Why did changing the conda channel make the dependencies solvable?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why did changing the conda channel make the dependencies solvable?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>You may wonder “How could changing the package source (aka ‘channel’) make the env solvable? The package versions were the same!”</p>
+<p>That’s a good observation and intuition! If converting a python package into a conda package was impossible to mess up, there wouldn’t be any difference in conda packages for a given python package version across channels. But conda isn’t just a tool for packaging python code; it’s a tool for <a href="https://conda.io/projects/conda/en/latest/user-guide/concepts/packages.html#what-is-a-conda-package">packaging and distributing any executable</a>, and that often means instructions for building the package and for resolving dependencies are needed. In essence, you need a recipe for making the package. In conda terms, that recipe is a package’s <a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html#editing-the-meta-yaml-file">meta.yaml</a> file, and the file provides places to point to build scripts and <a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/building-conda-packages.html#edit-the-skeleton-files">define dependencies</a>. Each conda channel is maintained separately, so each can have different meta.yaml file for a given python package version. Consequently, if dependencies are inconsistent across channels, an env that’s consistent when pulling exclusively from one channel may be unresolvable when pulling exclusively from another channel.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="step-5.-export-the-env" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="step-5.-export-the-env"><span class="header-section-number">2.6</span> Step 5. Export the env</h2>
+<p>Now that we have a working env, let’s export both the full specification and a cross-platform specification (which only includes the explicitly requested packages).</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>conda env export <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>n prisons_post_env <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> environment.yml</span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>conda env export <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>n prisons_post_env <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">--</span><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>history <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> environment_cross_platform.yml</span></code></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="summary" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Summary</h1>
+<p>This post showed how to reverse engineer the conda env that was used to run old notebooks.</p>
+<p>This post also showed a concrete example of a valid conda env seeming inconsistent due to conda weirdness, as well as a troubleshooting strategy (albeit not a very generalizable one) for resolving the problem.</p>
+</section>
+<section id="appendix" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Appendix</h1>
+<section id="side-projects" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="side-projects"><span class="header-section-number">4.1</span> Side Projects</h2>
+<p>While working through technical projects, little problems tangential to the main task often pop out and block progress. Often these side quests can be ignored, but</p>
+<section id="sec-side-project-1" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="sec-side-project-1"><span class="header-section-number">4.1.1</span> git diff side project</h3>
+<p>I don’t recall why I updated Parts 1 and 2 after Part 3. I doubt I made substantive changes, but as I’m using metadata of git commits to determine changes, it only makes sense to look at the diffs. Unfortunately, while github indicates a relatively small number of lines were modified, the diffs are too large to display in browser and I have to review in a locally to see the diffs.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>This is a well-known drawback of jupyter notebooks; plots get represented by very long plaintext strings and rerunning a notebook often changes every line in version control, so diffs can be hard to review).</p>
+</div>
+</div>
+</div>
+<p>So I cloned the repo, copied down the hash of the commit I’m interested in (commit 0857e6c), and looked at the diffs of that file in that commit via</p>
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> diff 0857e6c^..0857e6c <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--</span> Crime_and_Prisons_part2.ipynb</span></code></pre></div>
+<p>Most of the changes only changed the cell execution-order number or <code>uuid</code>-looking tags. There may also have been changes to the extremely long string representations used to render plots, but they were too long to crosscheck. In fact, those long strings took so long to page through that I stopped reviewing that way and just compared the rendered notebooks (<a href="https://github.com/MattTriano/personal_site_public/blob/04f1224f085a38f32ff58c8719dd31b7a09c3fbc/Crime_and_Prisons_part2.ipynb">pre-commit</a> vs <a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part2.ipynb">commit</a>) and concluded there weren’t any substantive changes, so the timestamp from the earlier commit is adequate.</p>
+</section>
+</section>
+<section id="footnotes" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="footnotes"><span class="header-section-number">4.2</span> Footnotes</h2>
+
+
+
+</section>
+</section>
+
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Context: Over the years, I’ve writen up a number of posts for a number of different personal blogs, and I want to consolidate those posts into one platform. Many of my posts involved leveraging the capabilities of jupyter notebooks, and while I’ve always used conda envs to avoid polluting my base python environment, I didn’t reliably export my envs or keep separate envs for each project or purpose. So I occassionally run into a situation where I want to rerun old code on a new machine, but I have to go through extra steps to recreate the env.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>conda</category>
+  <category>tutorial</category>
+  <category>howto</category>
+  <guid>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</guid>
+  <pubDate>Thu, 13 Jul 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://www.matttriano.dev/posts/009_reproducing_a_conda_env/imgs/detective_reverse_engineering_conda_envs.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
 <item>
   <title>Midjourney Experiments</title>
   <dc:creator>Matt Triano</dc:creator>
@@ -103,12 +647,12 @@
 <h2 class="anchored" data-anchor-id="aspect-ratio">Aspect Ratio</h2>
 <p>The desired aspect ratio for an image.</p>
 <ul>
-<li>Parameter: <code>--ar l:w</code> or <code>--aspect l:w</code> (where <code>l</code> is length and <code>w</code> is width)</li>
+<li>Parameter: <code>--ar l:w</code> or <code>--aspect w:h</code> (where <code>w</code> is width <code>h</code> is height)</li>
 <li>Examples:
 <ul>
 <li><code>--ar 1:1</code> (square, default)</li>
-<li><code>--ar 16:9</code> (good for stories; typical phone screen aspect ratio)</li>
-<li><code>--ar 1.91:1</code> (good for covers or landscapes)</li>
+<li><code>--ar 9:16</code> (good for stories; typical phone screen aspect ratio)</li>
+<li><code>--ar 19:10</code> (good for covers or landscapes)</li>
 <li><code>--ar 4:5</code> (good for portraits)</li>
 </ul></li>
 </ul>
@@ -147,6 +691,10 @@
 <section id="papercut" class="level2">
 <h2 class="anchored" data-anchor-id="papercut">Papercut</h2>
 <p><img src="https://www.matttriano.dev/posts/007_midjourney_experiments/papercut_prompt.png" class="img-fluid"></p>
+</section>
+<section id="in-the-style-of" class="level2">
+<h2 class="anchored" data-anchor-id="in-the-style-of">In the style of …</h2>
+<p><img src="https://www.matttriano.dev/posts/007_midjourney_experiments/imgs/in_the_style_of_van_gogh_art_deco.png" class="img-fluid"></p>
 <p>I’ll keep adding to the <strong>Neat Prompt Tags</strong> section.</p>
 </section>
 </section>
@@ -177,7 +725,7 @@ No matching items
 <li id="fn6"><p>In late 2020, DeepMind (a subsidiary of Alphabet) <a href="https://web.archive.org/web/20201210212032/https://predictioncenter.org/casp14/doc/presentations/2020_12_01_TS_predictor_AlphaFold2.pdf">announced AlphaFold2</a> a reengineered version of their protein-structure prediction system, which uses transformers to predict <a href="https://www.nature.com/articles/s41586-021-03819-2">much more accurate</a> representations of proteins. Understanding the molecular structure of complex proteins makes it possible to determine what molecular groups are exposed on the outer surface of the molecule, which is useful as only those exposed groups can interact with groups on other molecules.↩︎</p></li>
 <li id="fn7"><p>In late 2020, <a href="https://web.archive.org/web/20201122014832/https://uberduck.ai/">uberduck.ai</a> introduced a text-to-speech generation service and (per Uberduck copy) over 5000 voice models that can be used to generate speech from text. In early to mid 2021, this platform gained some press when users started generating not-quite-passable tracks with different rapper voice models.↩︎</p></li>
 <li id="fn8"><p>Hugging created <a href="https://huggingface.co/spaces">spaces</a> where users could host small AI applications using existing transformer models on their platform.↩︎</p></li>
-<li id="fn9"><p>assuming the use is not for commercial purposes by a company earning over $1M in gross refenue per year, which must purchase the Pro ($60/mo) or Mega ($120/mo) plan. <a href="https://docs.midjourney.com/docs/plans">Source</a>↩︎</p></li>
+<li id="fn9"><p>assuming the use is not for commercial purposes by a company earning over $1M in gross refenue per year, which must purchase the Pro (\$60/mo) or Mega (\$120/mo) plan. <a href="https://docs.midjourney.com/docs/plans">Source</a>↩︎</p></li>
 <li id="fn10"><p>A <a href="https://web.archive.org/web/20230629095344/https://www.theverge.com/2023/1/16/23557098/generative-ai-art-copyright-legal-lawsuit-stable-diffusion-midjourney-deviantart">lawsuit</a>↩︎</p></li>
 </ol>
 </section></div> ]]></description>
