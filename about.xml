@@ -4506,5 +4506,1179 @@ No matching items
   <pubDate>Fri, 22 Jul 2022 00:00:00 GMT</pubDate>
   <media:content url="https://www.matttriano.dev/posts/000_setting_up_miniconda/interested_conda.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
+<item>
+  <title>Exploration in Criminal Justice and Corrections Data, Part 1</title>
+  <dc:creator>Matt Triano</dc:creator>
+  <link>https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="exploration-in-criminal-justice-and-corrections-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Exploration in Criminal Justice and Corrections Data <a id="0"></a></h1>
+<p>I’ve repeatedly read the statistic that the US makes up around 4% of the global population, but makes up more than 20% of the prison population. Well defined questions are crucial tools for making sense of raw data, and this massive asymmetry is provokes some important questions, such as those listed below.</p>
+<ul>
+<li><p>Why isn’t our prison population proportional to our regular population?</p>
+<ul>
+<li>Do other countries have fewer criminals?</li>
+<li>Do we have a drastically different approach to criminal justice than the rest of the world?</li>
+<li>Are our prison sentances just much longer?</li>
+</ul></li>
+<li><p>What are the most common crimes?</p>
+<ul>
+<li>How many people are in for those crimes?</li>
+</ul></li>
+<li><p>How many people enter the prison system each month?</p>
+<ul>
+<li>How many exit?</li>
+</ul></li>
+<li><p>Recidivism</p>
+<ul>
+<li>How many prisoners have been to prison at least once before?</li>
+<li>What is the recidivism rate for 1st time prisoners who served in public prisons?</li>
+<li>And for private prisons?</li>
+<li>Which prisons have the lowest recidivism rates?</li>
+</ul></li>
+</ul>
+<section id="table-of-contents" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="table-of-contents"><span class="header-section-number">1.1</span> Table of Contents</h2>
+<ol type="1">
+<li>Exploration in Criminal Justice and Corrections Data<br></li>
+<li>Datasets<br></li>
+<li>Total Imprisonment Rates<br> 3a. Observations<br></li>
+<li>Imprisonment by Race<br> 4a. Observations<br></li>
+<li>Imprisonment by Gender<br> 5a. Observations<br></li>
+<li>To Be Continued<br></li>
+</ol>
+</section>
+<section id="datasets" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="datasets"><span class="header-section-number">1.2</span> Datasets <a id="1"></a></h2>
+<p>With some questions in hand, I can start trying to gather data that could shed light on the situation. I may not be able to get data with the resolution needed to answer some of these questions (eg I may not be able to find data broken down by month).</p>
+<p>The government makes some data publicly available. While government data is rarely current, often involves a bit of cleanup, and always involves hunting through old government sites, it’s the only source for much of this extremely valuable information. From the Bureau of Justice Statistics, I found a government project called the <a href="https://www.bjs.gov/index.cfm?ty=pbse&amp;sid=40">Prisoner Series</a> and I downloaded the <a href="http://www.bjs.gov/index.cfm?ty=pbdetail&amp;iid=6187">most recent data</a>.</p>
+<div class="cell" data-execution_count="21">
+<details>
+<summary>Imports, styling, and path definition</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> urllib.request <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> urlretrieve</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> seaborn <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> sns</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-8"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.ticker <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> ticker</span>
+<span id="cb1-9"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.core.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> display, HTML</span>
+<span id="cb1-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>matplotlib inline</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Notebook Styling</span></span>
+<span id="cb1-13">pd.options.display.float_format <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.5f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> x</span>
+<span id="cb1-14">pd.options.display.max_columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span></span>
+<span id="cb1-15">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'figure.figsize'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"></span>
+<span id="cb1-18">DATA_DIR_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'data'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'prison'</span>)</span>
+<span id="cb1-19">os.makedirs(DATA_DIR_PATH, exist_ok<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@ticker.FuncFormatter</span></span>
+<span id="cb1-22"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">def</span> y_formatter(x, pos):</span>
+<span id="cb1-23">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:4.0f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>)</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="total-imprisonment-rates-table-p16f01" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="total-imprisonment-rates-table-p16f01"><span class="header-section-number">1.3</span> Total Imprisonment Rates (Table p16f01) <a id="2"></a></h2>
+<p>The values in the by-race dataset are [per 100k population].</p>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Downloading the relevant data and unzipping it</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> zipfile</span>
+<span id="cb2-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> requests</span>
+<span id="cb2-3"></span>
+<span id="cb2-4">url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://bjs.ojp.gov/redirect-legacy/content/pub/sheets/p16.zip"</span></span>
+<span id="cb2-5">file_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(DATA_DIR_PATH, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p16.zip"</span>)</span>
+<span id="cb2-6">headers <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb2-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"User-Agent"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"</span></span>
+<span id="cb2-8">}</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">not</span> os.path.isfile(file_path):</span>
+<span id="cb2-11">    response <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> requests.get(url, headers<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>headers, stream<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> response.status_code <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>:</span>
+<span id="cb2-13">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">open</span>(file_path, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"wb"</span>) <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">file</span>:</span>
+<span id="cb2-14">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> chunk <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> response.iter_content(chunk_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>):</span>
+<span id="cb2-15">                <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> chunk:</span>
+<span id="cb2-16">                    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">file</span>.write(chunk)</span>
+<span id="cb2-17"></span>
+<span id="cb2-18">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> zipfile.ZipFile(file_path, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>) <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> zf:</span>
+<span id="cb2-19">        zf.extractall(DATA_DIR_PATH)</span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="13">
+<details>
+<summary>Loading and preprocessing the f01 dataset, Total Counts</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">CSV_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'data'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'prison'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'p16f01.csv'</span>)</span>
+<span id="cb3-2">total_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(CSV_PATH, encoding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'latin1'</span>, header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>, index_col<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, parse_dates<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>])</span>
+<span id="cb3-3">total_df.dropna(inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb3-4">total_df.index <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> total_df.index.values.astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(total_df.shape)</span>
+<span id="cb4-2">total_df.head()</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(39, 2)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">All ages</th>
+<th data-quarto-table-cell-role="th">Age 18 or older</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1978</td>
+<td>131.00000</td>
+<td>183.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1979</td>
+<td>133.00000</td>
+<td>185.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1980</td>
+<td>138.00000</td>
+<td>191.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1981</td>
+<td>153.00000</td>
+<td>211.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1982</td>
+<td>170.00000</td>
+<td>232.00000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Plotting out the f01 data</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb6-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb6-3">    ax.plot(total_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'All ages'</span>])</span>
+<span id="cb6-4">    ax.plot(total_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Age 18 or older'</span>])</span>
+<span id="cb6-5">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Imprisonment Rates (table: p16f01)'</span>)</span>
+<span id="cb6-6">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>)</span>
+<span id="cb6-7">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'People imprisoned (per relevant 100k US population)'</span>)</span>
+<span id="cb6-8">    ax.legend()</span>
+<span id="cb6-9">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>([total_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'All ages'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), </span>
+<span id="cb6-10">                             total_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Age 18 or older'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()])])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="observations" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="observations"><span class="header-section-number">1.4</span> Observations <a id="3"></a></h2>
+<p>The imprisonment rate normalized to the entire population of US residents is lower than the imprisonment rate normalized to the population of US residents that are 18 or older. This indicates that the imprisonment rate for people under age 18 is much lower than for people 18 or older. That fits with my intuition.</p>
+<p>We also see that the imprisonment rate climbs steadily from 1980 up through 1999, dips, and peaks around 2007-2008, at which point it starts trending down. In 1978, 183 people were in prison per every 100k US residents 18 or older. In 2007, 670 people were in prison per every 100k US residents 18 or older. That’s a 266% increase in the imprisonment rate over that 29 year span. That’s huge.</p>
+<section id="new-questions" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="new-questions"><span class="header-section-number">1.4.1</span> New Questions:</h3>
+<ul>
+<li>What was responsible for the increase in the rate of imprisonment? What was responsible for the decrease?
+<ul>
+<li>Was it proportional to the actual crime rates?</li>
+<li>Was it a product of different enforcement policies?</li>
+</ul></li>
+</ul>
+<p>To answer these new questions, we will probably have to look at other sets of data.</p>
+</section>
+</section>
+<section id="imprisonment-by-race-table-p16f02" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="imprisonment-by-race-table-p16f02"><span class="header-section-number">1.5</span> Imprisonment by Race (Table p16f02) <a id="4"></a></h2>
+<p>Imprisonment rate of sentenced prisoners under the jurisdiction of state or federal correctional authorities, per 100,000 U.S. residents age 18 or older, by race and Hispanic origin, December 31, 2006–2016</p>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Loading and preprocessing the f02 data, Counts by Race</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">CSV_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'data'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'prison'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'p16f02.csv'</span>)</span>
+<span id="cb7-2">race_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(CSV_PATH, encoding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'latin1'</span>, header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb7-3">race_df.dropna(inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb7-4">race_df.rename(columns<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Unnamed: 0'</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>}, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb7-5">race_df.set_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb7-6">race_df</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">White/*</th>
+<th data-quarto-table-cell-role="th">Black/*</th>
+<th data-quarto-table-cell-role="th">Hispanic</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2006</td>
+<td>324.00000</td>
+<td>2261.00000</td>
+<td>1073.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2007</td>
+<td>317.00000</td>
+<td>2233.00000</td>
+<td>1094.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2008</td>
+<td>316.00000</td>
+<td>2196.00000</td>
+<td>1057.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2009</td>
+<td>308.00000</td>
+<td>2134.00000</td>
+<td>1060.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2010</td>
+<td>307.00000</td>
+<td>2059.00000</td>
+<td>1014.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2011</td>
+<td>299.00000</td>
+<td>1973.00000</td>
+<td>990.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2012</td>
+<td>293.00000</td>
+<td>1873.00000</td>
+<td>949.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2013</td>
+<td>291.00000</td>
+<td>1817.00000</td>
+<td>922.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2014</td>
+<td>289.00000</td>
+<td>1754.00000</td>
+<td>893.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2015</td>
+<td>281.00000</td>
+<td>1670.00000</td>
+<td>862.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2016</td>
+<td>274.00000</td>
+<td>1608.00000</td>
+<td>856.00000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<details>
+<summary>Plotting out the f02 data, Counts by Race</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb8-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb8-3">    ax.plot(race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White/*'</span>])</span>
+<span id="cb8-4">    ax.plot(race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black/*'</span>])</span>
+<span id="cb8-5">    ax.plot(race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>])</span>
+<span id="cb8-6">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Imprisonment Rates by Race (table: p16f02)'</span>)</span>
+<span id="cb8-7">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>)</span>
+<span id="cb8-8">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'People imprisoned (per 100k US population)'</span>)</span>
+<span id="cb8-9">    ax.legend()</span>
+<span id="cb8-10">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>([race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), </span>
+<span id="cb8-11">                         race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), </span>
+<span id="cb8-12">                         race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()])])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="19">
+<details>
+<summary>Printing out summary stats for f02 data, Counts by Race</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> imprisonment per 100k US pop: max: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, min: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb9-2">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White/*'</span>, race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>()))</span>
+<span id="cb9-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> imprisonment per 100k US pop: max: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, min: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb9-4">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black/*'</span>, race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black/*'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>()))</span>
+<span id="cb9-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> imprisonment per 100k US pop: max: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">, min: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb9-6">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>, race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), race_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>()))</span>
+<span id="cb9-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'*: non-Hispanic'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> White/* imprisonment per 100k US pop: max: 324.0, min: 274.0
+ Black/* imprisonment per 100k US pop: max: 2261.0, min: 1608.0
+Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
+*: non-Hispanic</code></pre>
+</div>
+</div>
+</section>
+<section id="observations-1" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="observations-1"><span class="header-section-number">1.6</span> Observations <a id="5"></a></h2>
+<p>This is very striking. We see that there is a very significant difference in the rates of white (non-Hispanic), black (non-Hispanic), and Hispanic imprisonment. We also see that rates for all three have dropped over this time period.</p>
+<section id="new-questions-1" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="new-questions-1"><span class="header-section-number">1.6.1</span> New Questions:</h3>
+<ul>
+<li>What is responsible for this difference in imprisonment rates for different demographic groups?</li>
+</ul>
+<p>Based on prior research, I suspect that this is the result of many systemic factors, but let’s continue exploring the data.</p>
+</section>
+</section>
+<section id="breakdown-by-gender-table-p16t01" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="breakdown-by-gender-table-p16t01"><span class="header-section-number">1.7</span> Breakdown by Gender (Table p16t01) <a id="6"></a></h2>
+<div class="cell" data-execution_count="22">
+<details>
+<summary>Loading and preprocessing the t01 data, Total Counts by Gender and State/Federal</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">CSV_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'data'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'prison'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'p16t01.csv'</span>)</span>
+<span id="cb11-2">sex_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(CSV_PATH, encoding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'latin1'</span>, header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>, thousands<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r','</span>)</span>
+<span id="cb11-3">sex_df.dropna(inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, thresh<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb11-4">sex_df.dropna(inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, thresh<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb11-5">sex_df.dropna(inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-6">fix <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: x.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/'</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb11-7">sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(fix)</span>
+<span id="cb11-8">sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb11-9">sex_df.set_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-10">sex_df</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Total</th>
+<th data-quarto-table-cell-role="th">Federal/a</th>
+<th data-quarto-table-cell-role="th">State</th>
+<th data-quarto-table-cell-role="th">Male</th>
+<th data-quarto-table-cell-role="th">Female</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2006</td>
+<td>1568674.00000</td>
+<td>193046.00000</td>
+<td>1375628.00000</td>
+<td>1456366.00000</td>
+<td>112308.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2007</td>
+<td>1596835.00000</td>
+<td>199618.00000</td>
+<td>1397217.00000</td>
+<td>1482524.00000</td>
+<td>114311.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2008</td>
+<td>1608282.00000</td>
+<td>201280.00000</td>
+<td>1407002.00000</td>
+<td>1493670.00000</td>
+<td>114612.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2009</td>
+<td>1615487.00000</td>
+<td>208118.00000</td>
+<td>1407369.00000</td>
+<td>1502002.00000</td>
+<td>113485.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2010</td>
+<td>1613803.00000</td>
+<td>209771.00000</td>
+<td>1404032.00000</td>
+<td>1500936.00000</td>
+<td>112867.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2011</td>
+<td>1598968.00000</td>
+<td>216362.00000</td>
+<td>1382606.00000</td>
+<td>1487561.00000</td>
+<td>111407.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2012</td>
+<td>1570397.00000</td>
+<td>217815.00000</td>
+<td>1352582.00000</td>
+<td>1461625.00000</td>
+<td>108772.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2013</td>
+<td>1576950.00000</td>
+<td>215866.00000</td>
+<td>1361084.00000</td>
+<td>1465592.00000</td>
+<td>111358.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2014</td>
+<td>1562319.00000</td>
+<td>210567.00000</td>
+<td>1351752.00000</td>
+<td>1449291.00000</td>
+<td>113028.00000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2015</td>
+<td>1526603.00000</td>
+<td>196455.00000</td>
+<td>1330148.00000</td>
+<td>1415112.00000</td>
+<td>111491.00000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2016</td>
+<td>1505397.00000</td>
+<td>189192.00000</td>
+<td>1316205.00000</td>
+<td>1393975.00000</td>
+<td>111422.00000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="23">
+<details>
+<summary>Plotting out the t01 data</summary>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb12-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb12-3">    ax.plot(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Male'</span>])</span>
+<span id="cb12-4">    ax.plot(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Female'</span>])</span>
+<span id="cb12-5">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Imprisonment Counts by Gender (table: p16t01)'</span>)</span>
+<span id="cb12-6">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>)</span>
+<span id="cb12-7">    ax.yaxis.set_major_formatter(y_formatter)</span>
+<span id="cb12-8">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'People Imprisoned [in thousands of people]'</span>)</span>
+<span id="cb12-9">    ax.legend()</span>
+<span id="cb12-10">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Male'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(),</span>
+<span id="cb12-11">                            sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Female'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>())])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="observations-2" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="observations-2"><span class="header-section-number">1.8</span> Observations <a id="7"></a></h2>
+<p>The first thing that I notice is that the number of men in prison is much higher than the number of females imprisoned. Per the chart below, over the entire span of the data set (2006 to 2016), there are at least 12 men in prison for each woman in prison. This is a massive asymmetry. It doesn’t feel very controversial, but should it? According to the <a href="https://www.census.gov/prod/cen2010/briefs/c2010br-03.pdf">2010 US Census</a>, the US population is 50.8% female and 49.2% male.</p>
+<section id="new-questions-2" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="new-questions-2"><span class="header-section-number">1.8.1</span> New Questions</h3>
+<ul>
+<li>Why are men so much more likely to be in prison?
+<ul>
+<li>What are the relevant differences between men and women?</li>
+<li>What is the gender breakdown of crimes?</li>
+</ul></li>
+</ul>
+<div class="cell" data-execution_count="24">
+<details>
+<summary>Plotting out Male to Female imprisonment ratio</summary>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'m_f_ratio'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Male'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Female'</span>]</span>
+<span id="cb13-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb13-3">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>))</span>
+<span id="cb13-4">    ax.plot(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'m_f_ratio'</span>])</span>
+<span id="cb13-5">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Male to Female Imprisonment Ratio (table: p16t01)'</span>)</span>
+<span id="cb13-6">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>)</span>
+<span id="cb13-7">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average Number of Males imprisoned per Female'</span>)</span>
+<span id="cb13-8">    ax.legend()</span>
+<span id="cb13-9">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'m_f_ratio'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<details>
+<summary>Plotting out Counts of State and Federal imprisonment</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb14-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb14-3">    ax.plot(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Federal/a'</span>])</span>
+<span id="cb14-4">    ax.plot(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'State'</span>])</span>
+<span id="cb14-5">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Imprisonment Counts in State and Federal Prisons (table: p16t01)'</span>)</span>
+<span id="cb14-6">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>)</span>
+<span id="cb14-7">    ax.yaxis.set_major_formatter(y_formatter)</span>
+<span id="cb14-8">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'People Imprisoned [in thousands of people]'</span>)</span>
+<span id="cb14-9">    ax.legend()</span>
+<span id="cb14-10">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Federal/a'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(),</span>
+<span id="cb14-11">                            sex_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'State'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>())])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="observations-3" class="level3" data-number="1.8.2">
+<h3 data-number="1.8.2" class="anchored" data-anchor-id="observations-3"><span class="header-section-number">1.8.2</span> Observations</h3>
+<p>Far more people are in State prisons than are in Federal prisons. That isn’t very controversial and at this level, I won’t dig much deeper. It may be interesting to dig further into imprisonment counts broken down by state.</p>
+</section>
+</section>
+</section>
+<section id="to-be-continued" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> To Be Continued <a id="8"></a></h1>
+<p>There are still 20 more tables that I haven’t looked at yet, but so far, we’ve seen * The imprisonment rates increased by just over 266% between 1978 and 2007. * Black people are imprisoned at a far higher rate than either Hispanic people or non-Hispanic white people. * Hispanic people are imprisoned at a far higher rate than non-Hispanic white people. * Far more men are imprisoned than women. * Far more people are in state prisons than in federal prisons.</p>
+<p>Continued in <a href="https://nbviewer.jupyter.org/github/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part2.ipynb">the next notebook</a>.</p>
+
+
+
+</section>
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div> ]]></description>
+  <category>conda</category>
+  <category>tutorial</category>
+  <category>howto</category>
+  <guid>https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html</guid>
+  <pubDate>Tue, 26 Jun 2018 00:00:00 GMT</pubDate>
+  <media:content url="https://www.matttriano.dev/posts/010_crime_and_prisons_p1/imgs/total_imprisoned_pop_in_state_and_federal_prison.png" medium="image" type="image/png" height="103" width="144"/>
+</item>
 </channel>
 </rss>

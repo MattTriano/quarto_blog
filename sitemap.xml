@@ -2,34 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.matttriano.dev/about.html</loc>
-    <lastmod>2023-07-14T03:35:40.240Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
-    <lastmod>2023-07-14T03:35:39.040Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</loc>
-    <lastmod>2023-07-14T03:35:33.248Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/index.html</loc>
-    <lastmod>2023-07-14T03:35:31.704Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</loc>
-    <lastmod>2023-07-14T03:35:32.844Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2023-07-14T03:35:33.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</loc>
-    <lastmod>2023-07-14T03:35:38.220Z</lastmod>
+    <lastmod>2023-07-15T02:51:21.759Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/007_midjourney_experiments/midjourney_experiments.html</loc>
-    <lastmod>2023-07-14T03:35:39.624Z</lastmod>
+    <lastmod>2023-07-15T02:51:20.123Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</loc>
+    <lastmod>2023-07-15T02:51:18.595Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
+    <lastmod>2023-07-15T02:51:13.598Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</loc>
+    <lastmod>2023-07-15T02:51:12.794Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/index.html</loc>
+    <lastmod>2023-07-15T02:51:11.650Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</loc>
+    <lastmod>2023-07-15T02:51:13.234Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
+    <lastmod>2023-07-15T02:51:19.471Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html</loc>
+    <lastmod>2023-07-15T02:51:21.043Z</lastmod>
   </url>
 </urlset>
