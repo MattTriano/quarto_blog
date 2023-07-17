@@ -440,14 +440,14 @@ Why did changing the conda channel make the dependencies solvable?
 <h2 data-number="2.6" class="anchored" data-anchor-id="step-5.-export-the-env"><span class="header-section-number">2.6</span> Step 5. Export the env</h2>
 <p>Now that we have a working env, let’s export both the full specification and a cross-platform specification (which only includes the explicitly requested packages).</p>
 <div class="cell" data-execution_count="2">
-<details>
-<summary>Code</summary>
+<details open="">
+<summary>Export the full, OS specific env spec</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>conda env export <span class="op">-</span>n prisons_post_env <span class="op">&gt;</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-execution_count="3">
-<details>
-<summary>Code</summary>
+<details open="">
+<summary>Export the cross-platform env spec</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>conda env export <span class="op">-</span>n prisons_post_env <span class="op">--</span><span class="im">from</span><span class="op">-</span>history <span class="op">&gt;</span> environment_cross_platform.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>

@@ -186,9 +186,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">conda</div>
-                <div class="quarto-category">tutorial</div>
-                <div class="quarto-category">howto</div>
+                <div class="quarto-category">pandas</div>
+                <div class="quarto-category">analysis</div>
+                <div class="quarto-category">old</div>
               </div>
                   </div>
   </div>
@@ -259,6 +259,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
+<div class="callout callout-style-simple callout-note callout-titled" title="Update Note">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Update Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The majority of code and analysis in this post was originally written back in mid-2018 (in <a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part1.ipynb">this notebook</a>). I’ve consolidated some cells, automated data retrieval, and added cell labels to make things render nicely, but otherwise I’ve left the work as-is. Compared to my current work products, this old code is very messy and unpolished, but like <a href="https://youtu.be/kETDOnnt5sc?t=530">Eric Ma</a> (creator of the <code>networkx</code> graph data analysis package), I believe in showing newer data analysts and scientists I mentor that no one in this field started off with mastery of git, pandas, bash, etc, and that everyone who lasts loves to keep learning and improving.</p>
+<p>After I integrate these old posts into this blog, I’ll write an EDA post that starts from scratch using up-to-date data.</p>
+</div>
+</div>
+</div>
 <section id="exploration-in-criminal-justice-and-corrections-data" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Exploration in Criminal Justice and Corrections Data <a id="0"></a></h1>
 <p>I’ve repeatedly read the statistic that the US makes up around 4% of the global population, but makes up more than 20% of the prison population. Well defined questions are crucial tools for making sense of raw data, and this massive asymmetry is provokes some important questions, such as those listed below.</p>
@@ -300,7 +317,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="1.2" class="anchored" data-anchor-id="datasets"><span class="header-section-number">1.2</span> Datasets <a id="1"></a></h2>
 <p>With some questions in hand, I can start trying to gather data that could shed light on the situation. I may not be able to get data with the resolution needed to answer some of these questions (eg I may not be able to find data broken down by month).</p>
 <p>The government makes some data publicly available. While government data is rarely current, often involves a bit of cleanup, and always involves hunting through old government sites, it’s the only source for much of this extremely valuable information. From the Bureau of Justice Statistics, I found a government project called the <a href="https://www.bjs.gov/index.cfm?ty=pbse&amp;sid=40">Prisoner Series</a> and I downloaded the <a href="http://www.bjs.gov/index.cfm?ty=pbdetail&amp;iid=6187">most recent data</a>.</p>
-<div class="cell" data-execution_count="21">
+<div class="cell" data-execution_count="1">
 <details>
 <summary>Imports, styling, and path definition</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
@@ -332,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="total-imprisonment-rates-table-p16f01" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="total-imprisonment-rates-table-p16f01"><span class="header-section-number">1.3</span> Total Imprisonment Rates (Table p16f01) <a id="2"></a></h2>
 <p>The values in the by-race dataset are [per 100k population].</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="2">
 <details>
 <summary>Downloading the relevant data and unzipping it</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
@@ -356,7 +373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        zf.extractall(DATA_DIR_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="3">
 <details>
 <summary>Loading and preprocessing the f01 dataset, Total Counts</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>CSV_PATH <span class="op">=</span> os.path.join(<span class="st">'data'</span>, <span class="st">'prison'</span>, <span class="st">'p16f01.csv'</span>)</span>
@@ -365,13 +382,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>total_df.index <span class="op">=</span> total_df.index.values.astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(total_df.shape)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>total_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(39, 2)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -415,7 +432,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="5">
 <details>
 <summary>Plotting out the f01 data</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">"whitegrid"</span>):</span>
@@ -453,7 +470,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="imprisonment-by-race-table-p16f02" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="imprisonment-by-race-table-p16f02"><span class="header-section-number">1.5</span> Imprisonment by Race (Table p16f02) <a id="4"></a></h2>
 <p>Imprisonment rate of sentenced prisoners under the jurisdiction of state or federal correctional authorities, per 100,000 U.S. residents age 18 or older, by race and Hispanic origin, December 31, 2006–2016</p>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="6">
 <details>
 <summary>Loading and preprocessing the f02 data, Counts by Race</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>CSV_PATH <span class="op">=</span> os.path.join(<span class="st">'data'</span>, <span class="st">'prison'</span>, <span class="st">'p16f02.csv'</span>)</span>
@@ -463,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>race_df.set_index(<span class="st">'Year'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>race_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -555,7 +572,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="7">
 <details>
 <summary>Plotting out the f02 data, Counts by Race</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">"whitegrid"</span>):</span>
@@ -575,7 +592,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="Crime_and_Prisons_part1_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="19">
+<div class="cell" data-execution_count="8">
 <details>
 <summary>Printing out summary stats for f02 data, Counts by Race</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{:&gt;8s}</span><span class="st"> imprisonment per 100k US pop: max: </span><span class="sc">{}</span><span class="st">, min: </span><span class="sc">{}</span><span class="st">'</span></span>
@@ -607,7 +624,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 </section>
 <section id="breakdown-by-gender-table-p16t01" class="level2" data-number="1.7">
 <h2 data-number="1.7" class="anchored" data-anchor-id="breakdown-by-gender-table-p16t01"><span class="header-section-number">1.7</span> Breakdown by Gender (Table p16t01) <a id="6"></a></h2>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="9">
 <details>
 <summary>Loading and preprocessing the t01 data, Total Counts by Gender and State/Federal</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>CSV_PATH <span class="op">=</span> os.path.join(<span class="st">'data'</span>, <span class="st">'prison'</span>, <span class="st">'p16t01.csv'</span>)</span>
@@ -621,7 +638,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>sex_df.set_index(<span class="st">'Year'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>sex_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -739,7 +756,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="10">
 <details>
 <summary>Plotting out the t01 data</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">"whitegrid"</span>):</span>
@@ -771,7 +788,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 <li>What is the gender breakdown of crimes?</li>
 </ul></li>
 </ul>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="11">
 <details>
 <summary>Plotting out Male to Female imprisonment ratio</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sex_df[<span class="st">'m_f_ratio'</span>] <span class="op">=</span> sex_df[<span class="st">'Male'</span>] <span class="op">/</span> sex_df[<span class="st">'Female'</span>]</span>
@@ -788,7 +805,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 <p><img src="Crime_and_Prisons_part1_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="12">
 <details>
 <summary>Plotting out Counts of State and Federal imprisonment</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">"whitegrid"</span>):</span>
@@ -817,7 +834,7 @@ Hispanic imprisonment per 100k US pop: max: 1094.0, min: 856.0
 <section id="to-be-continued" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> To Be Continued <a id="8"></a></h1>
 <p>There are still 20 more tables that I haven’t looked at yet, but so far, we’ve seen * The imprisonment rates increased by just over 266% between 1978 and 2007. * Black people are imprisoned at a far higher rate than either Hispanic people or non-Hispanic white people. * Hispanic people are imprisoned at a far higher rate than non-Hispanic white people. * Far more men are imprisoned than women. * Far more people are in state prisons than in federal prisons.</p>
-<p>Continued in <a href="https://nbviewer.jupyter.org/github/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part2.ipynb">the next notebook</a>.</p>
+<p>Continued in <a href="../../posts/011_crime_and_prisons_p2/Crime_and_Prisons_part2.html">the next notebook</a>.</p>
 
 
 
