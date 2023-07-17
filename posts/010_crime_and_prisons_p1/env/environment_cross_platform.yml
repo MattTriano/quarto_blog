@@ -1,0 +1,15 @@
+name: prisons_post_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh=0.12.16
+  - matplotlib=2.2.2
+  - notebook[version='<=5.5.0']
+  - pandas[version='<=0.24.2']
+  - python=3.6.4
+  - seaborn[version='<=0.8.1']
+  - tornado[version='<6']
+  - xlrd
+  - requests
+prefix: /home/matt/miniconda3/envs/prisons_post_env
