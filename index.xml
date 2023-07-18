@@ -4502,6 +4502,2301 @@ No matching items
   <media:content url="https://www.matttriano.dev/posts/000_setting_up_miniconda/interested_conda.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
+  <title>Exploration in Criminal Justice and Corrections Data, Part 3</title>
+  <dc:creator>Matt Triano</dc:creator>
+  <link>https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="callout callout-style-simple callout-note callout-titled" title="Update Note">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Update Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The majority of code and analysis in this post was originally written back in mid-2018 (in <a href="https://github.com/MattTriano/personal_site_public/blob/master/Crime_and_Prisons_part3.ipynb">this notebook</a>). I’ve consolidated some cells, automated data retrieval, and added cell labels to make things render nicely, but otherwise I’ve left the work as-is. Compared to my current work products, this old code is very messy and unpolished, but like <a href="https://youtu.be/kETDOnnt5sc?t=530">Eric Ma</a> (creator of the <code>networkx</code> graph data analysis package), I believe in showing newer data analysts and scientists I mentor that no one in this field started off with mastery of git, pandas, bash, etc, and that everyone who lasts loves to keep learning and improving.</p>
+<p>After I integrate these old posts into this blog, I’ll write an EDA post that starts from scratch using up-to-date data.</p>
+</div>
+</div>
+</div>
+<section id="imprisonment-by-race" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Imprisonment by Race</h1>
+<p>This notebook explores the racial breakdown of the 3 largest racial groups in US prisons (from 2006 to 2016): non-Hispanic white people, non-Hispanic black people, and Hispanic people.</p>
+<p>In this notebook, I show that, over the entire span of data (2006-2016), black people are the largest racial prison population both in raw numbers and as a proportion of the total same-race US population.</p>
+<p><strong>Average Number of Prisoners (from 2006-2016)</strong></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Race</th>
+<th style="text-align: center;">Average Number in Prison</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Black</td>
+<td style="text-align: center;">551209</td>
+</tr>
+<tr class="even">
+<td>White</td>
+<td style="text-align: center;">476136</td>
+</tr>
+<tr class="odd">
+<td>Hispanic</td>
+<td style="text-align: center;">336500</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Average Percent US Racial Population in Prison</strong></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Race</th>
+<th style="text-align: left;">% of US Racial Pop. in Prison</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Black</td>
+<td style="text-align: left;">1.440 %</td>
+</tr>
+<tr class="even">
+<td>White</td>
+<td style="text-align: left;">0.241 %</td>
+</tr>
+<tr class="odd">
+<td>Hispanic</td>
+<td style="text-align: left;">0.656 %</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Change in Average Percent US Racial Population in Prison</strong></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Race</th>
+<th style="text-align: left;">Change in % of US Racial Pop. in Prison</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Black</td>
+<td style="text-align: left;">-0.406 %</td>
+</tr>
+<tr class="even">
+<td>White</td>
+<td style="text-align: left;">-0.035 %</td>
+</tr>
+<tr class="odd">
+<td>Hispanic</td>
+<td style="text-align: left;">-0.113 %</td>
+</tr>
+</tbody>
+</table>
+<p>That is a fairly astonishing. A randomly selected black person is (on average) nearly 6 times as likely to be in prison as a randomly selected white person. There is clearly a statistically significant difference between these rates, so there are clearly more questions to answer.</p>
+<section id="data-source" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="data-source"><span class="header-section-number">1.1</span> Data Source</h2>
+<p>This data is from file p16t03.csv of the Bureau of Justice Statistics <a href="https://www.bjs.gov/index.cfm?ty=pbse&amp;sid=40">Prisoner Series</a> data.</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Imports, styling, and path definitions</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> urllib.request <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> urlretrieve</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> zipfile</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> seaborn <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> sns</span>
+<span id="cb1-8"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-9"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.ticker <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> ticker</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.core.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> display, HTML</span>
+<span id="cb1-11"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>matplotlib inline</span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Importing modules from a visualization package.</span></span>
+<span id="cb1-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># from bokeh.sampledata.us_states import data as states|</span></span>
+<span id="cb1-15"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.plotting <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> figure, show, output_notebook</span>
+<span id="cb1-16"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.models <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> HoverTool, ColumnDataSource</span>
+<span id="cb1-17"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> bokeh.models <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> LinearColorMapper, ColorBar, BasicTicker</span>
+<span id="cb1-18"></span>
+<span id="cb1-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># styling</span></span>
+<span id="cb1-20">pd.options.display.max_columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span></span>
+<span id="cb1-21">display(HTML(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"&lt;style&gt;.container { width:100% !important; }&lt;/style&gt;"</span>))</span>
+<span id="cb1-22">pd.set_option(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'display.float_format'</span>,<span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%.3f</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span> x)</span>
+<span id="cb1-23">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'figure.figsize'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25">DATA_DIR_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"010_crime_and_prisons_p1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'data'</span>)</span>
+<span id="cb1-26">PRISON_DATA_DIR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(DATA_DIR_PATH, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'prison'</span>)</span>
+<span id="cb1-27">POP_DATA_DIR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(DATA_DIR_PATH, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"population"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<style>.container { width:100% !important; }</style>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Loading and preprocessing the t03 dataset, Counts by Gender, Race, and Jurisdiction</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">CSV_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(PRISON_DATA_DIR, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'p16t03.csv'</span>)</span>
+<span id="cb2-2">race_sex_raw <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(CSV_PATH, </span>
+<span id="cb2-3">                           encoding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'latin1'</span>,</span>
+<span id="cb2-4">                           header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>, </span>
+<span id="cb2-5">                           na_values<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">':'</span>,</span>
+<span id="cb2-6">                           thousands<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r','</span>)</span>
+<span id="cb2-7">race_sex_raw.dropna(axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, thresh<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-8">race_sex_raw.dropna(axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, thresh<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-9">race_sex_raw.dropna(axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-10">fix <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: x.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/'</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb2-11">race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(fix)</span>
+<span id="cb2-12">race_sex_raw.columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [x.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/'</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> x <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> race_sex_raw.columns]</span>
+<span id="cb2-13">race_sex_raw.set_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb2-14"></span>
+<span id="cb2-15">display(race_sex_raw)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Total</th>
+<th data-quarto-table-cell-role="th">Federal</th>
+<th data-quarto-table-cell-role="th">State</th>
+<th data-quarto-table-cell-role="th">Male</th>
+<th data-quarto-table-cell-role="th">Female</th>
+<th data-quarto-table-cell-role="th">White</th>
+<th data-quarto-table-cell-role="th">Black</th>
+<th data-quarto-table-cell-role="th">Hispanic</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2006</td>
+<td>1504598.000</td>
+<td>173533.000</td>
+<td>1331065.000</td>
+<td>1401261.000</td>
+<td>103337.000</td>
+<td>507100.000</td>
+<td>590300.000</td>
+<td>313600.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2007</td>
+<td>1532851.000</td>
+<td>179204.000</td>
+<td>1353647.000</td>
+<td>1427088.000</td>
+<td>105763.000</td>
+<td>499800.000</td>
+<td>592900.000</td>
+<td>330400.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2008</td>
+<td>1547742.000</td>
+<td>182333.000</td>
+<td>1365409.000</td>
+<td>1441384.000</td>
+<td>106358.000</td>
+<td>499900.000</td>
+<td>592800.000</td>
+<td>329800.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2009</td>
+<td>1553574.000</td>
+<td>187886.000</td>
+<td>1365688.000</td>
+<td>1448239.000</td>
+<td>105335.000</td>
+<td>490000.000</td>
+<td>584800.000</td>
+<td>341200.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2010</td>
+<td>1552669.000</td>
+<td>190641.000</td>
+<td>1362028.000</td>
+<td>1447766.000</td>
+<td>104903.000</td>
+<td>484400.000</td>
+<td>572700.000</td>
+<td>345800.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2011</td>
+<td>1538847.000</td>
+<td>197050.000</td>
+<td>1341797.000</td>
+<td>1435141.000</td>
+<td>103706.000</td>
+<td>474300.000</td>
+<td>557100.000</td>
+<td>347800.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2012</td>
+<td>1512430.000</td>
+<td>196574.000</td>
+<td>1315856.000</td>
+<td>1411076.000</td>
+<td>101354.000</td>
+<td>466600.000</td>
+<td>537800.000</td>
+<td>340300.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2013</td>
+<td>1520403.000</td>
+<td>195098.000</td>
+<td>1325305.000</td>
+<td>1416102.000</td>
+<td>104301.000</td>
+<td>463900.000</td>
+<td>529900.000</td>
+<td>341200.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2014</td>
+<td>1507781.000</td>
+<td>191374.000</td>
+<td>1316407.000</td>
+<td>1401685.000</td>
+<td>106096.000</td>
+<td>461500.000</td>
+<td>518700.000</td>
+<td>338900.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2015</td>
+<td>1476847.000</td>
+<td>178688.000</td>
+<td>1298159.000</td>
+<td>1371879.000</td>
+<td>104968.000</td>
+<td>450200.000</td>
+<td>499400.000</td>
+<td>333200.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2016</td>
+<td>1458173.000</td>
+<td>171482.000</td>
+<td>1286691.000</td>
+<td>1352684.000</td>
+<td>105489.000</td>
+<td>439800.000</td>
+<td>486900.000</td>
+<td>339300.000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Mean annual inmate count by race</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average number of </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> people in prison from 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:6.0f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb3-2">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black'</span>, race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black'</span>].mean()))</span>
+<span id="cb3-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average number of </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> people in prison from 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:6.0f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb3-4">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white'</span>, race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White'</span>].mean()))</span>
+<span id="cb3-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average number of </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> people in prison from 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:6.0f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb3-6">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>, race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].mean()))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Average number of    black people in prison from 2006 to 2016: 551209
+Average number of    white people in prison from 2006 to 2016: 476136
+Average number of Hispanic people in prison from 2006 to 2016: 336500</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Plotting annual inmate counts by race</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb5-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb5-3">    ax.plot(race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White'</span>])</span>
+<span id="cb5-4">    ax.plot(race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black'</span>])</span>
+<span id="cb5-5">    ax.plot(race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>])</span>
+<span id="cb5-6">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Imprisonment Counts by Race (table: p16t03)'</span>,fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb5-7">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb5-8">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Number of People imprisoned'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb5-9">    ax.legend(fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb5-10">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>([race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), </span>
+<span id="cb5-11">                             race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(),</span>
+<span id="cb5-12">                             race_sex_raw[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()])])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Looking at this plot of total imprisonment counts, we see that: * At any given time, there are more non-Hispanic black people in prison than any other race. * At any given time, there are more non-Hispanic white people than Hispanic people in prison. * The numbers of imprisoned black people and white people decreased steadily from 2008 to 2016, while the number of imprisoned Hispanic people was been fairly flat over that time.</p>
+<p>These numbers are raw counts, so they don’t account for the fact that the fact that these races make up different proportions of the entire US population. This motivates questions like:</p>
+<ul>
+<li>What percent of the population of each race is in prison?</li>
+</ul>
+<p>To answer that, I’ll have to find population data broken down by race.</p>
+<section id="census-data" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="census-data"><span class="header-section-number">1.1.1</span> Census Data</h3>
+<p>The Constitution requires that a full, national census is performed every 10 years that reaches every resident on American soil. This data is used to determine how much federal money is allocated to each district for things like schools, roadways, police, etc. and it determines how many congressional representatives will be allocated to each state. With the help of smaller surveys, the US Census bureau makes estimates of populations for the years between censuses.</p>
+<p><a href="https://www2.census.gov/programs-surveys/popest/tables/2010-2016/state/asrh/">data source</a></p>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>(NEW CODE) automating data collection</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">zip_pop_file_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(POP_DATA_DIR, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PEP_2016_PEPSR6H.zip"</span>)</span>
+<span id="cb6-2">url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www2.census.gov/programs-surveys/popest/tables/2010-2016/state/asrh/PEP_2016_PEPSR6H.zip"</span></span>
+<span id="cb6-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">not</span> os.path.isfile(zip_pop_file_path):</span>
+<span id="cb6-4">    urlretrieve(url<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>url, filename<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>zip_pop_file_path)</span>
+<span id="cb6-5">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> zipfile.ZipFile(zip_pop_file_path, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>) <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> zf:</span>
+<span id="cb6-6">        zf.extractall(POP_DATA_DIR)</span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Loading, filtering, and preprocessing annual national pop. estimates by race and ethnicity</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">CSV_PATH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(POP_DATA_DIR, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PEP_2016_PEPSR6H_with_ann.csv'</span>)</span>
+<span id="cb7-2">race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(CSV_PATH, header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>], encoding<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'latin1'</span>)</span>
+<span id="cb7-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Initial Data Format:'</span>)</span>
+<span id="cb7-4">display(race_pop.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>))</span>
+<span id="cb7-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Only looking for national values</span></span>
+<span id="cb7-6">race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Geography'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'United States'</span>]</span>
+<span id="cb7-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Eliminating the actual census values</span></span>
+<span id="cb7-8">race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.contains(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'April'</span>)]</span>
+<span id="cb7-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Eliminating aggregated rows</span></span>
+<span id="cb7-10">race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic Origin'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total'</span>]</span>
+<span id="cb7-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># race_pop = race_pop[race_pop['Sex'] != 'Both Sexes']  # for later</span></span>
+<span id="cb7-12">race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Sex'</span>].isin([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Male'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Female'</span>])]</span>
+<span id="cb7-13"></span>
+<span id="cb7-14">drop_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Id'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Id.1'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Id.2'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Id2'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Id.3'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Geography'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Sex'</span>,</span>
+<span id="cb7-15">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Race Alone - American Indian and Alaska Native'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Race Alone - Asian'</span>,</span>
+<span id="cb7-16">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Race Alone - Native Hawaiian and Other Pacific Islander'</span>]</span>
+<span id="cb7-17">race_pop.drop(drop_cols, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb7-18"></span>
+<span id="cb7-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Reducing the size of long column names</span></span>
+<span id="cb7-20">col_map <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Race Alone - Black or African American'</span>:<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black_only_pop'</span>,</span>
+<span id="cb7-21">           <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Race Alone - White'</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white_only_pop'</span>}</span>
+<span id="cb7-22">race_pop.rename(col_map, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb7-23"></span>
+<span id="cb7-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Data Format after Processing:'</span>)</span>
+<span id="cb7-25">display(race_pop.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Initial Data Format:
+
+
+Data Format after Processing:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Id</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th">Id.1</th>
+<th data-quarto-table-cell-role="th">Sex</th>
+<th data-quarto-table-cell-role="th">Id.2</th>
+<th data-quarto-table-cell-role="th">Hispanic Origin</th>
+<th data-quarto-table-cell-role="th">Id.3</th>
+<th data-quarto-table-cell-role="th">Id2</th>
+<th data-quarto-table-cell-role="th">Geography</th>
+<th data-quarto-table-cell-role="th">Total</th>
+<th data-quarto-table-cell-role="th">Race Alone - White</th>
+<th data-quarto-table-cell-role="th">Race Alone - Black or African American</th>
+<th data-quarto-table-cell-role="th">Race Alone - American Indian and Alaska Native</th>
+<th data-quarto-table-cell-role="th">Race Alone - Asian</th>
+<th data-quarto-table-cell-role="th">Race Alone - Native Hawaiian and Other Pacific Islander</th>
+<th data-quarto-table-cell-role="th">Two or More Races</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>cen42010</td>
+<td>April 1, 2010 Census</td>
+<td>female</td>
+<td>Female</td>
+<td>hisp</td>
+<td>Hispanic</td>
+<td>0100000US</td>
+<td>nan</td>
+<td>United States</td>
+<td>24858794</td>
+<td>21936806</td>
+<td>1191984</td>
+<td>702309</td>
+<td>249346</td>
+<td>85203</td>
+<td>693146</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>cen42010</td>
+<td>April 1, 2010 Census</td>
+<td>female</td>
+<td>Female</td>
+<td>nhisp</td>
+<td>Not Hispanic</td>
+<td>0100000US</td>
+<td>nan</td>
+<td>United States</td>
+<td>132105418</td>
+<td>100301335</td>
+<td>19853611</td>
+<td>1147502</td>
+<td>7691693</td>
+<td>246518</td>
+<td>2864759</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>cen42010</td>
+<td>April 1, 2010 Census</td>
+<td>female</td>
+<td>Female</td>
+<td>tothisp</td>
+<td>Total</td>
+<td>0100000US</td>
+<td>nan</td>
+<td>United States</td>
+<td>156964212</td>
+<td>122238141</td>
+<td>21045595</td>
+<td>1849811</td>
+<td>7941039</td>
+<td>331721</td>
+<td>3557905</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th">Hispanic Origin</th>
+<th data-quarto-table-cell-role="th">Total</th>
+<th data-quarto-table-cell-role="th">white_only_pop</th>
+<th data-quarto-table-cell-role="th">black_only_pop</th>
+<th data-quarto-table-cell-role="th">Two or More Races</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>July 1, 2010</td>
+<td>Hispanic</td>
+<td>50754069</td>
+<td>44855529</td>
+<td>2343053</td>
+<td>1392607</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>July 1, 2010</td>
+<td>Not Hispanic</td>
+<td>258594124</td>
+<td>197394319</td>
+<td>38015461</td>
+<td>5647760</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">33</td>
+<td>July 1, 2011</td>
+<td>Hispanic</td>
+<td>51906353</td>
+<td>45841771</td>
+<td>2410490</td>
+<td>1445820</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Based on the aggregation of the data I pulled, there is a rather vague ‘Two or More Races’ column. The prisoner data I’ve been working with has not differentiated between multiracial people and single-race people, rather, the prison data only breaks races down to non-Hispanic white, non-Hispanic black, and Hispanic. It’s entirely possible for someone to be non-Hispanic, black, and multiracial, which would make it much more difficult and less accurate to use this population data with the prison data. Fortunately, however, the <a href="https://www.bjs.gov/content/pub/pdf/p16.pd">documentation for the prison data</a>] includes footnotes indicating the data for white and black prison populations excludes persons of two or more races, so, conveniently, I must also exclude it.</p>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Engineering counts for Hispanic origin (any race), Non Hispanic White only, and Non Hispanic Black only</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">race_pop.drop(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Two or More Races'</span>, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb9-2">hisp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic Origin'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].copy()</span>
+<span id="cb9-3">non_hisp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop[race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic Origin'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>].copy()</span>
+<span id="cb9-4">non_hisp.drop([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic Origin'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total'</span>], axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb9-5">hisp.drop([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white_only_pop'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black_only_pop'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic Origin'</span>], axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb9-6">hisp.rename({<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total'</span>:<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pop'</span>}, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb9-7">us_race_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> hisp.merge(non_hisp, on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>])</span>
+<span id="cb9-8">fix_yr <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">lambda</span> x: x.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' '</span>)[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb9-9">us_race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> us_race_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(fix_yr)</span>
+<span id="cb9-10">us_race_pop.set_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb9-11"></span>
+<span id="cb9-12">display(us_race_pop.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Hispanic_pop</th>
+<th data-quarto-table-cell-role="th">white_only_pop</th>
+<th data-quarto-table-cell-role="th">black_only_pop</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2010</td>
+<td>50754069</td>
+<td>197394319</td>
+<td>38015461</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2011</td>
+<td>51906353</td>
+<td>197519026</td>
+<td>38393758</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2012</td>
+<td>52993496</td>
+<td>197701109</td>
+<td>38776276</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This provides population data from 2010 on, but not for the earlier years. To deal with earlier years, I need to handle another data set.</p>
+<p><a href="https://www.census.gov/data/tables/time-series/demo/popest/intercensal-2000-2010-national.html">data source</a></p>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>(NEW CODE) automating data collection</summary>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">pop_file_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(POP_DATA_DIR, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"us-est00int-02.xls"</span>)</span>
+<span id="cb10-2">url <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www2.census.gov/programs-surveys/popest/tables/2000-2010/intercensal/national/us-est00int-02.xls"</span></span>
+<span id="cb10-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">not</span> os.path.isfile(pop_file_path):</span>
+<span id="cb10-4">    urlretrieve(url<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>url, filename<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>pop_file_path)</span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Loading, filtering, and preprocessing annual national pop. estimates by race and ethnicity</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">race_pop0010 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_excel(pop_file_path, header<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>)</span>
+<span id="cb11-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Initial Data Format:'</span>)</span>
+<span id="cb11-3">display(race_pop0010.head())</span>
+<span id="cb11-4"></span>
+<span id="cb11-5">race_pop0010.dropna(axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, thresh<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-6">race_pop0010.drop([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-7">race_pop0010 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop0010.T</span>
+<span id="cb11-8">race_pop0010.iloc[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span></span>
+<span id="cb11-9">race_pop0010.columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop0010.loc[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb11-10">race_pop0010.drop(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-11">race_pop0010.dropna(axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-12">race_pop0010[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop0010[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb11-13">race_pop0010[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop0010[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>].astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>)</span>
+<span id="cb11-14">race_pop0010.set_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-15"></span>
+<span id="cb11-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Code to help drop columns I'm not interested in</span></span>
+<span id="cb11-17">drop_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb11-18">drop_stumps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'AIAN'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Asian'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NHPI'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'One Race'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Two or'</span>]</span>
+<span id="cb11-19"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> race_pop0010.columns:</span>
+<span id="cb11-20">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">any</span>(x <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> col <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> x <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> drop_stumps):</span>
+<span id="cb11-21">        drop_cols.append(col)</span>
+<span id="cb11-22">race_pop0010.drop(drop_cols, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-23"></span>
+<span id="cb11-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Code to facilitate merging this DataFrame with theother Population DataFrame</span></span>
+<span id="cb11-25">both0010 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_pop0010.iloc[:,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>].copy()</span>
+<span id="cb11-26">name_map <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'...White'</span>  : <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white_only_pop'</span>,</span>
+<span id="cb11-27">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'...Black'</span>  : <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black_only_pop'</span>,</span>
+<span id="cb11-28">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'.HISPANIC'</span> : <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pop'</span>}</span>
+<span id="cb11-29">both0010.rename(name_map, axis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb11-30">both0010 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> both0010.astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb11-31">pop_span <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.concat([both0010, us_race_pop], join<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'inner'</span>)</span>
+<span id="cb11-32">race_sex_pop <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_sex_raw.join(pop_span)</span>
+<span id="cb11-33"></span>
+<span id="cb11-34"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Data Format after Processing:'</span>)</span>
+<span id="cb11-35">display(race_pop0010.head())</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Initial Data Format:
+
+
+Data Format after Processing:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">10</th>
+<th data-quarto-table-cell-role="th">11</th>
+<th data-quarto-table-cell-role="th">12</th>
+<th data-quarto-table-cell-role="th">13</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>table with row headers in column A and column ...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Table 2. Intercensal Estimates of the Resident...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Sex, Race, and Hispanic Origin</td>
+<td>April 1, 20001</td>
+<td>Intercensal Estimates (as of July 1)</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>nan</td>
+<td>April 1, 20102</td>
+<td>July 1, 20103</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>2000</td>
+<td>2001.000</td>
+<td>2002.000</td>
+<td>2003.000</td>
+<td>2004.000</td>
+<td>2005.000</td>
+<td>2006.000</td>
+<td>2007.000</td>
+<td>2008.000</td>
+<td>2009.000</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>BOTH SEXES</td>
+<td>281424600</td>
+<td>282162411</td>
+<td>284968955.000</td>
+<td>287625193.000</td>
+<td>290107933.000</td>
+<td>292805298.000</td>
+<td>295516599.000</td>
+<td>298379912.000</td>
+<td>301231207.000</td>
+<td>304093966.000</td>
+<td>306771529.000</td>
+<td>308745538</td>
+<td>309349689</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">BOTH SEXES</th>
+<th data-quarto-table-cell-role="th">..White</th>
+<th data-quarto-table-cell-role="th">..Black</th>
+<th data-quarto-table-cell-role="th">.NOT HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+<th data-quarto-table-cell-role="th">.HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+<th data-quarto-table-cell-role="th">MALE</th>
+<th data-quarto-table-cell-role="th">..White</th>
+<th data-quarto-table-cell-role="th">..Black</th>
+<th data-quarto-table-cell-role="th">.NOT HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+<th data-quarto-table-cell-role="th">.HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+<th data-quarto-table-cell-role="th">FEMALE</th>
+<th data-quarto-table-cell-role="th">..White</th>
+<th data-quarto-table-cell-role="th">..Black</th>
+<th data-quarto-table-cell-role="th">.NOT HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+<th data-quarto-table-cell-role="th">.HISPANIC</th>
+<th data-quarto-table-cell-role="th">...White</th>
+<th data-quarto-table-cell-role="th">...Black</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2000</td>
+<td>282162411</td>
+<td>228530479</td>
+<td>35814706</td>
+<td>246500526</td>
+<td>195701752</td>
+<td>34405800</td>
+<td>35661885</td>
+<td>32828727</td>
+<td>1408906</td>
+<td>138443407</td>
+<td>112710885</td>
+<td>17027514</td>
+<td>120101363</td>
+<td>95778530</td>
+<td>16340639</td>
+<td>18342044</td>
+<td>16932355</td>
+<td>686875</td>
+<td>143719004</td>
+<td>115819594</td>
+<td>18787192</td>
+<td>126399163</td>
+<td>99923222</td>
+<td>18065161</td>
+<td>17319841</td>
+<td>15896372</td>
+<td>722031</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2001</td>
+<td>284968955.000</td>
+<td>230049196.000</td>
+<td>36263029.000</td>
+<td>247824859.000</td>
+<td>195974813.000</td>
+<td>34780280.000</td>
+<td>37144096.000</td>
+<td>34074383.000</td>
+<td>1482749.000</td>
+<td>139891492.000</td>
+<td>113534140.000</td>
+<td>17249678.000</td>
+<td>120806379.000</td>
+<td>95977450.000</td>
+<td>16526760.000</td>
+<td>19085113.000</td>
+<td>17556690.000</td>
+<td>722918.000</td>
+<td>145077463.000</td>
+<td>116515056.000</td>
+<td>19013351.000</td>
+<td>127018480.000</td>
+<td>99997363.000</td>
+<td>18253520.000</td>
+<td>18058983.000</td>
+<td>16517693.000</td>
+<td>759831.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2002</td>
+<td>287625193.000</td>
+<td>231446915.000</td>
+<td>36684650.000</td>
+<td>249007573.000</td>
+<td>196140540.000</td>
+<td>35130061.000</td>
+<td>38617620.000</td>
+<td>35306375.000</td>
+<td>1554589.000</td>
+<td>141230559.000</td>
+<td>114269447.000</td>
+<td>17454795.000</td>
+<td>121412514.000</td>
+<td>96101267.000</td>
+<td>16697032.000</td>
+<td>19818045.000</td>
+<td>18168180.000</td>
+<td>757763.000</td>
+<td>146394634.000</td>
+<td>117177468.000</td>
+<td>19229855.000</td>
+<td>127595059.000</td>
+<td>100039273.000</td>
+<td>18433029.000</td>
+<td>18799575.000</td>
+<td>17138195.000</td>
+<td>796826.000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2003</td>
+<td>290107933.000</td>
+<td>232717191.000</td>
+<td>37066096.000</td>
+<td>250058504.000</td>
+<td>196232760.000</td>
+<td>35438251.000</td>
+<td>40049429.000</td>
+<td>36484431.000</td>
+<td>1627845.000</td>
+<td>142428897.000</td>
+<td>114897973.000</td>
+<td>17631747.000</td>
+<td>121910556.000</td>
+<td>96155748.000</td>
+<td>16839027.000</td>
+<td>20518341.000</td>
+<td>18742225.000</td>
+<td>792720.000</td>
+<td>147679036.000</td>
+<td>117819218.000</td>
+<td>19434349.000</td>
+<td>128147948.000</td>
+<td>100077012.000</td>
+<td>18599224.000</td>
+<td>19531088.000</td>
+<td>17742206.000</td>
+<td>835125.000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2004</td>
+<td>292805298.000</td>
+<td>234120447.000</td>
+<td>37510582.000</td>
+<td>251303923.000</td>
+<td>196461761.000</td>
+<td>35797599.000</td>
+<td>41501375.000</td>
+<td>37658686.000</td>
+<td>1712983.000</td>
+<td>143828012.000</td>
+<td>115664854.000</td>
+<td>17856753.000</td>
+<td>122592198.000</td>
+<td>96345151.000</td>
+<td>17022156.000</td>
+<td>21235814.000</td>
+<td>19319703.000</td>
+<td>834597.000</td>
+<td>148977286.000</td>
+<td>118455593.000</td>
+<td>19653829.000</td>
+<td>128711725.000</td>
+<td>100116610.000</td>
+<td>18775443.000</td>
+<td>20265561.000</td>
+<td>18338983.000</td>
+<td>878386.000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now that I’ve got a full population data set, I can normalize the prisoner data.</p>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Engineering percent of total group population incarcerated features</summary>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White'</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-2">                .divide(race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white_only_pop'</span>]) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span></span>
+<span id="cb13-3">race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black'</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-4">                .divide(race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black_only_pop'</span>]) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span></span>
+<span id="cb13-5">race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-6">                .divide(race_sex_pop.loc[:,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pop'</span>]) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span></span>
+<span id="cb13-7"></span>
+<span id="cb13-8">display(race_sex_pop)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Total</th>
+<th data-quarto-table-cell-role="th">Federal</th>
+<th data-quarto-table-cell-role="th">State</th>
+<th data-quarto-table-cell-role="th">Male</th>
+<th data-quarto-table-cell-role="th">Female</th>
+<th data-quarto-table-cell-role="th">White</th>
+<th data-quarto-table-cell-role="th">Black</th>
+<th data-quarto-table-cell-role="th">Hispanic</th>
+<th data-quarto-table-cell-role="th">white_only_pop</th>
+<th data-quarto-table-cell-role="th">black_only_pop</th>
+<th data-quarto-table-cell-role="th">Hispanic_pop</th>
+<th data-quarto-table-cell-role="th">White_pct</th>
+<th data-quarto-table-cell-role="th">Black_pct</th>
+<th data-quarto-table-cell-role="th">Hispanic_pct</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2006</td>
+<td>1504598.000</td>
+<td>173533.000</td>
+<td>1331065.000</td>
+<td>1401261.000</td>
+<td>103337.000</td>
+<td>507100.000</td>
+<td>590300.000</td>
+<td>313600.000</td>
+<td>196832697</td>
+<td>36520961</td>
+<td>44606305</td>
+<td>0.258</td>
+<td>1.616</td>
+<td>0.703</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2007</td>
+<td>1532851.000</td>
+<td>179204.000</td>
+<td>1353647.000</td>
+<td>1427088.000</td>
+<td>105763.000</td>
+<td>499800.000</td>
+<td>592900.000</td>
+<td>330400.000</td>
+<td>197011394</td>
+<td>36905758</td>
+<td>46196853</td>
+<td>0.254</td>
+<td>1.607</td>
+<td>0.715</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2008</td>
+<td>1547742.000</td>
+<td>182333.000</td>
+<td>1365409.000</td>
+<td>1441384.000</td>
+<td>106358.000</td>
+<td>499900.000</td>
+<td>592800.000</td>
+<td>329800.000</td>
+<td>197183535</td>
+<td>37290709</td>
+<td>47793785</td>
+<td>0.254</td>
+<td>1.590</td>
+<td>0.690</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2009</td>
+<td>1553574.000</td>
+<td>187886.000</td>
+<td>1365688.000</td>
+<td>1448239.000</td>
+<td>105335.000</td>
+<td>490000.000</td>
+<td>584800.000</td>
+<td>341200.000</td>
+<td>197274549</td>
+<td>37656592</td>
+<td>49327489</td>
+<td>0.248</td>
+<td>1.553</td>
+<td>0.692</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2010</td>
+<td>1552669.000</td>
+<td>190641.000</td>
+<td>1362028.000</td>
+<td>1447766.000</td>
+<td>104903.000</td>
+<td>484400.000</td>
+<td>572700.000</td>
+<td>345800.000</td>
+<td>197394319</td>
+<td>38015461</td>
+<td>50754069</td>
+<td>0.245</td>
+<td>1.506</td>
+<td>0.681</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2011</td>
+<td>1538847.000</td>
+<td>197050.000</td>
+<td>1341797.000</td>
+<td>1435141.000</td>
+<td>103706.000</td>
+<td>474300.000</td>
+<td>557100.000</td>
+<td>347800.000</td>
+<td>197519026</td>
+<td>38393758</td>
+<td>51906353</td>
+<td>0.240</td>
+<td>1.451</td>
+<td>0.670</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2012</td>
+<td>1512430.000</td>
+<td>196574.000</td>
+<td>1315856.000</td>
+<td>1411076.000</td>
+<td>101354.000</td>
+<td>466600.000</td>
+<td>537800.000</td>
+<td>340300.000</td>
+<td>197701109</td>
+<td>38776276</td>
+<td>52993496</td>
+<td>0.236</td>
+<td>1.387</td>
+<td>0.642</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2013</td>
+<td>1520403.000</td>
+<td>195098.000</td>
+<td>1325305.000</td>
+<td>1416102.000</td>
+<td>104301.000</td>
+<td>463900.000</td>
+<td>529900.000</td>
+<td>341200.000</td>
+<td>197777454</td>
+<td>39135988</td>
+<td>54064149</td>
+<td>0.235</td>
+<td>1.354</td>
+<td>0.631</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2014</td>
+<td>1507781.000</td>
+<td>191374.000</td>
+<td>1316407.000</td>
+<td>1401685.000</td>
+<td>106096.000</td>
+<td>461500.000</td>
+<td>518700.000</td>
+<td>338900.000</td>
+<td>197902336</td>
+<td>39507913</td>
+<td>55189962</td>
+<td>0.233</td>
+<td>1.313</td>
+<td>0.614</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2015</td>
+<td>1476847.000</td>
+<td>178688.000</td>
+<td>1298159.000</td>
+<td>1371879.000</td>
+<td>104968.000</td>
+<td>450200.000</td>
+<td>499400.000</td>
+<td>333200.000</td>
+<td>197964402</td>
+<td>39876758</td>
+<td>56338521</td>
+<td>0.227</td>
+<td>1.252</td>
+<td>0.591</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2016</td>
+<td>1458173.000</td>
+<td>171482.000</td>
+<td>1286691.000</td>
+<td>1352684.000</td>
+<td>105489.000</td>
+<td>439800.000</td>
+<td>486900.000</td>
+<td>339300.000</td>
+<td>197969608</td>
+<td>40229236</td>
+<td>57470287</td>
+<td>0.222</td>
+<td>1.210</td>
+<td>0.590</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Plotting percent of total group population incarcerated by year</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">with</span> sns.axes_style(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"whitegrid"</span>):</span>
+<span id="cb14-2">    fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb14-3">    ax.plot(race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>])</span>
+<span id="cb14-4">    ax.plot(race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>])</span>
+<span id="cb14-5">    ax.plot(race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>])</span>
+<span id="cb14-6">    ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">% o</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f Total US Racial Population in Prison'</span>,fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb14-7">    ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Year'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb14-8">    ax.set_ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Percent of Racial Population In Prison [%]'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb14-9">    ax.legend(fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb14-10">    ax.set_ylim([<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>([race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(), </span>
+<span id="cb14-11">                             race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(),</span>
+<span id="cb14-12">                             race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()])])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Descriptive stats for percent of group incarcerated</summary>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-2">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>].mean()))</span>
+<span id="cb15-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-4">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>].mean()))</span>
+<span id="cb15-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Average percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-6">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>].mean()))</span>
+<span id="cb15-7"></span>
+<span id="cb15-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Change in percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison between 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-9">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'black'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2016'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Black_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2006'</span>]))</span>
+<span id="cb15-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Change in percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison between 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-11">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2016'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hispanic_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2006'</span>]))</span>
+<span id="cb15-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Change in percentage of total </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:&gt;8s}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> population in prison between 2006 to 2016: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{:0.3f}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">%'</span></span>
+<span id="cb15-13">      .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white'</span>, race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2016'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> race_sex_pop[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'White_pct'</span>][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2006'</span>]))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Average percentage of total    black population in prison: 1.440%
+Average percentage of total Hispanic population in prison: 0.656%
+Average percentage of total    white population in prison: 0.241%
+Change in percentage of total    black population in prison between 2006 to 2016: -0.406%
+Change in percentage of total Hispanic population in prison between 2006 to 2016: -0.113%
+Change in percentage of total    white population in prison between 2006 to 2016: -0.035%</code></pre>
+</div>
+</div>
+<p>That’s an extremely large difference. A randomly selected black person is nearly 6 times more likely to be in prison than a randomly selected white person and more than twice as likely as a randomly selected Hispanic person.</p>
+<p>That motivates the question: Why is there such a large difference between these populations?</p>
+<p>To investigate that question, it would be useful to investigate other questions, such as: * Does the criminal justice system treat different racial groups differently? * Is the average quality of education comparable for different racial populations? * Is the distribution of quality of education comparable for different racial populations? * Is the average quality of employment opportunity comparable for different racial populations? * Is the distribution of quality of employment opportunities comparable for different racial populations? * Is there a causal relationship between the pervasive housing segregation across the US and these disparities? * What drove the significant reduction in the incarcerated proportion of black Americans from 2006-2016?</p>
+<p>To Be Continued?</p>
+
+
+
+</section>
+</section>
+</section>
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div> ]]></description>
+  <category>pandas</category>
+  <category>analysis</category>
+  <category>old</category>
+  <guid>https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3.html</guid>
+  <pubDate>Thu, 28 Jun 2018 00:00:00 GMT</pubDate>
+  <media:content url="https://www.matttriano.dev/posts/012_crime_and_prisons_p3/imgs/proportion_of_population_group_incarcerated_by_year.png" medium="image" type="image/png" height="105" width="144"/>
+</item>
+<item>
   <title>Exploration in Criminal Justice and Corrections Data, Part 2</title>
   <dc:creator>Matt Triano</dc:creator>
   <link>https://www.matttriano.dev/posts/011_crime_and_prisons_p2/Crime_and_Prisons_part2.html</link>
@@ -4541,7 +6836,7 @@ Update Note
 </ol>
 <ul>
 <li><a href="../../posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html">Previous Notebook: Part 1</a></li>
-<li><a href="../012_crime_and_prisons_p3/Crime_and_Prisons_part3.ipynb">Next Notebook: Part 3</a></li>
+<li><a href="../../posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3.html">Next Notebook: Part 3</a></li>
 </ul>
 </section>
 </section>
