@@ -2,46 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.matttriano.dev/about.html</loc>
-    <lastmod>2023-07-18T11:49:28.569Z</lastmod>
+    <lastmod>2023-08-01T03:41:30.486Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/007_midjourney_experiments/midjourney_experiments.html</loc>
-    <lastmod>2023-07-18T11:49:26.613Z</lastmod>
+    <lastmod>2023-08-01T03:41:28.470Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
-    <lastmod>2023-07-18T11:49:23.733Z</lastmod>
+    <lastmod>2023-08-01T03:41:25.762Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</loc>
-    <lastmod>2023-07-18T11:49:20.729Z</lastmod>
+    <lastmod>2023-08-01T03:41:22.842Z</lastmod>
   </url>
   <url>
-    <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2023-07-18T11:49:15.109Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</loc>
-    <lastmod>2023-07-18T11:49:14.229Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.matttriano.dev/index.html</loc>
-    <lastmod>2023-07-18T11:49:12.977Z</lastmod>
+    <loc>https://www.matttriano.dev/posts/008_aerial_imagery/Aerial_Imagery_experiments.html</loc>
+    <lastmod>2023-08-01T03:41:17.170Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</loc>
-    <lastmod>2023-07-18T11:49:14.709Z</lastmod>
+    <lastmod>2023-08-01T03:41:15.138Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/index.html</loc>
+    <lastmod>2023-08-01T03:41:13.366Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</loc>
+    <lastmod>2023-08-01T03:41:14.662Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
+    <lastmod>2023-08-01T03:41:15.542Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3.html</loc>
-    <lastmod>2023-07-18T11:49:22.729Z</lastmod>
+    <lastmod>2023-08-01T03:41:24.786Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/011_crime_and_prisons_p2/Crime_and_Prisons_part2.html</loc>
-    <lastmod>2023-07-18T11:49:25.857Z</lastmod>
+    <lastmod>2023-08-01T03:41:27.762Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html</loc>
-    <lastmod>2023-07-18T11:49:27.701Z</lastmod>
+    <lastmod>2023-08-01T03:41:29.558Z</lastmod>
   </url>
 </urlset>

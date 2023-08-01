@@ -3,6 +3,7 @@
     "listing": "/about.html",
     "items": [
       "/posts/004_census_tiger_dev/TIGER_data_collector_dev.html",
+      "/posts/008_aerial_imagery/Aerial_Imagery_experiments.html",
       "/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html",
       "/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html",
       "/posts/011_crime_and_prisons_p2/Crime_and_Prisons_part2.html",
@@ -26,16 +27,17 @@
     "items": []
   },
   {
-    "listing": "/posts/002_notebook_test/jupyter_quarto.html",
+    "listing": "/posts/008_aerial_imagery/Aerial_Imagery_experiments.html",
     "items": []
   },
   {
-    "listing": "/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html",
+    "listing": "/posts/000_setting_up_miniconda/Setting_up_Miniconda.html",
     "items": []
   },
   {
     "listing": "/index.html",
     "items": [
+      "/posts/008_aerial_imagery/Aerial_Imagery_experiments.html",
       "/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html",
       "/posts/007_midjourney_experiments/midjourney_experiments.html",
       "/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html",
@@ -48,7 +50,11 @@
     ]
   },
   {
-    "listing": "/posts/000_setting_up_miniconda/Setting_up_Miniconda.html",
+    "listing": "/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/002_notebook_test/jupyter_quarto.html",
     "items": []
   },
   {

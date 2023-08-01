@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Triano">
+<meta name="dcterms.date" content="2023-07-23">
+<meta name="description" content="Preparing for image segmentation experiments">
+
+<title>Matt Triano - Collecting High Resolution Satellite Imagery</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: [],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<link rel="alternate" type="application/rss+xml" title="Matt Triano" href="Aerial_Imagery_experiments.xml"></head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Matt Triano</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/MattTriano" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <div class="quarto-title-block"><div><h1 class="title">Collecting High Resolution Satellite Imagery</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+                  <div>
+        <div class="description">
+          Preparing for image segmentation experiments
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">rasterio</div>
+                <div class="quarto-category">GIS</div>
+                <div class="quarto-category">data collection</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Matt Triano </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 23, 2023</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">July 27, 2023</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a>
+  <ul class="collapse">
+  <li><a href="#question-1-is-the-image-resolution-fine-enough-that-we-can-resolve-buildings" id="toc-question-1-is-the-image-resolution-fine-enough-that-we-can-resolve-buildings" class="nav-link" data-scroll-target="#question-1-is-the-image-resolution-fine-enough-that-we-can-resolve-buildings">Question 1: Is the image resolution fine enough that we can resolve buildings?</a>
+  <ul class="collapse">
+  <li><a href="#answer-1-yes-we-can-easily-resolve-small-buildings" id="toc-answer-1-yes-we-can-easily-resolve-small-buildings" class="nav-link" data-scroll-target="#answer-1-yes-we-can-easily-resolve-small-buildings">Answer 1: Yes, we can easily resolve small buildings</a></li>
+  </ul></li>
+  <li><a href="#question-2-what-does-.vrt-file-data-look-like-and-can-i-use-it-to-determine-the-images-covering-chicago" id="toc-question-2-what-does-.vrt-file-data-look-like-and-can-i-use-it-to-determine-the-images-covering-chicago" class="nav-link" data-scroll-target="#question-2-what-does-.vrt-file-data-look-like-and-can-i-use-it-to-determine-the-images-covering-chicago">Question 2: What does <code>.vrt</code> file data look like, and can I use it to determine the images covering Chicago</a>
+  <ul class="collapse">
+  <li><a href="#answer-2-yes-there-was-usable-order-although-it-was-a-bit-of-a-chore" id="toc-answer-2-yes-there-was-usable-order-although-it-was-a-bit-of-a-chore" class="nav-link" data-scroll-target="#answer-2-yes-there-was-usable-order-although-it-was-a-bit-of-a-chore">Answer 2: yes, there was usable order, although it was a bit of a chore</a></li>
+  </ul></li>
+  <li><a href="#question-3-what-is-in-the-zipped-tile-index-file-and-can-i-use-it-to-determine-the-images-covering-chicago" id="toc-question-3-what-is-in-the-zipped-tile-index-file-and-can-i-use-it-to-determine-the-images-covering-chicago" class="nav-link" data-scroll-target="#question-3-what-is-in-the-zipped-tile-index-file-and-can-i-use-it-to-determine-the-images-covering-chicago">Question 3: What is in the zipped tile-index file, and can I use it to determine the images covering Chicago</a>
+  <ul class="collapse">
+  <li><a href="#answer-3-the-zipped-tile-index-file-seems-to-be-primarily-intended-as-an-aid-for-finding-images-covering-areas-of-interest" id="toc-answer-3-the-zipped-tile-index-file-seems-to-be-primarily-intended-as-an-aid-for-finding-images-covering-areas-of-interest" class="nav-link" data-scroll-target="#answer-3-the-zipped-tile-index-file-seems-to-be-primarily-intended-as-an-aid-for-finding-images-covering-areas-of-interest">Answer 3: The zipped tile-index file seems to be primarily intended as an aid for finding images covering areas of interest</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="motivation" class="level1">
+<h1>Motivation</h1>
+<p>A few months ago, Facebook Research <a href="https://github.com/facebookresearch/segment-anything">released a model</a> they named the <strong>Segment Anything Model</strong> (or <strong>SAM</strong> for short) for image segmentation, either taking a textual prompt and segmenting areas related to the prompt, or autmatically segmenting every discrete contiguous body of pixels.</p>
+<p>It would be pretty neat to be able to engineer features like “trees per block”, “cars per street”, etc. To attempt that, I’ll need very high resolution imagery. Fortunately, the NOAA <a href="https://coast.noaa.gov/digitalcoast/data/">freely provides</a> such image data. They don’t offer an image dataset that’s limited just to Chicago. I could download all of the image tiles from their <a href="https://coastalimagery.blob.core.windows.net/digitalcoast/IL_NAIP_2021_9599/index.html">latest Illinois release</a>, but each of these images is gigantic, so I’ll have to figure out a way to find the URLs to just the image tiles I want.</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Imports, Path definitions, and defining basic functions</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> List, Tuple</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.request <span class="im">import</span> urlretrieve</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyproj <span class="im">import</span> CRS, Transformer</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rasterio</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rasterio.plot <span class="im">import</span> show</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>PROJECT_DIR <span class="op">=</span> Path(<span class="st">"."</span>).resolve()</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>PROJECT_DATA_DIR <span class="op">=</span> PROJECT_DIR.joinpath(<span class="st">"data"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>PROJECT_DATA_DIR.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> PROJECT_DATA_DIR.joinpath(<span class="st">"IL_NAIP_2021_9599"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>output_dir.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_image_bounds_to_4326(image_crs: rasterio.crs.CRS, image_bounds: rasterio.coords.BoundingBox) <span class="op">-&gt;</span> Tuple:</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    transformer <span class="op">=</span> Transformer.from_crs(CRS(image_crs), CRS(<span class="st">"epsg:4326"</span>))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    left, top <span class="op">=</span> transformer.transform(image_bounds.left, image_bounds.top)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    right, bottom <span class="op">=</span> transformer.transform(image_bounds.right, image_bounds.bottom)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Lat, Lon of the upper left corner:   </span><span class="sc">{</span>left<span class="sc">,</span> top<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Lat, Lon of the bottom right corner: </span><span class="sc">{</span>right<span class="sc">,</span> bottom<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (left, bottom, right, top)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_img_file(img_urls: List[<span class="bu">str</span>], output_dir: Path <span class="op">=</span> output_dir) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> img_url <span class="kw">in</span> img_urls:</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        file_name <span class="op">=</span> img_url.split(<span class="st">"/"</span>)[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> file_path.is_file():</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"File </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> doesn't exist; downloading now"</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>            urlretrieve(img_url, file_path)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"File </span><span class="sc">{</span>file_name<span class="sc">}</span><span class="ss"> already downloaded. Skipping redownload."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Examining NOAA’s data file list for the 2021-Illinois-4band-imagery dataset</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>il_2021_img_urls_url <span class="op">=</span> <span class="st">"https://coastalimagery.blob.core.windows.net/digitalcoast/IL_NAIP_2021_9599/urllist_2021_4BandImagery_Illinois_m9599.txt"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.get(il_2021_img_urls_url)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> resp.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    il_2021_img_urls <span class="op">=</span> resp.text.split(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'.tif file urls:  </span><span class="sc">{</span><span class="bu">len</span>([x <span class="cf">for</span> x <span class="kw">in</span> il_2021_img_urls <span class="cf">if</span> x.endswith(<span class="st">".tif"</span>)])<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total file urls: </span><span class="sc">{</span><span class="bu">len</span>(il_2021_img_urls)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>file_extension_counts <span class="op">=</span> Counter([x.split(<span class="st">"."</span>)[<span class="op">-</span><span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> il_2021_img_urls])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>sorted_counts <span class="op">=</span> <span class="bu">sorted</span>(file_extension_counts.items(), key<span class="op">=</span><span class="kw">lambda</span> ext: ext[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Counts of URLs by file extension (or content following a period)"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file_ext, url_count  <span class="kw">in</span> sorted_counts:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - File extension: </span><span class="sc">{</span>file_ext<span class="sc">: &gt;22}</span><span class="ss">, URL count: </span><span class="sc">{</span>url_count<span class="sc">:&gt;4}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>.tif file urls:  4131
+Total file urls: 8285
+Counts of URLs by file extension (or content following a period)
+  - File extension:                    xml, URL count: 4149
+  - File extension:                    tif, URL count: 4131
+  - File extension:                    vrt, URL count:    2
+  - File extension:                    zip, URL count:    1
+  - File extension:  gov/inport/item/68085, URL count:    1
+  - File extension:                       , URL count:    1</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>URLs for the non .tif or .xml files</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Non .tif or .xml URLs:"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>non_tif_or_xml_file_urls <span class="op">=</span> [el <span class="cf">for</span> el <span class="kw">in</span> il_2021_img_urls <span class="cf">if</span> <span class="bu">all</span>(<span class="kw">not</span> el.endswith(ext) <span class="cf">for</span> ext <span class="kw">in</span> [<span class="st">".tif"</span>, <span class="st">".xml"</span>])]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> url <span class="kw">in</span> non_tif_or_xml_file_urls:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f" - '</span><span class="sc">{</span>url<span class="sc">}</span><span class="ss">'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non .tif or .xml URLs:
+ - 'https://coastalimagery.blob.core.windows.net/digitalcoast/IL_NAIP_2021_9599/il_naip_2021_15.vrt'
+ - 'https://coastalimagery.blob.core.windows.net/digitalcoast/IL_NAIP_2021_9599/il_naip_2021_16.vrt'
+ - 'https://coastalimagery.blob.core.windows.net/digitalcoast/IL_NAIP_2021_9599/tile_index_IL_NAIP_2021_9599.zip'
+ - 'https://www.fisheries.noaa.gov/inport/item/68085'
+ - ''</code></pre>
+</div>
+</div>
+<p><code>.vrt</code> files are Virtual Format files used by GDAL (the Geospatial Data Abstraction Library). I haven’t looked at one before, and this full Illinois aerial imagery dataset is ~75GB, so let’s take a look and see if we can’t determine some pattern to the <code>.tif</code> filenaming that would enable me to avoid a massive download. And if the <code>.vrt</code> files aren’t useful, I guess I can explore those … 4149 <code>.xml</code> files for meaning.</p>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Downloading a few .tif image files</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dl_urls <span class="op">=</span> [img_url <span class="cf">for</span> img_url <span class="kw">in</span> il_2021_img_urls <span class="cf">if</span> img_url.endswith(<span class="st">".tif"</span>)][<span class="dv">0</span>:<span class="dv">3</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>dl_file_names <span class="op">=</span> [url.split(<span class="st">"/"</span>)[<span class="op">-</span><span class="dv">1</span>] <span class="cf">for</span> url <span class="kw">in</span> dl_urls]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>download_img_file(img_urls<span class="op">=</span>dl_urls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_3608906_ne_16_060_20210622.tif already downloaded. Skipping redownload.
+File m_3608907_ne_16_060_20210617.tif already downloaded. Skipping redownload.
+File m_3608907_nw_16_060_20210617.tif already downloaded. Skipping redownload.</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Examining the size and names of those downloaded .tif files</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>ls <span class="op">-</span>lshtr {output_dir} <span class="op">|</span> head <span class="op">-</span>n <span class="dv">6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>total 31G
+1.6M -rw-rw-r-- 1 matt matt 1.6M Jul  1 20:31 il_naip_2021_15.vrt
+5.1M -rw-rw-r-- 1 matt matt 5.1M Jul  1 20:31 il_naip_2021_16.vrt
+454M -rw-rw-r-- 1 matt matt 454M Jul  1 20:31 m_3608906_ne_16_060_20210622.tif
+431M -rw-rw-r-- 1 matt matt 431M Jul  1 20:31 m_3608907_ne_16_060_20210617.tif
+422M -rw-rw-r-- 1 matt matt 422M Jul  1 20:31 m_3608907_nw_16_060_20210617.tif
+ls: write error: Broken pipe</code></pre>
+</div>
+</div>
+<p>Oof.mp3, ~450MB per <code>.tif</code> (based on looking at the first 3), and there are 4131 <code>.tif</code> files. I guess before I try to figure out the naming structure, I should see if the image data is adequate to resolve buildings.</p>
+<section id="question-1-is-the-image-resolution-fine-enough-that-we-can-resolve-buildings" class="level2">
+<h2 class="anchored" data-anchor-id="question-1-is-the-image-resolution-fine-enough-that-we-can-resolve-buildings">Question 1: Is the image resolution fine enough that we can resolve buildings?</h2>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Examining assorted metadata in one of these .tif image files</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(dl_file_names[<span class="dv">2</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    orig_crs <span class="op">=</span> src.crs</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    orig_bounds <span class="op">=</span> src.bounds</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    bands <span class="op">=</span> src.read()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"File name: </span><span class="sc">{</span>file_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Transforms: </span><span class="sc">{</span>src<span class="sc">.</span>transform<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"CRS:        </span><span class="sc">{</span>orig_crs<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Resolution: </span><span class="sc">{</span>src<span class="sc">.</span>res<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"units:      </span><span class="sc">{</span>src<span class="sc">.</span>crs<span class="sc">.</span>linear_units<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"bounds:     </span><span class="sc">{</span>orig_bounds<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"indexes:    </span><span class="sc">{</span>src<span class="sc">.</span>indexes<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"# of bands: </span><span class="sc">{</span>src<span class="sc">.</span>count<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Shape of imagery array: </span><span class="sc">{</span>bands<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> convert_image_bounds_to_4326(image_crs<span class="op">=</span>orig_crs, image_bounds<span class="op">=</span>orig_bounds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>File name: m_3608907_nw_16_060_20210617.tif
+Transforms: | 0.60, 0.00, 299327.40|
+| 0.00,-0.60, 4097538.60|
+| 0.00, 0.00, 1.00|
+CRS:        EPSG:26916
+Resolution: (0.6, 0.6)
+units:      metre
+bounds:     BoundingBox(left=299327.4, bottom=4089928.2, right=305696.4, top=4097538.6)
+indexes:    (1, 2, 3, 4)
+# of bands: 4
+Shape of imagery array: (4, 12684, 10615)
+Lat, Lon of the upper left corner:   (37.002598910956365, -89.25526907292884)
+Lat, Lon of the bottom right corner: (36.93538410568418, -89.18177942773526)</code></pre>
+</div>
+</div>
+<p>From the above printout, we see:</p>
+<ul>
+<li>the rasters in this dataset use projected coordinate reference system (CRS) EPSG 26916,</li>
+<li>that projected CRS uses units of meters,</li>
+<li>one pixel represents a 0.6m x 0.6m area (i.e.&nbsp;the resolution is 0.6m x 0.6m), and</li>
+<li>the <code>bands</code> variable contains four stacked image arrays that are 12684 pixels by 10615 pixels</li>
+</ul>
+<p>So each image should show a ~7.5 km by ~6.5 km area and have more than enough resolution to distinguish buildings from surrounding easments and infrastructure.</p>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Showing the .tif image</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> show(bands)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>That image is pretty faded. Let’s look at the color-interpretation metadata and make prettier maps.</p>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>Examining the color-interpretation metadata in the .tif image</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Color interpretation for bands:</span><span class="ch">\n</span><span class="ss">  </span><span class="sc">{</span>src<span class="sc">.</span>colorinterp<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Color interpretation for bands:
+  (&lt;ColorInterp.red: 3&gt;, &lt;ColorInterp.green: 4&gt;, &lt;ColorInterp.blue: 5&gt;, &lt;ColorInterp.undefined: 0&gt;)</code></pre>
+</div>
+</div>
+<p>Ok, so the 4 bands represent [red, green, blue, non-color-data]. Let’s account for that.</p>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Developing a display function with proper color-interpretation</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>file_path<span class="op">=</span>file_path</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> src.read(<span class="dv">1</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> src.read(<span class="dv">2</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> src.read(<span class="dv">3</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    rgb <span class="op">=</span> np.stack((r, g, b))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    show(rgb, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We saw above that a pixel corresponds to about 0.6m of linear distance, so we should definately be able to see buildings, but many human-scale things (like cars) may only a few pixels wide. Let’s blow up an image and really get a sense for the max resolution.</p>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Zooming in on the north-south cluster of buildings</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>file_path<span class="op">=</span>file_path</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    window <span class="op">=</span> rasterio.windows.Window(col_off<span class="op">=</span><span class="dv">5000</span>, row_off<span class="op">=</span><span class="dv">6000</span>, width<span class="op">=</span><span class="dv">4000</span>, height<span class="op">=</span><span class="dv">4000</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> src.read(<span class="dv">1</span>, window<span class="op">=</span>window)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> src.read(<span class="dv">2</span>, window<span class="op">=</span>window)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> src.read(<span class="dv">3</span>, window<span class="op">=</span>window)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    rgb <span class="op">=</span> np.stack((r, g, b))</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    show(rgb, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Zooming in much tighter on the north-south cluster of buildings</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>file_path<span class="op">=</span>file_path</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    window <span class="op">=</span> rasterio.windows.Window(col_off<span class="op">=</span><span class="dv">6500</span>, row_off<span class="op">=</span><span class="dv">7600</span>, width<span class="op">=</span><span class="dv">750</span>, height<span class="op">=</span><span class="dv">750</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> src.read(<span class="dv">1</span>, window<span class="op">=</span>window)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> src.read(<span class="dv">2</span>, window<span class="op">=</span>window)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> src.read(<span class="dv">3</span>, window<span class="op">=</span>window)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    rgb <span class="op">=</span> np.stack((r, g, b))</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    show(rgb, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Zooming in to the extent of much tighter on the north-south cluster of buildings</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>file_path<span class="op">=</span>file_path</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    window <span class="op">=</span> rasterio.windows.Window(col_off<span class="op">=</span><span class="dv">6800</span>, row_off<span class="op">=</span><span class="dv">8000</span>, width<span class="op">=</span><span class="dv">300</span>, height<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> src.read(<span class="dv">1</span>, window<span class="op">=</span>window)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> src.read(<span class="dv">2</span>, window<span class="op">=</span>window)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> src.read(<span class="dv">3</span>, window<span class="op">=</span>window)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    rgb <span class="op">=</span> np.stack((r, g, b))</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    show(rgb, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<section id="answer-1-yes-we-can-easily-resolve-small-buildings" class="level3">
+<h3 class="anchored" data-anchor-id="answer-1-yes-we-can-easily-resolve-small-buildings">Answer 1: Yes, we can easily resolve small buildings</h3>
+<p>Cross-referencing with Google maps, we see that cars (like the red one in the shadow of the structure top-center in the above image) are barely discernable, but we can clearly make out buildings and trees.</p>
+<p><img src="imgs/google_maps_zoomed_in_cross_reference.png" class="img-fluid"></p>
+<div class="cell" data-execution_count="13">
+<details>
+<summary>Encapsulating logic for downloading, extracting, and displaying .tifs</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_tif_and_extract_bands(dl_filename: <span class="bu">str</span>, full_url_list: List <span class="op">=</span> il_2021_img_urls, output_dir: Path <span class="op">=</span> output_dir) <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    filename_subset <span class="op">=</span> [el <span class="cf">for</span> el <span class="kw">in</span> full_url_list <span class="cf">if</span> el.endswith(dl_filename)]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    download_img_file(output_dir<span class="op">=</span>output_dir, img_urls<span class="op">=</span>filename_subset)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    file_path <span class="op">=</span> output_dir.joinpath(dl_filename)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        orig_crs <span class="op">=</span> src.crs</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        orig_bounds <span class="op">=</span> src.bounds</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        bands <span class="op">=</span> src.read()</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"File name:  </span><span class="sc">{</span>file_path<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"bounds:     </span><span class="sc">{</span>orig_bounds<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Shape of imagery array: </span><span class="sc">{</span>bands<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=</span> convert_image_bounds_to_4326(image_crs<span class="op">=</span>orig_crs, image_bounds<span class="op">=</span>orig_bounds)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bands</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_raster_image(file_path: Path, fig_width: <span class="bu">int</span> <span class="op">=</span> <span class="dv">10</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> rasterio.<span class="bu">open</span>(file_path) <span class="im">as</span> src:</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> src.read(<span class="dv">1</span>)</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>        g <span class="op">=</span> src.read(<span class="dv">2</span>)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        b <span class="op">=</span> src.read(<span class="dv">3</span>)</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        rgb <span class="op">=</span> np.stack((r, g, b))</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        show(rgb, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now that we know that the data can support the research task, let’s try to find images relevant to the research goal (namely, let’s find images of Chicago). These <code>.tif</code> files are gigantic, so let’s explore the metadata for order we can exploit to guide us. From the counts of file-extentions above, ~99.9% of the URLs in this dataset’s manifest were either <code>.tif</code> or <code>.xml</code> files, and there were a few other URLs, two for <code>.vrt</code> files and one <code>.zip</code> file.</p>
+</section>
+</section>
+<section id="question-2-what-does-.vrt-file-data-look-like-and-can-i-use-it-to-determine-the-images-covering-chicago" class="level2">
+<h2 class="anchored" data-anchor-id="question-2-what-does-.vrt-file-data-look-like-and-can-i-use-it-to-determine-the-images-covering-chicago">Question 2: What does <code>.vrt</code> file data look like, and can I use it to determine the images covering Chicago</h2>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Examining the first ~20 lines in one of the .vrt files</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(output_dir.joinpath(<span class="st">"il_naip_2021_15.vrt"</span>)) <span class="im">as</span> f:</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    vrt_lines <span class="op">=</span> f.readlines()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">""</span>.join(vrt_lines[<span class="dv">0</span>:<span class="dv">20</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;VRTDataset rasterXSize="236571" rasterYSize="857074"&gt;
+  &lt;SRS&gt;PROJCS["NAD83 / UTM zone 15N",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-93],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","26915"]]&lt;/SRS&gt;
+  &lt;GeoTransform&gt;  6.2200080000000005e+05,  6.0000000000001086e-01,  0.0000000000000000e+00,  4.7169515999999996e+06,  0.0000000000000000e+00, -6.0000000000001086e-01&lt;/GeoTransform&gt;
+  &lt;VRTRasterBand dataType="Byte" band="1"&gt;
+    &lt;ColorInterp&gt;Red&lt;/ColorInterp&gt;
+    &lt;SimpleSource&gt;
+      &lt;SourceFilename relativeToVRT="1"&gt;m_3709008_ne_15_060_20210616.tif&lt;/SourceFilename&gt;
+      &lt;SourceBand&gt;1&lt;/SourceBand&gt;
+      &lt;SourceProperties RasterXSize="10445" RasterYSize="12759" DataType="Byte" BlockXSize="10445" BlockYSize="1" /&gt;
+      &lt;SrcRect xOff="0" yOff="0" xSize="10445" ySize="12759" /&gt;
+      &lt;DstRect xOff="226126" yOff="844315" xSize="10445" ySize="12759" /&gt;
+    &lt;/SimpleSource&gt;
+    &lt;SimpleSource&gt;
+      &lt;SourceFilename relativeToVRT="1"&gt;m_3809003_ne_15_060_20210704.tif&lt;/SourceFilename&gt;
+      &lt;SourceBand&gt;1&lt;/SourceBand&gt;
+      &lt;SourceProperties RasterXSize="10249" RasterYSize="12700" DataType="Byte" BlockXSize="10249" BlockYSize="1" /&gt;
+      &lt;SrcRect xOff="0" yOff="0" xSize="10249" ySize="12700" /&gt;
+      &lt;DstRect xOff="129996" yOff="661987" xSize="10249" ySize="12700" /&gt;
+    &lt;/SimpleSource&gt;
+    &lt;SimpleSource&gt;
+</code></pre>
+</div>
+</div>
+<p>That looks like XML, which is very structured. After the opening <code>VRTDataset</code> tag, we see tags <code>&lt;SRS&gt;</code> (with CRS, projection, unit, orientation, etc metadata for the image data), <code>&lt;GEOTRANSFORM&gt;</code> (presumably providing the affine transformation matrix to transform from some reference), and then the start tag of a <code>&lt;VRTRasterBand&gt;</code> set (presumably for the band describing the red pixel mask values) of <code>&lt;SimpleSource&gt;</code> tags.</p>
+<p>Let’s try parsing those <code>&lt;SimpleSource&gt;</code> elements to an easier-to-search data structure, the DataFrame.</p>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Code to extract and structure data from these .vrt files</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xml.etree.ElementTree <span class="im">as</span> ET</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_simple_sources_from_vrt_file(vrt_file_path: Path) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    tree <span class="op">=</span> ET.parse(vrt_file_path)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    root <span class="op">=</span> tree.getroot()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    vrt_data <span class="op">=</span> []</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> source <span class="kw">in</span> root.<span class="bu">iter</span>(<span class="st">"SimpleSource"</span>):</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>        src_filename <span class="op">=</span> source.find(<span class="st">"SourceFilename"</span>).text</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        src_band <span class="op">=</span> source.find(<span class="st">"SourceBand"</span>).text</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        src_properties <span class="op">=</span> source.find(<span class="st">"SourceProperties"</span>).attrib</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>        src_rect <span class="op">=</span> source.find(<span class="st">"SrcRect"</span>).attrib</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        dst_rect <span class="op">=</span> source.find(<span class="st">"DstRect"</span>).attrib</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>        vrt_data.append({</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SourceFilename"</span>: src_filename,</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SourceBand"</span>: <span class="bu">int</span>(src_band),</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RasterXSize"</span>: <span class="bu">int</span>(src_properties[<span class="st">"RasterXSize"</span>]),</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RasterYSize"</span>: <span class="bu">int</span>(src_properties[<span class="st">"RasterYSize"</span>]),</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">"DataType"</span>: src_properties[<span class="st">"DataType"</span>],</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"BlockXSize"</span>: <span class="bu">int</span>(src_properties[<span class="st">"BlockXSize"</span>]),</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">"BlockYSize"</span>: <span class="bu">int</span>(src_properties[<span class="st">"BlockYSize"</span>]),</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">"src_x_off"</span>: <span class="bu">int</span>(src_rect[<span class="st">"xOff"</span>]),</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">"src_y_off"</span>: <span class="bu">int</span>(src_rect[<span class="st">"yOff"</span>]),</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"src_x_size"</span>: <span class="bu">int</span>(src_rect[<span class="st">"xSize"</span>]),</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">"src_y_size"</span>: <span class="bu">int</span>(src_rect[<span class="st">"ySize"</span>]),</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dst_x_off"</span>: <span class="bu">int</span>(dst_rect[<span class="st">"xOff"</span>]),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dst_y_off"</span>: <span class="bu">int</span>(dst_rect[<span class="st">"yOff"</span>]),</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dst_x_size"</span>: <span class="bu">int</span>(dst_rect[<span class="st">"xSize"</span>]),</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dst_y_size"</span>: <span class="bu">int</span>(dst_rect[<span class="st">"ySize"</span>]),</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(vrt_data)</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>    min_x: <span class="bu">int</span>, max_x: <span class="bu">int</span>, min_y: <span class="bu">int</span>, max_y: <span class="bu">int</span>, vrt_df: pd.DataFrame,</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    keep_cols <span class="op">=</span> [<span class="st">"SourceFilename"</span>, <span class="st">"dst_x_off"</span>, <span class="st">"dst_y_off"</span>]</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    df_subset <span class="op">=</span> vrt_df.loc[</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>            (vrt_df[<span class="st">"dst_x_off"</span>] <span class="op">&gt;=</span> min_x) <span class="op">&amp;</span> (vrt_df[<span class="st">"dst_x_off"</span>] <span class="op">&lt;=</span> max_x) <span class="op">&amp;</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>            (vrt_df[<span class="st">"dst_y_off"</span>] <span class="op">&gt;=</span> min_y) <span class="op">&amp;</span> (vrt_df[<span class="st">"dst_y_off"</span>] <span class="op">&lt;=</span> max_y)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>        keep_cols</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    ].sort_values(by<span class="op">=</span><span class="st">"dst_x_off"</span>)</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_subset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="16">
+<details>
+<summary>Examining the structured data from vrt files</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>vrt_15_df <span class="op">=</span> parse_simple_sources_from_vrt_file(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    vrt_file_path<span class="op">=</span>output_dir.joinpath(<span class="st">"il_naip_2021_15.vrt"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Source files referenced in the '15' vrt file: </span><span class="sc">{</span><span class="bu">len</span>(vrt_15_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>display(vrt_15_df.head(<span class="dv">2</span>))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>vrt_16_df <span class="op">=</span> parse_simple_sources_from_vrt_file(</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    vrt_file_path<span class="op">=</span>output_dir.joinpath(<span class="st">"il_naip_2021_16.vrt"</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Source files referenced in the '16' vrt file: </span><span class="sc">{</span><span class="bu">len</span>(vrt_16_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>display(vrt_16_df.head(<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Source files referenced in the '15' vrt file: 3868
+Source files referenced in the '16' vrt file: 12656</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">SourceBand</th>
+<th data-quarto-table-cell-role="th">RasterXSize</th>
+<th data-quarto-table-cell-role="th">RasterYSize</th>
+<th data-quarto-table-cell-role="th">DataType</th>
+<th data-quarto-table-cell-role="th">BlockXSize</th>
+<th data-quarto-table-cell-role="th">BlockYSize</th>
+<th data-quarto-table-cell-role="th">src_x_off</th>
+<th data-quarto-table-cell-role="th">src_y_off</th>
+<th data-quarto-table-cell-role="th">src_x_size</th>
+<th data-quarto-table-cell-role="th">src_y_size</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+<th data-quarto-table-cell-role="th">dst_x_size</th>
+<th data-quarto-table-cell-role="th">dst_y_size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>m_3709008_ne_15_060_20210616.tif</td>
+<td>1</td>
+<td>10445</td>
+<td>12759</td>
+<td>Byte</td>
+<td>10445</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>10445</td>
+<td>12759</td>
+<td>226126</td>
+<td>844315</td>
+<td>10445</td>
+<td>12759</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>m_3809003_ne_15_060_20210704.tif</td>
+<td>1</td>
+<td>10249</td>
+<td>12700</td>
+<td>Byte</td>
+<td>10249</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>10249</td>
+<td>12700</td>
+<td>129996</td>
+<td>661987</td>
+<td>10249</td>
+<td>12700</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">SourceBand</th>
+<th data-quarto-table-cell-role="th">RasterXSize</th>
+<th data-quarto-table-cell-role="th">RasterYSize</th>
+<th data-quarto-table-cell-role="th">DataType</th>
+<th data-quarto-table-cell-role="th">BlockXSize</th>
+<th data-quarto-table-cell-role="th">BlockYSize</th>
+<th data-quarto-table-cell-role="th">src_x_off</th>
+<th data-quarto-table-cell-role="th">src_y_off</th>
+<th data-quarto-table-cell-role="th">src_x_size</th>
+<th data-quarto-table-cell-role="th">src_y_size</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+<th data-quarto-table-cell-role="th">dst_x_size</th>
+<th data-quarto-table-cell-role="th">dst_y_size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>m_3608906_ne_16_060_20210622.tif</td>
+<td>1</td>
+<td>10475</td>
+<td>12686</td>
+<td>Byte</td>
+<td>10475</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>10475</td>
+<td>12686</td>
+<td>96991</td>
+<td>1032135</td>
+<td>10475</td>
+<td>12686</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>m_3608907_ne_16_060_20210617.tif</td>
+<td>1</td>
+<td>10459</td>
+<td>12674</td>
+<td>Byte</td>
+<td>10459</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>10459</td>
+<td>12674</td>
+<td>115547</td>
+<td>1032573</td>
+<td>10459</td>
+<td>12674</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Varying offsets to find images bounding the corners of Chicago</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">0</span>, max_x<span class="op">=</span><span class="dv">31000</span>, min_y<span class="op">=</span><span class="dv">0</span>, max_y<span class="op">=</span><span class="dv">10000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3026</td>
+<td>m_4208925_sw_16_060_20210918.tif</td>
+<td>29303</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4208925_sw_16_060_20210918.tif already downloaded. Skipping redownload.
+File name:  m_4208925_sw_16_060_20210918.tif
+bounds:     BoundingBox(left=253192.2, bottom=4709173.8, right=259211.40000000002, top=4716951.6)
+Shape of imagery array: (4, 12963, 10032)
+Lat, Lon of the upper left corner:   (42.56552458440836, -90.00678751628385)
+Lat, Lon of the bottom right corner: (42.49747091858195, -89.93027728345706)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-18-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Chicago is roughly bounded by (42.05, -87.95) to (41.65, -87.55), so filtering to the minimum y-offset in the vrt_16 file gets us pretty close, but from inspection, that level of ruralness is pretty far from Chicago.</p>
+<div class="cell" data-execution_count="18">
+<details>
+<summary>Varying offsets to find images bounding the corners of Chicago</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">300000</span>, max_x<span class="op">=</span><span class="dv">310000</span>, min_y<span class="op">=</span><span class="dv">110000</span>, max_y<span class="op">=</span><span class="dv">115000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2226</td>
+<td>m_4108701_nw_16_060_20210908.tif</td>
+<td>301986</td>
+<td>110654</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4108701_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4108701_nw_16_060_20210908.tif
+bounds:     BoundingBox(left=416802.0, bottom=4643016.600000001, right=422700.0, top=4650559.2)
+Shape of imagery array: (4, 12571, 9830)
+Lat, Lon of the upper left corner:   (42.00265573776309, -88.00462897145327)
+Lat, Lon of the bottom right corner: (41.93533185561142, -87.93242799924842)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-19-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now that we have a few (<code>dst_x_off</code>, <code>dst_y_off</code>) + (<code>longitude</code>, <code>latitude</code>) pairs, let’s do a little back-of-the-envelope math to figure out how 1 unit of <code>dst_x_off</code> or <code>dst_y_off</code> corresponds to longitude or latitude respectively.</p>
+<p>From middle school algebra, we know that (for linear relationships) slope is given by rise over run.</p>
+<p><span class="math display">\[ m = \frac{\Delta y }{\Delta x} = \frac{y_2 - y_1}{x_2 - x_1} \]</span></p>
+<p>Here, rise is the change in latitude, run is the change in longitude. As we have two images with two sets of latitude and longitude pairs, we can calculate the slope. And as we know the latitude and longitude of Chicago, we can use that slope and one of our known (lat, long) pairs to estimate the approximate <code>dst_x_off</code> and <code>dst_y_off</code> values for corners bounding Chicago.</p>
+<p>dst_x_off: 29303, dst_y_off: 0</p>
+<ul>
+<li>Lat, Lon of the upper left corner: (42.56552458440836, -90.00678751628385)</li>
+<li>Lat, Lon of the bottom right corner: (42.49747091858195, -89.93027728345706)</li>
+</ul>
+<p>dst_x_off: 301986, dst_y_off: 110654</p>
+<ul>
+<li>Lat, Lon of the upper left corner: (42.00265573776309, -88.00462897145327)</li>
+<li>Lat, Lon of the bottom right corner: (41.93533185561142, -87.93242799924842)</li>
+</ul>
+<div class="cell" data-execution_count="19">
+<details>
+<summary>Back of the envelope math to estimate offsets for Chicago’s bounding box</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>dst_x_off_1 <span class="op">=</span> <span class="dv">301986</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>dst_y_off_1 <span class="op">=</span> <span class="dv">110654</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>ll_tl_1 <span class="op">=</span> (<span class="fl">42.00265573776309</span>, <span class="op">-</span><span class="fl">88.00462897145327</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>ll_lb_1 <span class="op">=</span> (<span class="fl">41.93533185561142</span>, <span class="op">-</span><span class="fl">87.93242799924842</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>lat_1 <span class="op">=</span> (ll_tl_1[<span class="dv">0</span>] <span class="op">+</span> ll_lb_1[<span class="dv">0</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>lon_1 <span class="op">=</span> (ll_tl_1[<span class="dv">1</span>] <span class="op">+</span> ll_lb_1[<span class="dv">1</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>dst_x_off_2 <span class="op">=</span> <span class="dv">29303</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>dst_y_off_2 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>ll_tl_2 <span class="op">=</span> (<span class="fl">42.56552458440836</span>, <span class="op">-</span><span class="fl">90.00678751628385</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>ll_lb_2 <span class="op">=</span> (<span class="fl">42.49747091858195</span>, <span class="op">-</span><span class="fl">89.93027728345706</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>lat_2 <span class="op">=</span> (ll_tl_2[<span class="dv">0</span>] <span class="op">+</span> ll_lb_2[<span class="dv">0</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>lon_2 <span class="op">=</span> (ll_tl_2[<span class="dv">1</span>] <span class="op">+</span> ll_lb_2[<span class="dv">1</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>delta_x_off <span class="op">=</span> dst_x_off_2 <span class="op">-</span> dst_x_off_1</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>delta_y_off <span class="op">=</span> dst_y_off_2 <span class="op">-</span> dst_y_off_1</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>delta_lat <span class="op">=</span> lat_2 <span class="op">-</span> lat_1</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>delta_lon <span class="op">=</span> lon_2 <span class="op">-</span> lon_1</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>x_slope <span class="op">=</span> delta_lon <span class="op">/</span> delta_x_off</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>y_slope <span class="op">=</span> delta_lat <span class="op">/</span> delta_y_off</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Change in longitude per 1 unit of dst_x_off: </span><span class="sc">{</span>x_slope<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Change in latitude per 1 unit of dst_y_off:  </span><span class="sc">{</span>y_slope<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x_offset <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">250000</span>, <span class="dv">400000</span>, <span class="dv">10000</span>):</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"longitude w dst_x_off </span><span class="sc">{</span>x_offset<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>lon_2 <span class="op">+</span> x_slope <span class="op">*</span> x_offset<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"------------------------------------------------ "</span>)</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y_offset <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100000</span>, <span class="dv">200000</span>, <span class="dv">10000</span>):</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"latitude w dst_y_off </span><span class="sc">{</span>y_offset<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>lat_2 <span class="op">+</span> y_slope <span class="op">*</span> y_offset<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Change in longitude per 1 unit of dst_x_off: 7.334538326626925e-06
+Change in latitude per 1 unit of dst_y_off:  -5.083448902054101e-06
+longitude w dst_x_off 250000: -88.13489781821373
+longitude w dst_x_off 260000: -88.06155243494746
+longitude w dst_x_off 270000: -87.98820705168119
+longitude w dst_x_off 280000: -87.91486166841491
+longitude w dst_x_off 290000: -87.84151628514864
+longitude w dst_x_off 300000: -87.76817090188237
+longitude w dst_x_off 310000: -87.69482551861611
+longitude w dst_x_off 320000: -87.62148013534984
+longitude w dst_x_off 330000: -87.54813475208357
+longitude w dst_x_off 340000: -87.4747893688173
+longitude w dst_x_off 350000: -87.40144398555103
+longitude w dst_x_off 360000: -87.32809860228477
+longitude w dst_x_off 370000: -87.2547532190185
+longitude w dst_x_off 380000: -87.18140783575222
+longitude w dst_x_off 390000: -87.10806245248595
+------------------------------------------------ 
+latitude w dst_y_off 100000: 42.023152861289745
+latitude w dst_y_off 110000: 41.9723183722692
+latitude w dst_y_off 120000: 41.92148388324866
+latitude w dst_y_off 130000: 41.87064939422812
+latitude w dst_y_off 140000: 41.81981490520758
+latitude w dst_y_off 150000: 41.768980416187034
+latitude w dst_y_off 160000: 41.718145927166496
+latitude w dst_y_off 170000: 41.66731143814596
+latitude w dst_y_off 180000: 41.61647694912541
+latitude w dst_y_off 190000: 41.565642460104876</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<details>
+<summary>Using our estimates to try to find the offsets for the northwest corner of Chicago</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">270000</span>, max_x<span class="op">=</span><span class="dv">310000</span>, min_y<span class="op">=</span><span class="dv">110000</span>, max_y<span class="op">=</span><span class="dv">110400</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2373</td>
+<td>m_4108807_ne_16_060_20210928.tif</td>
+<td>276149</td>
+<td>110324</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4108807_ne_16_060_20210928.tif already downloaded. Skipping redownload.
+File name:  m_4108807_ne_16_060_20210928.tif
+bounds:     BoundingBox(left=401299.8, bottom=4643203.8, right=407130.0, top=4650757.2)
+Shape of imagery array: (4, 12589, 9717)
+Lat, Lon of the upper left corner:   (42.00264796207355, -88.19181782437538)
+Lat, Lon of the bottom right corner: (41.93533894952825, -88.12023834528422)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-21-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Ok, our calculations got us pretty close, although clearly we were a bit short in the x-direction.</p>
+<p>Ding ding ding! That’s Montrose Beach! We’re in Chicago with {<code>dst_x_off</code>: 345232, <code>dst_y_off</code>: 111079}</p>
+<div class="cell" data-execution_count="21">
+<details>
+<summary>Using our estimates to try to find the offsets for the northwest corner of Chicago</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">340000</span>, max_x<span class="op">=</span><span class="dv">350000</span>, min_y<span class="op">=</span><span class="dv">110000</span>, max_y<span class="op">=</span><span class="dv">120000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2233</td>
+<td>m_4108703_ne_16_060_20210908.tif</td>
+<td>345232</td>
+<td>111079</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4108703_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4108703_ne_16_060_20210908.tif
+bounds:     BoundingBox(left=442749.6, bottom=4642780.8, right=448539.6, top=4650304.2)
+Shape of imagery array: (4, 12539, 9650)
+Lat, Lon of the upper left corner:   (42.002673723730645, -87.69130950207042)
+Lat, Lon of the bottom right corner: (41.935316313647476, -87.62074015029482)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-22-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Oh rats, O’Hare is split in two. Well, O’Hare marks the western-most point in Chicago, and it’s nearly the northern-most point.</p>
+<div class="cell" data-execution_count="22">
+<details>
+<summary>Adjusting offsets to get O’Hare International Airport, the northwest corner of Chicago</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">310000</span>, max_x<span class="op">=</span><span class="dv">315000</span>, min_y<span class="op">=</span><span class="dv">90000</span>, max_y<span class="op">=</span><span class="dv">120000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>file_name1 <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">1</span>]</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>file_path1 <span class="op">=</span> output_dir.joinpath(file_name1)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name1)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>file_name0 <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>file_path0 <span class="op">=</span> output_dir.joinpath(file_name0)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name0)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path1, fig_width<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path0, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2225</td>
+<td>m_4108701_ne_16_060_20210908.tif</td>
+<td>310691</td>
+<td>110752</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2887</td>
+<td>m_4208757_se_16_060_20210908.tif</td>
+<td>310816</td>
+<td>99094</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4208757_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4208757_se_16_060_20210908.tif
+bounds:     BoundingBox(left=422100.0, bottom=4649845.8, right=427906.2, top=4657495.2)
+Shape of imagery array: (4, 12749, 9677)
+Lat, Lon of the upper left corner:   (42.06565922520393, -87.9415848800517)
+Lat, Lon of the bottom right corner: (41.99732626080149, -87.8704724306422)
+File m_4108701_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4108701_ne_16_060_20210908.tif
+bounds:     BoundingBox(left=422025.0, bottom=4642962.0, right=427834.8, top=4650500.4)
+Shape of imagery array: (4, 12564, 9683)
+Lat, Lon of the upper left corner:   (42.002660830466866, -87.94156106696074)
+Lat, Lon of the bottom right corner: (41.93532640993883, -87.87049010245049)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-23-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-23-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<p>And there’s Lake Calumet (that oddly-shaped body of water near the top). While not exactly the southeastern corner of Chicago, it’s very close, so we know the extents of Chicago are roughly 310000 to 360000 in <code>dst_x_off</code> units, and 90000 to 170000 in <code>dst_y_off</code> units.</p>
+<div class="cell" data-execution_count="23">
+<details>
+<summary>Adjusting offsets to get Lake Calumet, (very nearly) the southeast corner of Chicago</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">350000</span>, max_x<span class="op">=</span><span class="dv">360000</span>, min_y<span class="op">=</span><span class="dv">160000</span>, max_y<span class="op">=</span><span class="dv">170000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2268</td>
+<td>m_4108720_sw_16_060_20210908.tif</td>
+<td>353377</td>
+<td>168879</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4108720_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4108720_sw_16_060_20210908.tif
+bounds:     BoundingBox(left=447636.6, bottom=4607994.0, right=453530.39999999997, top=4615624.2)
+Shape of imagery array: (4, 12717, 9823)
+Lat, Lon of the upper left corner:   (41.69067319541816, -87.62923384329923)
+Lat, Lon of the bottom right corner: (41.62231527376006, -87.5578195678046)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-24-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>And that’s probably the best image of downtown.</p>
+<div class="cell" data-execution_count="24">
+<details>
+<summary>Adjusting offsets to get downtown Chicago</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>df_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">340000</span>, max_x<span class="op">=</span><span class="dv">350000</span>, min_y<span class="op">=</span><span class="dv">120000</span>, max_y<span class="op">=</span><span class="dv">130000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>display(df_subset.drop_duplicates(subset<span class="op">=</span><span class="st">"SourceFilename"</span>))</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>file_name <span class="op">=</span> df_subset[<span class="st">"SourceFilename"</span>].unique()[<span class="dv">0</span>]</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> output_dir.joinpath(file_name)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> download_tif_and_extract_bands(dl_filename<span class="op">=</span>file_name)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>plot_raster_image(file_path<span class="op">=</span>file_path, fig_width<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SourceFilename</th>
+<th data-quarto-table-cell-role="th">dst_x_off</th>
+<th data-quarto-table-cell-role="th">dst_y_off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2235</td>
+<td>m_4108703_se_16_060_20210908.tif</td>
+<td>345139</td>
+<td>122552</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File m_4108703_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File name:  m_4108703_se_16_060_20210908.tif
+bounds:     BoundingBox(left=442693.8, bottom=4635786.0, right=448489.2, top=4643420.4)
+Shape of imagery array: (4, 12724, 9659)
+Lat, Lon of the upper left corner:   (41.940673761594084, -87.69131260636372)
+Lat, Lon of the bottom right corner: (41.87231581185974, -87.62073763881713)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-25-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<details>
+<summary>Downloading the images in the offsets bounded by the northwest and southeast corners</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>chicago_subset <span class="op">=</span> filter_vrt_df_to_offset_spans(</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    min_x<span class="op">=</span><span class="dv">310000</span>, max_x<span class="op">=</span><span class="dv">360000</span>, min_y<span class="op">=</span><span class="dv">90000</span>, max_y<span class="op">=</span><span class="dv">170000</span>, vrt_df<span class="op">=</span>vrt_16_df</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>chicago_img_urls <span class="op">=</span> [</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    url <span class="cf">for</span> url <span class="kw">in</span> il_2021_img_urls <span class="cf">if</span> <span class="bu">any</span>(url.endswith(fn) <span class="cf">for</span> fn <span class="kw">in</span> chicago_subset[<span class="st">"SourceFilename"</span>])</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of images in the Chicago dst_xy_offset bounds: </span><span class="sc">{</span><span class="bu">len</span>(chicago_img_urls)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>download_img_file(img_urls<span class="op">=</span>chicago_img_urls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of images in the Chicago dst_xy_offset bounds: 40
+File m_4108701_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108701_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108702_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108702_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108702_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108702_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108703_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108703_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108703_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108703_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108704_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108709_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108709_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108710_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108710_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108710_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108710_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108711_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108711_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108711_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108711_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108712_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108712_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108717_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108717_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108718_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108718_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108718_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108718_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108719_ne_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108719_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108719_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108719_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108720_nw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4108720_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4208757_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4208758_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4208758_sw_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4208759_se_16_060_20210908.tif already downloaded. Skipping redownload.
+File m_4208759_sw_16_060_20210908.tif already downloaded. Skipping redownload.</code></pre>
+</div>
+</div>
+<section id="answer-2-yes-there-was-usable-order-although-it-was-a-bit-of-a-chore" class="level3">
+<h3 class="anchored" data-anchor-id="answer-2-yes-there-was-usable-order-although-it-was-a-bit-of-a-chore">Answer 2: yes, there was usable order, although it was a bit of a chore</h3>
+</section>
+</section>
+<section id="question-3-what-is-in-the-zipped-tile-index-file-and-can-i-use-it-to-determine-the-images-covering-chicago" class="level2">
+<h2 class="anchored" data-anchor-id="question-3-what-is-in-the-zipped-tile-index-file-and-can-i-use-it-to-determine-the-images-covering-chicago">Question 3: What is in the zipped tile-index file, and can I use it to determine the images covering Chicago</h2>
+<p>While not really necessary anymore, let’s take a look at the zipped file. Based on the file name, I suspect I should have gone with this one first.</p>
+<div class="cell" data-execution_count="26">
+<details>
+<summary>Examining the contents of the tile-index file</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> zipfile <span class="im">import</span> ZipFile</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>zip_file_name <span class="op">=</span> non_tif_or_xml_file_urls[<span class="dv">2</span>].split(<span class="st">"/"</span>)[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>zip_file_path <span class="op">=</span> output_dir.joinpath(zip_file_name)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> ZipFile(zip_file_path) <span class="im">as</span> zf:</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filename <span class="kw">in</span> zf.namelist():</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"File Name: </span><span class="sc">{</span>zf<span class="sc">.</span>getinfo(filename)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>File Name: &lt;ZipInfo filename='tmp/tmpuejxrveu/tile_index_IL_NAIP_2021_9599.shp' filemode='-rw-rw-r--' file_size=561916&gt;
+File Name: &lt;ZipInfo filename='tmp/tmpuejxrveu/tile_index_IL_NAIP_2021_9599.dbf' filemode='-rw-rw-r--' file_size=582569&gt;
+File Name: &lt;ZipInfo filename='tmp/tmpuejxrveu/tile_index_IL_NAIP_2021_9599.shx' filemode='-rw-rw-r--' file_size=33148&gt;
+File Name: &lt;ZipInfo filename='tmp/tmpuejxrveu/tile_index_IL_NAIP_2021_9599.prj' filemode='-rw-rw-r--' file_size=167&gt;</code></pre>
+</div>
+</div>
+<p>Oh, it’s a shapefile.</p>
+<div class="cell" data-execution_count="27">
+<details>
+<summary>Loading the tile-index shapefile file</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.read_file(<span class="ss">f"zip://</span><span class="sc">{</span>zip_file_path<span class="sc">}</span><span class="ss">!tmp/tmpuejxrveu/tile_index_IL_NAIP_2021_9599.shp"</span>)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Image tiles in all of Illinois: </span><span class="sc">{</span><span class="bu">len</span>(gdf)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>display(gdf.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Image tiles in all of Illinois: 4131</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">filename</th>
+<th data-quarto-table-cell-role="th">url</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>m_3608906_ne_16_060_20210622.tif</td>
+<td>https://coastalimagery.blob.core.windows.net/d...</td>
+<td>POLYGON ((-89.24674 36.93539, -89.31525 36.935...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>m_3608907_ne_16_060_20210617.tif</td>
+<td>https://coastalimagery.blob.core.windows.net/d...</td>
+<td>POLYGON ((-89.12173 36.93538, -89.19025 36.935...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>m_3608907_nw_16_060_20210617.tif</td>
+<td>https://coastalimagery.blob.core.windows.net/d...</td>
+<td>POLYGON ((-89.18374 36.93539, -89.25325 36.935...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<details>
+<summary>Mapping out tile boundaries and coloring Chicago tiles</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>fig_width <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>chicago_tiles_gdf <span class="op">=</span> gdf.loc[</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    (gdf.geometry.centroid.x <span class="op">&gt;=</span> <span class="op">-</span><span class="dv">88</span>) <span class="op">&amp;</span> (gdf.geometry.centroid.x <span class="op">&lt;=</span> <span class="op">-</span><span class="fl">87.50</span>) <span class="op">&amp;</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    (gdf.geometry.centroid.y <span class="op">&gt;=</span> <span class="fl">41.60</span>) <span class="op">&amp;</span> (gdf.geometry.centroid.y <span class="op">&lt;=</span> <span class="fl">42.05</span>)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Images corresponding to the Chicago blue area: </span><span class="sc">{</span><span class="bu">len</span>(chicago_tiles_gdf)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(fig_width, fig_width))</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gdf.plot(facecolor<span class="op">=</span><span class="st">"none"</span>, linewidth<span class="op">=</span>fig_width<span class="op">*</span><span class="fl">0.01</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> chicago_tiles_gdf.plot(facecolor<span class="op">=</span><span class="st">"#B3DDF2"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Images corresponding to the Chicago blue area: 50</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Aerial_Imagery_experiments_files/figure-html/cell-29-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Oh man, that’s was much easier.</p>
+<section id="answer-3-the-zipped-tile-index-file-seems-to-be-primarily-intended-as-an-aid-for-finding-images-covering-areas-of-interest" class="level3">
+<h3 class="anchored" data-anchor-id="answer-3-the-zipped-tile-index-file-seems-to-be-primarily-intended-as-an-aid-for-finding-images-covering-areas-of-interest">Answer 3: The zipped tile-index file seems to be primarily intended as an aid for finding images covering areas of interest</h3>
+<p>I’m really kicking myself for not checking the zip file first; the name really hinted at the purpose. But in addition to learning the hard way that NOAA provides helpful shapefiles that map out tiles, we’ve collected the images that cover Chicago, and learned a bit about the <code>.vrt</code> file type.</p>
+<p>That’s enough for this post, but in the near future, I’ll see if I can segment these images with a model like <a href="https://github.com/facebookresearch/segment-anything">SAM</a> or <a href="https://github.com/casia-iva-lab/fastsam">FastSAM</a>. Even if these images do prove to be too much to segment in a reasonable amount of time (with my hardware; a many-cored system with a 12GB VRAM CUDA-enabled GPU and 64 GB DRAM), it’s just a matter of time until even more performant implementations emerge.</p>
+
+
+
+</section>
+</section>
+</section>
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
