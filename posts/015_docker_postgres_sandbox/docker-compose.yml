@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  postgis:
+    image: sandbox_postgis:15.3.3
+    build:
+      context: ./db_context
+      dockerfile: Dockerfile
+    ports:
+      - 54321:5432
+    environment:
+      POSTGRES_DB: db_name
+      POSTGRES_USER: db_username
+      POSTGRES_PASSWORD: db_password
+    volumes:
+      - sandbox_postgis_data:/var/lib/postgresql/data
+
+volumes:
+  sandbox_postgis_data:
