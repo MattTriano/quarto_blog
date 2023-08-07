@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Triano">
+<meta name="dcterms.date" content="2023-08-01">
+<meta name="description" content="A full tutorial of a basic workflow">
+
+<title>Matt Triano - How to set up and play with a Postgres db using Docker</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: [],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<link rel="alternate" type="application/rss+xml" title="Matt Triano" href="setting_up_a_dockerized_postgis_database.xml"></head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Matt Triano</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/MattTriano" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <div class="quarto-title-block"><div><h1 class="title">How to set up and play with a Postgres db using Docker</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+                  <div>
+        <div class="description">
+          A full tutorial of a basic workflow
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">docker</div>
+                <div class="quarto-category">Postgres</div>
+                <div class="quarto-category">PostGIS</div>
+                <div class="quarto-category">sandbox</div>
+                <div class="quarto-category">tutorial</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Matt Triano </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 1, 2023</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">August 1, 2023</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-importance-of-sandboxes" id="toc-the-importance-of-sandboxes" class="nav-link active" data-scroll-target="#the-importance-of-sandboxes">The importance of sandboxes</a>
+  <ul class="collapse">
+  <li><a href="#what-is-docker" id="toc-what-is-docker" class="nav-link" data-scroll-target="#what-is-docker">What is Docker</a>
+  <ul class="collapse">
+  <li><a href="#our-dockerfile" id="toc-our-dockerfile" class="nav-link" data-scroll-target="#our-dockerfile">Our Dockerfile</a></li>
+  <li><a href="#our-docker-compose.yml-file" id="toc-our-docker-compose.yml-file" class="nav-link" data-scroll-target="#our-docker-compose.yml-file">Our docker-compose.yml file</a></li>
+  <li><a href="#building-the-images-used-in-our-system" id="toc-building-the-images-used-in-our-system" class="nav-link" data-scroll-target="#building-the-images-used-in-our-system">Building the image(s) used in our system</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#using-our-sandbox" id="toc-using-our-sandbox" class="nav-link" data-scroll-target="#using-our-sandbox">Using our sandbox</a>
+  <ul class="collapse">
+  <li><a href="#sending-commands-to-our-database" id="toc-sending-commands-to-our-database" class="nav-link" data-scroll-target="#sending-commands-to-our-database">Sending commands to our database</a></li>
+  <li><a href="#learning-exercise" id="toc-learning-exercise" class="nav-link" data-scroll-target="#learning-exercise">Learning exercise</a>
+  <ul class="collapse">
+  <li><a href="#creating-a-role-to-set-permissions-for-a-group-of-users" id="toc-creating-a-role-to-set-permissions-for-a-group-of-users" class="nav-link" data-scroll-target="#creating-a-role-to-set-permissions-for-a-group-of-users">Creating a role to set permissions for a group of users</a></li>
+  <li><a href="#cleaning-up-the-sandbox" id="toc-cleaning-up-the-sandbox" class="nav-link" data-scroll-target="#cleaning-up-the-sandbox">Cleaning up the sandbox</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_columns <span class="op">=</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="the-importance-of-sandboxes" class="level1">
+<h1>The importance of sandboxes</h1>
+<p>I’ve worked with SQL regularly over the past decade, but over the first half of that decade (and despite extensive formal knowledge of normalization, data modeling, and other database-related topics) I essentially only used SQL to extract data and use Python or R to do analysis. I only had access to production databases and I didn’t know enough about how database management system work to risk experiments, and as a result, I learned at a glacial pace. But in 2018, I stumbled into a project interesting enough to motivate me to install PostGIS on a personal machine and freed from the fear of accidentally taking down a production system (and the power of a superuser), I was able to lift up the hood and see how the machine worked, and this enabled me to learn and build with Postgres + PostGIS (a geospatial Postgres extension) far faster.</p>
+<p>In this post, I show how to use Docker to set up a PostGIS database and experiment with it.</p>
+<section id="what-is-docker" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-docker">What is Docker</h2>
+<p>Docker and Docker Compose<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> enable you to import and run complicated applications in just a few lines of code.</p>
+<p>The internals of docker are really interesting, but for this post, all you need to know these things:</p>
+<ol type="1">
+<li>A docker <strong>image</strong> is like a blueprint of an application, and it’s defined in <strong>Dockerfiles</strong>.</li>
+<li>A docker <strong>container</strong> is a runnable instance of the application, built from the instructions in the blueprint.</li>
+<li>You can configure your application in a <code>docker-compose.yml</code> file.</li>
+</ol>
+<section id="our-dockerfile" class="level3">
+<h3 class="anchored" data-anchor-id="our-dockerfile">Our Dockerfile</h3>
+<p>The first one may sound complicated, as the contents of our Dockerfile show, this can only take one line of code (from us). That’s possible because Dockerfiles can build an image based on another image, and the developers of many open source projects (e.g.&nbsp;Ubuntu, PostgreSQL/PostGIS, MySQL, Go, nginx, etc) public official images on <a href="https://registry.hub.docker.com/search?q=">Docker Hub</a>. Our Dockerfile pulls the <a href="https://registry.hub.docker.com/r/postgis/postgis">postgis/postgis image</a> (translated, it pulls the <code>postgis</code> base image from the <code>postgis</code> organization), and then adds nothing else. So in one line, we indicate that we want the <code>postgis/postgis</code> image that has the tag “15-3.3” (which they’ve intuitively used to indicate the image provides a PostGIS database that has version 15-3.3).</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>The full contents of our Dockerfile</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>cat db_context<span class="op">/</span>Dockerfile</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>FROM postgis/postgis:15-3.3</code></pre>
+</div>
+</div>
+</section>
+<section id="our-docker-compose.yml-file" class="level3">
+<h3 class="anchored" data-anchor-id="our-docker-compose.yml-file">Our docker-compose.yml file</h3>
+<p>And this is our <code>docker-compose.yml</code> file. The <code>docker-compose.yml</code> file defines the services, and any networks, volumes, configs, and/or secrets/environment variables your system needs to work. The file below defines one service (named <code>postgis</code>) and one volume (named <code>sandbox_postgis_data</code>).</p>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>The contents of our docker-compose.yml</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>cat docker<span class="op">-</span>compose.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>version: '3.9'
+
+services:
+  postgis:
+    image: sandbox_postgis:15.3.3
+    build:
+      context: ./db_context
+      dockerfile: Dockerfile
+    ports:
+      - 54321:5432
+    environment:
+      POSTGRES_DB: db_name
+      POSTGRES_USER: db_username
+      POSTGRES_PASSWORD: db_password
+    volumes:
+      - sandbox_postgis_data:/var/lib/postgresql/data
+
+volumes:
+  sandbox_postgis_data:</code></pre>
+</div>
+</div>
+<p>There are 3 top level elements in this file: <code>version</code>, <code>services</code>, and <code>volumes</code>.</p>
+<ul>
+<li><code>version</code> indicates the version of the Docker Compose specification; I don’t think I’ve ever set it to anything other than 3.9.</li>
+<li><code>services</code> defines configurations for each container your system needs.</li>
+<li><code>volumes</code> defines persistent data stores that can be shared by different services.</li>
+</ul>
+<section id="services" class="level4">
+<h4 class="anchored" data-anchor-id="services">Services</h4>
+<p>The <code>postgis</code> service has five elements: <code>image</code>, <code>build</code>, <code>ports</code>, <code>environment</code>, and <code>volumes</code>.</p>
+<p>The <code>image</code> and <code>build</code> elements define the docker image to use; <code>image</code> defines both the name (“sandbox_postgis”) and tag (“15.5.3”) for the docker image, and <code>build</code> defines the Dockerfile to build into an image as well as the context to build into the docker image.</p>
+<p>The <code>port</code> element defines a connection from a port on the host machine (host post 54321) to a port into the container (container port 5432, the default for PostgreSQL). We’ll use that later to connect to the database.</p>
+<p>The <code>volumes</code> element (in the <code>postgis</code> service) defines a persistent storage volume that will hold the data in our database. Without this, our database would reset every time we restart the system<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>And the <code>environment</code> element enables you to set environment variables in the container. Here, we pass in environment variables <code>POSTGRES_DB</code>, <code>POSTGRES_USER</code>, and <code>POSTGRES_PASSWORD</code> which are used to name the database (in this case, it’s named <code>db_name</code>) and create a superuser (in this case having username <code>db_username</code> and password <code>db_password</code>) when the database is first created in a new volume.</p>
+</section>
+</section>
+<section id="building-the-images-used-in-our-system" class="level3">
+<h3 class="anchored" data-anchor-id="building-the-images-used-in-our-system">Building the image(s) used in our system</h3>
+<p>The first time you build the image defined by your Dockerfile, docker will read your Dockerfile(s), download all layers of the base image(s) (defined in lines starting with <code>FROM</code>), process each subsequent instruction into a layer, cache layers, and then bind the layers into an image. This is a template for creating containers.</p>
+<p>The second time you run this command (assuming no changes have been made to the <code>docker-compose.yml</code> file, Dockerfile(s), or any other files the Dockerfile references), all layers will just be pulled from cache, producing much smaller output (like what’s shown below).</p>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>The output produced while building our images</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose build</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[+] Building 0.0s (0/2)                                                         
+[+] Building 0.2s (3/4)                                                         
+ =&gt; [postgis internal] load build definition from Dockerfile               0.0s
+ =&gt; =&gt; transferring dockerfile: 64B                                        0.0s
+ =&gt; [postgis internal] load .dockerignore                                  0.0s
+ =&gt; =&gt; transferring context: 2B                                            0.0s
+ =&gt; [postgis internal] load metadata for docker.io/postgis/postgis:15-3.3  0.1s
+ =&gt; [postgis auth] postgis/postgis:pull token for registry-1.docker.io     0.0s
+[+] Building 0.3s (3/4)                                                         
+ =&gt; [postgis internal] load build definition from Dockerfile               0.0s
+ =&gt; =&gt; transferring dockerfile: 64B                                        0.0s
+ =&gt; [postgis internal] load .dockerignore                                  0.0s
+ =&gt; =&gt; transferring context: 2B                                            0.0s
+ =&gt; [postgis internal] load metadata for docker.io/postgis/postgis:15-3.3  0.3s
+ =&gt; [postgis auth] postgis/postgis:pull token for registry-1.docker.io     0.0s
+[+] Building 0.4s (6/6) FINISHED                                                
+ =&gt; [postgis internal] load build definition from Dockerfile               0.0s
+ =&gt; =&gt; transferring dockerfile: 64B                                        0.0s
+ =&gt; [postgis internal] load .dockerignore                                  0.0s
+ =&gt; =&gt; transferring context: 2B                                            0.0s
+ =&gt; [postgis internal] load metadata for docker.io/postgis/postgis:15-3.3  0.3s
+ =&gt; [postgis auth] postgis/postgis:pull token for registry-1.docker.io     0.0s
+ =&gt; CACHED [postgis 1/1] FROM docker.io/postgis/postgis:15-3.3@sha256:55a  0.0s
+ =&gt; [postgis] exporting to image                                           0.0s
+ =&gt; =&gt; exporting layers                                                    0.0s
+ =&gt; =&gt; writing image sha256:1460a9b1410a939c0fd0035d534c14cd5fb7d051c13a4  0.0s
+ =&gt; =&gt; naming to docker.io/library/sandbox_postgis:15.3.3                  0.0s</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Shows that our system’s one container is not running yet</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES</code></pre>
+</div>
+</div>
+<p><code>docker ps</code> shows running containers, and the <code>-f name=...</code> option allows us to filter to running containers with a name containing the entered string. Currently, “sandbox-postgis” isn’t part of the name of any running container, so let’s spin one up.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose up <span class="op">-</span>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[+] Running 2/0
+ ✔ Network 015_docker_postgres_sandbox_default                Created      0.0s 
+ ✔ Volume "015_docker_postgres_sandbox_sandbox_postgis_data"  Created      0.0s 
+ ⠿ Container 015_docker_postgres_sandbox-postgis-1            Starting     0.1s 
+[+] Running 2/3
+ ✔ Network 015_docker_postgres_sandbox_default                Created      0.0s 
+ ✔ Volume "015_docker_postgres_sandbox_sandbox_postgis_data"  Created      0.0s 
+ ⠿ Container 015_docker_postgres_sandbox-postgis-1            Starting     0.2s 
+[+] Running 2/3
+ ✔ Network 015_docker_postgres_sandbox_default                Created      0.0s 
+ ✔ Volume "015_docker_postgres_sandbox_sandbox_postgis_data"  Created      0.0s 
+ ⠿ Container 015_docker_postgres_sandbox-postgis-1            Starting     0.3s 
+[+] Running 2/3
+ ✔ Network 015_docker_postgres_sandbox_default                Created      0.0s 
+ ✔ Volume "015_docker_postgres_sandbox_sandbox_postgis_data"  Created      0.0s 
+ ⠿ Container 015_docker_postgres_sandbox-postgis-1            Starting     0.4s 
+[+] Running 3/3
+ ✔ Network 015_docker_postgres_sandbox_default                Created      0.0s 
+ ✔ Volume "015_docker_postgres_sandbox_sandbox_postgis_data"  Created      0.0s 
+ ✔ Container 015_docker_postgres_sandbox-postgis-1            Started      0.4s </code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Shows that our system’s one container is running now</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>CONTAINER ID   IMAGE                    COMMAND                  CREATED        STATUS        PORTS                                         NAMES
+cf845e91c61a   sandbox_postgis:15.3.3   "docker-entrypoint.s…"   1 second ago   Up 1 second   0.0.0.0:54321-&gt;5432/tcp, :::54321-&gt;5432/tcp   015_docker_postgres_sandbox-postgis-1</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="using-our-sandbox" class="level1">
+<h1>Using our sandbox</h1>
+<section id="sending-commands-to-our-database" class="level2">
+<h2 class="anchored" data-anchor-id="sending-commands-to-our-database">Sending commands to our database</h2>
+<p>Now we have our database up and running on our local system, but now we need to connect to it from this jupyter notebook. I want to focus on experimenting with SQL, so I’ve implemented some functions than handle connecting to the database and executing SQL queries/commands.</p>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>Helper functions for our main python-to-postgres connector code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> contextlib <span class="im">import</span> contextmanager</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Tuple, Union, Optional</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> autopep8</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_indentation(query, spaces<span class="op">=</span><span class="dv">4</span>):</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> query.splitlines()</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    indented_lines <span class="op">=</span> [(<span class="st">" "</span> <span class="op">*</span> spaces) <span class="op">+</span> line <span class="cf">for</span> line <span class="kw">in</span> lines]</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    indented_query <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(indented_lines)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> indented_query</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> execute_query_w_existing_conn(</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    query: <span class="bu">str</span>, conn: psycopg2.extensions.connection</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> Tuple[<span class="bu">str</span>, Union[pd.DataFrame, <span class="va">None</span>]]:</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> conn.cursor() <span class="im">as</span> cur:</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>            cur.execute(query)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>            rows <span class="op">=</span> cur.fetchall()</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            col_names <span class="op">=</span> [desc[<span class="dv">0</span>] <span class="cf">for</span> desc <span class="kw">in</span> cur.description]</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> (cur.statusmessage, pd.DataFrame(rows, columns<span class="op">=</span>col_names))</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> psycopg2.errors.InsufficientPrivilege <span class="im">as</span> err:</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> (add_indentation(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>err<span class="sc">.</span>pgerror<span class="sc">}</span><span class="ss">  Error type: </span><span class="sc">{</span><span class="bu">type</span>(err)<span class="sc">}</span><span class="ss">"</span>), <span class="va">None</span>)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> psycopg2.ProgrammingError <span class="im">as</span> err:</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="st">"no results to fetch"</span> <span class="kw">in</span> <span class="bu">str</span>(err):</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> (cur.statusmessage, <span class="va">None</span>)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>                <span class="cf">raise</span> psycopg2.ProgrammingError(err)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> execute_query(</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    query: <span class="bu">str</span>, conn: Optional[psycopg2.extensions.connection] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> Union[pd.DataFrame, <span class="va">None</span>]:</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> conn <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> get_db_connection() <span class="im">as</span> new_conn:</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> execute_query_w_existing_conn(query<span class="op">=</span>query, conn<span class="op">=</span>new_conn)</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> execute_query_w_existing_conn(query<span class="op">=</span>query, conn<span class="op">=</span>conn)</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_transaction_results(result: Tuple[<span class="bu">str</span>, <span class="bu">str</span>, Union[pd.DataFrame, <span class="va">None</span>]]) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    query, status, result_df <span class="op">=</span> result</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    dedented_query <span class="op">=</span> add_indentation(query<span class="op">=</span>autopep8.fix_code(query))</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"""</span><span class="ch">\n</span><span class="ss">Query:</span><span class="ch">\n</span><span class="sc">{</span>dedented_query<span class="sc">}</span><span class="ss">"""</span>)</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Database response message: '</span><span class="sc">{</span>status<span class="sc">}</span><span class="ss">'"</span>)</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result_df <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"records in result: </span><span class="sc">{</span><span class="bu">len</span>(result_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>        display(result_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The <code>get_db_connection()</code> function provides a connection to our database. Note that <code>get_db_connection()</code> uses the <code>POSTGRES_DB</code>, <code>POSTGRES_USER</code>, and <code>POSTGRES_PASSWORD</code> environment variables as well as port number 54321, all of which we set in our <code>docker-compose.yml</code> file.</p>
+<p>The <code>execute_transaction()</code> function takes in a string containing one or more semicolon-separated SQL queries, executes each query using the same connection, displays the query and response from the database, and returns a list containing the query, database response, and result_set for each query from the input.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="at">@contextmanager</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_db_connection():</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> psycopg2.<span class="ex">connect</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        dbname<span class="op">=</span><span class="st">"db_name"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        user<span class="op">=</span><span class="st">"db_username"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        password<span class="op">=</span><span class="st">"db_password"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        host<span class="op">=</span><span class="st">"localhost"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        port<span class="op">=</span><span class="dv">54321</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    conn.autocommit <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> conn</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">finally</span>:</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        conn.close()</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> execute_transaction(</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    query: <span class="bu">str</span>, print_results: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> Tuple[<span class="bu">str</span>, <span class="bu">str</span>, Union[pd.DataFrame, <span class="va">None</span>]]:</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    queries <span class="op">=</span> [el.strip() <span class="cf">for</span> el <span class="kw">in</span> query.split(<span class="st">";"</span>) <span class="cf">if</span> el.strip() <span class="op">!=</span> <span class="st">""</span>]</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> get_db_connection() <span class="im">as</span> conn:</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        results <span class="op">=</span> []</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> q <span class="kw">in</span> queries:</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>            status_msg, result_df <span class="op">=</span> execute_query(query<span class="op">=</span>q, conn<span class="op">=</span>conn)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> (q, status_msg, result_df)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>            results.append(result)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> print_results:</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>                show_transaction_results(result<span class="op">=</span>result)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="learning-exercise" class="level2">
+<h2 class="anchored" data-anchor-id="learning-exercise">Learning exercise</h2>
+<p>Imagine you’re designing a data warehousing platform and you want to let other analysts or data scientists query data in the warehouse. Some users need to be able to update records or insert new records, but others only need to be able to view some datasets.</p>
+<p>PostgreSQL has a concept called <a href="https://www.postgresql.org/docs/15/user-manag.html">Roles</a> that enables you to define permissions for users or groups of users. If you aren’t already familiar with how roles and permissions work, you don’t have a skilled database administrator looking over your work, and you only have access to a database that other systems depend on, it would be extremely intimidating to figure out the correct permissions. Our sandbox takes off that weight by eliminating the cost of mistakes.</p>
+<p>Let’s specify the needs for a data analyst role and then figure out how to meet our specification in our sandbox.</p>
+<ul>
+<li>We want data analysts to be able to view data in tables in the <code>clean_data</code> schema.</li>
+<li>We don’t want data analysts to be able to modify data in any table, or view data in any schema other than the <code>public</code> schema.</li>
+<li>We want to be able to easily grant the data-analyst permissions to new users.</li>
+</ul>
+<section id="mocking-up-a-table" class="level4">
+<h4 class="anchored" data-anchor-id="mocking-up-a-table">Mocking up a table</h4>
+<p>To test whether our role meets the specification, we need to mock up some test fixtures.</p>
+<p>We’ll need a <code>clean_data</code> schema, and another non-<code>public</code> schema to test that our role can only view data in the <code>clean_data</code> schema.</p>
+<p>We’ll also need tables in these schemas to attempt to view.</p>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Creating raw_data and clean_data schemas and inserting a data table in each</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE SCHEMA raw_data;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE TABLE raw_data.customers (</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id int PRIMARY KEY,</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_name text,</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="st">            contact_name text,</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="st">            country text,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="st">            email text</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO raw_data.customers (customer_id, customer_name, contact_name, country, email)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 'Customer A', 'Contact A', 'Country A', 'contactA@email.com'),</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="st">            (2, 'Customer B', 'Contact B', 'Country B', 'contactB@email.com'),</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="st">            (3, 'Customer C', 'Contact C', 'Country C', 'contactC@email.com');</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE SCHEMA clean_data;</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE TABLE clean_data.customers (</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id int PRIMARY KEY,</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_name text,</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="st">            contact_name text,</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="st">            country text,</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="st">            email text</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO clean_data.customers (customer_id, customer_name, contact_name, country, email)</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id,</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_name,</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="st">            contact_name,</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="st">            country,</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="st">            lower(email) AS email</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM raw_data.customers;</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    CREATE SCHEMA raw_data
+Database response message: 'CREATE SCHEMA'
+
+Query:
+    CREATE TABLE raw_data.customers(
+        customer_id int PRIMARY KEY,
+        customer_name text,
+        contact_name text,
+        country text,
+        email text
+    )
+Database response message: 'CREATE TABLE'
+
+Query:
+    INSERT INTO raw_data.customers(customer_id, customer_name, contact_name, country, email)
+    VALUES
+    (1, 'Customer A', 'Contact A', 'Country A', 'contactA@email.com'),
+    (2, 'Customer B', 'Contact B', 'Country B', 'contactB@email.com'),
+    (3, 'Customer C', 'Contact C', 'Country C', 'contactC@email.com')
+Database response message: 'INSERT 0 3'
+
+Query:
+    CREATE SCHEMA clean_data
+Database response message: 'CREATE SCHEMA'
+
+Query:
+    CREATE TABLE clean_data.customers(
+        customer_id int PRIMARY KEY,
+        customer_name text,
+        contact_name text,
+        country text,
+        email text
+    )
+Database response message: 'CREATE TABLE'
+
+Query:
+    INSERT INTO clean_data.customers(customer_id, customer_name, contact_name, country, email)
+       SELECT
+           customer_id,
+            customer_name,
+            contact_name,
+            country,
+            lower(email) AS email
+        FROM raw_data.customers
+Database response message: 'INSERT 0 3'</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<details open="">
+<summary>Checking that my role can see a table</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.customers;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM clean_data.customers
+Database response message: 'SELECT 3'
+records in result: 3</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>db_username</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">customer_name</th>
+<th data-quarto-table-cell-role="th">contact_name</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">email</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Customer A</td>
+<td>Contact A</td>
+<td>Country A</td>
+<td>contacta@email.com</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Customer B</td>
+<td>Contact B</td>
+<td>Country B</td>
+<td>contactb@email.com</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Customer C</td>
+<td>Contact C</td>
+<td>Country C</td>
+<td>contactc@email.com</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="creating-a-role-to-set-permissions-for-a-group-of-users" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-role-to-set-permissions-for-a-group-of-users">Creating a role to set permissions for a group of users</h3>
+<p>If we had to individually set the permissions for each database user, it wouldn’t take long before some user(s) were mistakenly granted privileges they shouldn’t have, and it would also be a chore for the data governance/IT team to have to manage this. Fortunately, Postgres allows us to create a role for a <a href="https://www.postgresql.org/docs/15/role-membership.html">group of users</a> (e.g.&nbsp;data analysts, data engineers, data scientists, etc), define the permissions that class should have, and then grant the role to relevant users.</p>
+<p>Let’s create a role for data analysts.</p>
+<div class="cell" data-execution_count="12">
+<details open="">
+<summary>Creating a new role and seeing what it can see before granting it permissions</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE ROLE data_analyst;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.customers;</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.customers;</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM pg_roles</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="st">        WHERE rolname = 'data_analyst';</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    CREATE ROLE data_analyst
+Database response message: 'CREATE ROLE'
+
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.customers
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.customers
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.customers
+Database response message: '    
+    ERROR:  permission denied for schema clean_data
+    LINE 1: SELECT * FROM clean_data.customers
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT rolname, rolsuper, rolcreaterole, rolcreatedb
+    FROM pg_roles
+    WHERE rolname = 'data_analyst'
+Database response message: 'SELECT 1'
+records in result: 1</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rolname</th>
+<th data-quarto-table-cell-role="th">rolsuper</th>
+<th data-quarto-table-cell-role="th">rolcreaterole</th>
+<th data-quarto-table-cell-role="th">rolcreatedb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Good. We created that role, switched into that role, confirmed we were in the <code>data_analyst</code> role, and then were stopped from accessing tables in schema’s we didn’t have permission to use.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Question 1: What privileges does a role have by default?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Question 1: What privileges does a role have by default?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>From the result above, we see that the <code>data_analyst</code> doesn’t have permission to view the only tables the <code>raw_data</code> or <code>clean_data</code> schemas, but it is able to view the <code>pg_roles</code> table (which is in the public schema).</p>
+</div>
+</div>
+</div>
+<p>The error message also helps us see what we don’t have permission to access: the <code>clean_data</code> schema.</p>
+<p>A few privileges have to be granted before the <code>data_analyst</code> role can view that table.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Note: Why I keep setting the role in each transaction">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note: Why I keep setting the role in each transaction
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Because I implemented my database connector as a context manager, it closes the connection after every transaction. This is generally a good practice, as ensures that process that was listening to the connection is released (along with all of the process’s resources). In this situation however, when we execute another transaction, <code>get_db_connection()</code> will create a new connection that will have the original role: <code>db_username</code>, and we’ll have to set the role to <code>data_analyst</code> in each transaction.</p>
+</div>
+</div>
+</div>
+<section id="necessary-permission-1-grant-usage-on-schema" class="level5">
+<h5 class="anchored" data-anchor-id="necessary-permission-1-grant-usage-on-schema">Necessary Permission 1: GRANT USAGE ON SCHEMA</h5>
+<div class="cell" data-execution_count="13">
+<details open="">
+<summary>Granting the role permission to use a schema and checking again</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="st">        GRANT USAGE ON SCHEMA clean_data TO data_analyst;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.customers;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.customers;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    GRANT USAGE ON SCHEMA clean_data TO data_analyst
+Database response message: 'GRANT'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.customers
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.customers
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.customers
+Database response message: '    
+    ERROR:  permission denied for table customers
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>db_username</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="necessary-permission-2-grant-privilege-on-all-tables-in-schema" class="level5">
+<h5 class="anchored" data-anchor-id="necessary-permission-2-grant-privilege-on-all-tables-in-schema">Necessary Permission 2: GRANT privilege ON ALL TABLES IN SCHEMA</h5>
+<p>Our role still doesn’t have enough privileges to see the <code>customers</code> table in the <code>clean_data</code> schema. We haven’t specified whether the role should be allowed to delete tables, insert data into tables, select data from tables, etc, and <code>postgres</code> defaults to the more secure choice when there’s ambiguity. So we have to specify what we want to allow the role to do.</p>
+<p>There are many privileges we could <a href="https://www.postgresql.org/docs/15/sql-grant.html">grant</a>, but we only want to grant SELECT privileges.</p>
+<div class="cell" data-execution_count="14">
+<details open="">
+<summary>Granting the data_analyst role privileges to SELECT from tables in the clean_data schema</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="st">        GRANT SELECT ON ALL TABLES IN SCHEMA clean_data TO data_analyst;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.customers;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.customers;</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    GRANT SELECT ON ALL TABLES IN SCHEMA clean_data TO data_analyst
+Database response message: 'GRANT'
+
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.customers
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.customers
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.customers
+Database response message: 'SELECT 3'
+records in result: 3</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">customer_name</th>
+<th data-quarto-table-cell-role="th">contact_name</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">email</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Customer A</td>
+<td>Contact A</td>
+<td>Country A</td>
+<td>contacta@email.com</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Customer B</td>
+<td>Contact B</td>
+<td>Country B</td>
+<td>contactb@email.com</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Customer C</td>
+<td>Contact C</td>
+<td>Country C</td>
+<td>contactc@email.com</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now we see that the <code>data_analyst</code> role can select data from the <code>clean_data.customers</code> and can’t select from the <code>raw_data.customers</code> table. That seems to meet parts of our specification.</p>
+<p>Let’s try creating some users and granting them the <code>data_analyst</code> role.</p>
+<div class="cell" data-execution_count="15">
+<details open="">
+<summary>Creating a new user and granting it the data_analyst role</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM pg_roles</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="st">        WHERE rolname LIKE '%analyst%';</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE USER analyst1;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="st">        GRANT data_analyst TO analyst1;</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM pg_roles</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="st">        WHERE rolname LIKE '%analyst%';</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SELECT rolname, rolsuper, rolcreaterole, rolcreatedb
+    FROM pg_roles
+    WHERE rolname LIKE '%analyst%'
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    CREATE USER analyst1
+Database response message: 'CREATE ROLE'
+
+Query:
+    GRANT data_analyst TO analyst1
+Database response message: 'GRANT ROLE'
+
+Query:
+    SELECT rolname, rolsuper, rolcreaterole, rolcreatedb
+    FROM pg_roles
+    WHERE rolname LIKE '%analyst%'
+Database response message: 'SELECT 2'
+records in result: 2</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rolname</th>
+<th data-quarto-table-cell-role="th">rolsuper</th>
+<th data-quarto-table-cell-role="th">rolcreaterole</th>
+<th data-quarto-table-cell-role="th">rolcreatedb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rolname</th>
+<th data-quarto-table-cell-role="th">rolsuper</th>
+<th data-quarto-table-cell-role="th">rolcreaterole</th>
+<th data-quarto-table-cell-role="th">rolcreatedb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>analyst1</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Let’s confirm that our new user can view the <code>clean_data.customers</code> table and can’t view the <code>raw_data.customers</code> table.</p>
+<div class="cell" data-execution_count="16">
+<details open="">
+<summary>Checking if our new user can view the tables the data_analyst role can view.</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE analyst1;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.customers;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.customers;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SET ROLE analyst1
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.customers
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.customers
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.customers
+Database response message: 'SELECT 3'
+records in result: 3</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>analyst1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">customer_name</th>
+<th data-quarto-table-cell-role="th">contact_name</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">email</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Customer A</td>
+<td>Contact A</td>
+<td>Country A</td>
+<td>contacta@email.com</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Customer B</td>
+<td>Contact B</td>
+<td>Country B</td>
+<td>contactb@email.com</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Customer C</td>
+<td>Contact C</td>
+<td>Country C</td>
+<td>contactc@email.com</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Confirmed, our new user has the ability to select from a table in the <code>data_clean</code> schema. Let’s add another table and confirm the <code>data_analyst</code> and <code>analyst1</code> roles have permissions to view it, as well.</p>
+<div class="cell" data-execution_count="17">
+<details open="">
+<summary>Mocking up new tables in both the raw_data and clean_data schemas</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE TABLE raw_data.orders (</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="st">            order_id int PRIMARY KEY,</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id int,</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="st">            order_date text,</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="st">            product text,</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="st">            quantity int,</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="st">            FOREIGN KEY (customer_id) REFERENCES raw_data.customers(customer_id)</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO raw_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 1, '2023-01-01', 'Product A', 10),</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="st">            (2, 1, '2023-01-02', 'Product B', 15),</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="st">            (3, 2, '2023-02-01', 'Product A', 5),</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="st">            (4, 3, '2023-02-02', 'Product C', 20);</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE TABLE clean_data.orders (</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="st">            order_id int PRIMARY KEY,</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id int,</span></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="st">            order_date date,</span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="st">            product text,</span></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="st">            quantity int,</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="st">            FOREIGN KEY (customer_id) REFERENCES clean_data.customers(customer_id)</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO clean_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT</span></span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="st">            order_id,</span></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="st">            customer_id,</span></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a><span class="st">            order_date::date AS order_date,</span></span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a><span class="st">            product,</span></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a><span class="st">            quantity</span></span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM raw_data.orders;</span></span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    CREATE TABLE raw_data.orders(
+        order_id int PRIMARY KEY,
+        customer_id int,
+        order_date text,
+        product text,
+        quantity int,
+        FOREIGN KEY(customer_id) REFERENCES raw_data.customers(customer_id)
+    )
+Database response message: 'CREATE TABLE'
+
+Query:
+    INSERT INTO raw_data.orders(order_id, customer_id, order_date, product, quantity)
+    VALUES
+    (1, 1, '2023-01-01', 'Product A', 10),
+    (2, 1, '2023-01-02', 'Product B', 15),
+    (3, 2, '2023-02-01', 'Product A', 5),
+    (4, 3, '2023-02-02', 'Product C', 20)
+Database response message: 'INSERT 0 4'
+
+Query:
+    CREATE TABLE clean_data.orders(
+        order_id int PRIMARY KEY,
+        customer_id int,
+        order_date date,
+        product text,
+        quantity int,
+        FOREIGN KEY(customer_id) REFERENCES clean_data.customers(customer_id)
+    )
+Database response message: 'CREATE TABLE'
+
+Query:
+    INSERT INTO clean_data.orders(order_id, customer_id, order_date, product, quantity)
+       SELECT
+           order_id,
+            customer_id,
+            order_date: : date AS order_date,
+            product,
+            quantity
+        FROM raw_data.orders
+Database response message: 'INSERT 0 4'</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<details open="">
+<summary>Checking if our new user can view the tables the data_analyst role can view.</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.orders;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.orders;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE analyst1;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.orders;</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.orders;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.orders
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.orders
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.orders
+Database response message: '    
+    ERROR:  permission denied for table orders
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SET ROLE analyst1
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.orders
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.orders
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.orders
+Database response message: '    
+    ERROR:  permission denied for table orders
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>analyst1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Wait, our neither the <code>data_analyst</code> nor the <code>analyst1</code> roles have sufficient privileges to select from the new table in the <code>clean_data</code> table? Good thing we checked, as now we know we need to do more before our <code>data_analyst</code> role delivers the behavior we specified.</p>
+</section>
+<section id="necessary-permission-2-part-2-alter-default-privileges" class="level5">
+<h5 class="anchored" data-anchor-id="necessary-permission-2-part-2-alter-default-privileges">Necessary Permission 2 part 2: ALTER DEFAULT PRIVILEGES</h5>
+<p><code>GRANT SELECT ON ALL TABLES IN clean_data</code> gave the <code>data_analyst</code> role (and any role inheriting from <code>data_analyst</code> at grant-execution-time) permission to select from any table in <code>clean_data</code>, but doesn’t set that as the default for users granted the <code>data_analyst</code> role later on. We have to <a href="https://www.postgresql.org/docs/15/sql-alterdefaultprivileges.html"><code>ALTER DEFAULT PRIVILEGES</code></a> (which will apply to future grantings), and then we have to run the <code>GRANT SELECT ...</code> command again (to apply to the already-existing <code>analyst1</code>).</p>
+<div class="cell" data-execution_count="19">
+<details open="">
+<summary>Altering the default permissions for any user granted role data_analyst in the future</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="st">        ALTER DEFAULT PRIVILEGES IN SCHEMA clean_data</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="st">            GRANT SELECT ON TABLES TO data_analyst;</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="st">        GRANT SELECT ON ALL TABLES IN SCHEMA clean_data TO data_analyst;</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.orders;</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.orders;</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE analyst1;</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.orders;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.orders;</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    ALTER DEFAULT PRIVILEGES IN SCHEMA clean_data
+    GRANT SELECT ON TABLES TO data_analyst
+Database response message: 'ALTER DEFAULT PRIVILEGES'
+
+Query:
+    GRANT SELECT ON ALL TABLES IN SCHEMA clean_data TO data_analyst
+Database response message: 'GRANT'
+
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.orders
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.orders
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.orders
+Database response message: 'SELECT 4'
+records in result: 4
+
+Query:
+    SET ROLE analyst1
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.orders
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.orders
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.orders
+Database response message: 'SELECT 4'
+records in result: 4</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_id</th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">product</th>
+<th data-quarto-table-cell-role="th">quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>Product A</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>Product B</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>2</td>
+<td>2023-02-01</td>
+<td>Product A</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>3</td>
+<td>2023-02-02</td>
+<td>Product C</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>analyst1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_id</th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">product</th>
+<th data-quarto-table-cell-role="th">quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>Product A</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>Product B</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>2</td>
+<td>2023-02-01</td>
+<td>Product A</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>3</td>
+<td>2023-02-02</td>
+<td>Product C</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>And as a final check, let’s confirm that we can create another user and that they’ll have the ability to select from <code>clean_data</code> schema tables.</p>
+<div class="cell" data-execution_count="20">
+<details open="">
+<summary>Creating another user, granting them the data_analyst role, and checking permissions</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM pg_roles</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="st">        WHERE rolname LIKE '%analyst%';</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE USER analyst2;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="st">        GRANT data_analyst TO analyst2;</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="st">        FROM pg_roles</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="st">        WHERE rolname LIKE '%analyst%';</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE analyst2;</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM raw_data.orders;</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT * FROM clean_data.orders;</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SELECT rolname, rolsuper, rolcreaterole, rolcreatedb
+    FROM pg_roles
+    WHERE rolname LIKE '%analyst%'
+Database response message: 'SELECT 2'
+records in result: 2
+
+Query:
+    CREATE USER analyst2
+Database response message: 'CREATE ROLE'
+
+Query:
+    GRANT data_analyst TO analyst2
+Database response message: 'GRANT ROLE'
+
+Query:
+    SELECT rolname, rolsuper, rolcreaterole, rolcreatedb
+    FROM pg_roles
+    WHERE rolname LIKE '%analyst%'
+Database response message: 'SELECT 3'
+records in result: 3
+
+Query:
+    SET ROLE analyst2
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    SELECT * FROM raw_data.orders
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: SELECT * FROM raw_data.orders
+                          ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    SELECT * FROM clean_data.orders
+Database response message: 'SELECT 4'
+records in result: 4</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rolname</th>
+<th data-quarto-table-cell-role="th">rolsuper</th>
+<th data-quarto-table-cell-role="th">rolcreaterole</th>
+<th data-quarto-table-cell-role="th">rolcreatedb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>analyst1</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rolname</th>
+<th data-quarto-table-cell-role="th">rolsuper</th>
+<th data-quarto-table-cell-role="th">rolcreaterole</th>
+<th data-quarto-table-cell-role="th">rolcreatedb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>analyst1</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>analyst2</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>analyst2</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_id</th>
+<th data-quarto-table-cell-role="th">customer_id</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">product</th>
+<th data-quarto-table-cell-role="th">quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>Product A</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>Product B</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>2</td>
+<td>2023-02-01</td>
+<td>Product A</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>3</td>
+<td>2023-02-02</td>
+<td>Product C</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<details open="">
+<summary>Attempting to insert data into tables in both the raw_data and clean_data schemas</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE analyst2;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO raw_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 1, '2023-01-01', 'Product A', 10);</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO clean_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 1, '2023-01-01', 'Product A', 10);</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SET ROLE analyst2
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    INSERT INTO raw_data.orders(order_id, customer_id, order_date, product, quantity)
+    VALUES
+    (1, 1, '2023-01-01', 'Product A', 10)
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: INSERT INTO raw_data.orders (order_id, customer_id, order_da...
+                        ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    INSERT INTO clean_data.orders(order_id, customer_id, order_date, product, quantity)
+    VALUES
+    (1, 1, '2023-01-01', 'Product A', 10)
+Database response message: '    
+    ERROR:  permission denied for table orders
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>analyst2</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<details open="">
+<summary>Attempting to insert data into tables in both the raw_data and clean_data schemas</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="st">        SET ROLE data_analyst;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="st">        SELECT current_user;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO raw_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 1, '2023-01-01', 'Product A', 10);</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="st">        INSERT INTO clean_data.orders (order_id, customer_id, order_date, product, quantity)</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="st">        VALUES</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="st">            (1, 1, '2023-01-01', 'Product A', 10);</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    print_results<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Query:
+    SET ROLE data_analyst
+Database response message: 'SET'
+
+Query:
+    SELECT current_user
+Database response message: 'SELECT 1'
+records in result: 1
+
+Query:
+    INSERT INTO raw_data.orders(order_id, customer_id, order_date, product, quantity)
+    VALUES
+    (1, 1, '2023-01-01', 'Product A', 10)
+Database response message: '    
+    ERROR:  permission denied for schema raw_data
+    LINE 1: INSERT INTO raw_data.orders (order_id, customer_id, order_da...
+                        ^
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'
+
+Query:
+    INSERT INTO clean_data.orders(order_id, customer_id, order_date, product, quantity)
+    VALUES
+    (1, 1, '2023-01-01', 'Product A', 10)
+Database response message: '    
+    ERROR:  permission denied for table orders
+      Error type: &lt;class 'psycopg2.errors.InsufficientPrivilege'&gt;'</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">current_user</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>data_analyst</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="specification-met" class="level4">
+<h4 class="anchored" data-anchor-id="specification-met">Specification Met</h4>
+<p>It looks like we have a role that we can assign to new users to grant them permission to select data from tables in only the <code>clean_data</code> schema. And we’ve also confirmed our roles can’t insert data into tables (and likely can’t update or delete either). So we’ve developed and tested a solution that can meet our specification.</p>
+<p>We create our <code>data_analyst</code> role, grant it privileges, and set its default privileges</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USAGE</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> clean_data <span class="kw">TO</span> data_analyst;</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">ALL</span> <span class="kw">TABLES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> clean_data <span class="kw">TO</span> data_analyst;</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> clean_data</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">TO</span> data_analyst;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and we can grant new analyst users those privileges</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> data_analyst <span class="kw">TO</span> new_analyst;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Success!</p>
+</section>
+</section>
+<section id="cleaning-up-the-sandbox" class="level3">
+<h3 class="anchored" data-anchor-id="cleaning-up-the-sandbox">Cleaning up the sandbox</h3>
+<p>When we’re done with our experiments, we can tell docker to shut down our sandbox container and delete the volume storing our sandbox’s database via this command.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose down <span class="at">-v</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To shut down our container without deleting the volume, just leave off the <code>-v</code> flag.</p>
+<div class="cell" data-execution_count="23">
+<details>
+<summary>Shutting down our sandbox and deleting our volume</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose down <span class="op">-</span>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[+] Running 0/0
+ ⠋ Container 015_docker_postgres_sandbox-postgis-1  Stopping               0.1s 
+[+] Running 0/1
+ ⠙ Container 015_docker_postgres_sandbox-postgis-1  Stopping               0.2s 
+[+] Running 0/1
+ ⠹ Container 015_docker_postgres_sandbox-postgis-1  Stopping               0.3s 
+[+] Running 2/1
+ ✔ Container 015_docker_postgres_sandbox-postgis-1          Removed        0.3s 
+ ✔ Volume 015_docker_postgres_sandbox_sandbox_postgis_data  Removed        0.0s 
+ ⠋ Network 015_docker_postgres_sandbox_default              Removing       0.1s 
+[+] Running 2/3
+ ✔ Container 015_docker_postgres_sandbox-postgis-1          Removed        0.3s 
+ ✔ Volume 015_docker_postgres_sandbox_sandbox_postgis_data  Removed        0.0s 
+ ⠙ Network 015_docker_postgres_sandbox_default              Removing       0.2s 
+[+] Running 3/3
+ ✔ Container 015_docker_postgres_sandbox-postgis-1          Removed        0.3s 
+ ✔ Volume 015_docker_postgres_sandbox_sandbox_postgis_data  Removed        0.0s 
+ ✔ Network 015_docker_postgres_sandbox_default              Removed        0.2s </code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<details>
+<summary>Shows that our system’s one container has shut down</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>a <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES</code></pre>
+</div>
+</div>
+
+
+
+</section>
+</section>
+</section>
+
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Before you can use docker and compose, you have to install <a href="https://docs.docker.com/engine/install/">docker</a> and <a href="https://docs.docker.com/compose/install/">compose</a>. I installed the docker engine and compose, but it looks like the developers at Docker Inc.&nbsp;guide people towards installing their Docker Desktop client. In either setup, docker should still become available to you via the command line, so instructions in this post should work.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Docker containers are designed to be a replicable instance of an image, so when you shut down your application, your containers are removed and new ones are created next time you start it up. This is great for reproducibility (you always get a new, clean instance based on your image), but you don’t want the data you ingest into your database to get wiped every time you shut down your system, so you can define a persistent <strong>volume</strong> that will live on in the host system.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
