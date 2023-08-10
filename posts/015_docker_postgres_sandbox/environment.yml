@@ -1,0 +1,13 @@
+name: pg_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - geoalchemy2
+  - geopandas
+  - jupyterlab
+  - psycopg2
+  - python=3.11
+  - sqlalchemy
+  - autopep8
+prefix: /home/matt/miniconda3/envs/pg_env
