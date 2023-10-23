@@ -77,6 +77,29 @@ last
 ```
 
 
+## Tailscale
+
+1. [Install tailscale](https://tailscale.com/kb/1017/install/) onto each machine you want to add to the network.
+
+2. Start up ssh via tailscale on the destination server machine with `tailscale up --ssh`
+2.a. Adjust [ACLs](https://tailscale.com/kb/1018/acls/#acl-rules/) to limit access
+
+3. Connect to the server from a remote machine
+3.a. On the remote machine looking to connect to the server, look up the name of the server
+
+```bash
+tailscale status
+```
+
+3.b. `ssh` to the server
+
+```bash
+tailscale ssh {server_name}
+```
+
+3.c. Authenticate via whatever means you used when setting up your tailscale user account.
+
+
 ## Docker
 
 1. Set up the [Docker Apt repo](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)
@@ -160,28 +183,34 @@ export DOCKER_HOST=unix:///run/user/1000/docker.sock
 docker container run --rm hello-world
 ```
 
-## Tailscale
+## Git Config
+### GitHub SSH Key
 
-1. [Install tailscale](https://tailscale.com/kb/1017/install/) onto each machine you want to add to the network.
-
-2. Start up ssh via tailscale on the destination server machine with `tailscale up --ssh`
-2.a. Adjust [ACLs](https://tailscale.com/kb/1018/acls/#acl-rules/) to limit access
-
-3. Connect to the server from a remote machine
-3.a. On the remote machine looking to connect to the server, look up the name of the server
+1. Create an SSH key pair on your machine
 
 ```bash
-tailscale status
+ssh-keygen -t ed25519 -C "your_email@example.com"
 ```
 
-3.b. `ssh` to the server
+2. Add your SSH private key to your ssh-agent's keyring.
 
 ```bash
-tailscale ssh {server_name}
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
 ```
 
-3.c. Authenticate via whatever means you used when setting up your tailscale user account.
+3. Add your SSH **PUBLIC** key to GitHub
 
+Print your public key in your terminal via
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
 
+Copy that entire line and add it to GitHub as shown [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
 
+### Set email and username
 
+```bash
+git config --global user.email "your.email@email.com"
+git config --global user.name "your_username"
+```
