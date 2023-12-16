@@ -214,3 +214,7 @@ Copy that entire line and add it to GitHub as shown [here](https://docs.github.c
 git config --global user.email "your.email@email.com"
 git config --global user.name "your_username"
 ```
+
+## Install miniconda
+
+Follow the instructions in my [conda setup post](https://matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html).
