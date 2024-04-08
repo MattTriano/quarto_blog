@@ -10,17 +10,10 @@ website:
       - about.qmd
       - icon: github
         href: https://github.com/MattTriano
-      - icon: rss
-        href: index.xml
-
-listing:
-  contents: posts
-  feed: true
-
 format:
   html:
     theme: darkly
     css: styles.css
-
 execute:
   freeze: auto
+
