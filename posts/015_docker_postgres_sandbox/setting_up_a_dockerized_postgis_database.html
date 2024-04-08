@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.553">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,7 +25,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,15 +60,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-listing/list.min.js"></script>
-<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -84,7 +82,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -93,57 +97,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: [],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Matt Triano" href="setting_up_a_dockerized_postgis_database.xml"></head>
+</head>
 
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Matt Triano</span>
     </a>
@@ -155,23 +129,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/MattTriano" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/MattTriano"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
-</i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
-</div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -257,8 +226,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="cell" data-execution_count="1">
-<details>
+
+<div id="119a942d-f182-4d43-b2dc-a7a03f9eacf2" class="cell" data-execution_count="1">
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -283,8 +253,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="our-dockerfile" class="level3">
 <h3 class="anchored" data-anchor-id="our-dockerfile">Our Dockerfile</h3>
 <p>The first one may sound complicated, as the contents of our Dockerfile show, this can only take one line of code (from us). That’s possible because Dockerfiles can build an image based on another image, and the developers of many open source projects (e.g.&nbsp;Ubuntu, PostgreSQL/PostGIS, MySQL, Go, nginx, etc) public official images on <a href="https://registry.hub.docker.com/search?q=">Docker Hub</a>. Our Dockerfile pulls the <a href="https://registry.hub.docker.com/r/postgis/postgis">postgis/postgis image</a> (translated, it pulls the <code>postgis</code> base image from the <code>postgis</code> organization), and then adds nothing else. So in one line, we indicate that we want the <code>postgis/postgis</code> image that has the tag “15-3.3” (which they’ve intuitively used to indicate the image provides a PostGIS database that has version 15-3.3).</p>
-<div class="cell" data-execution_count="2">
-<details>
+<div id="0ffa04f3-90eb-43be-844a-2d4859681bf6" class="cell" data-execution_count="2">
+<details class="code-fold">
 <summary>The full contents of our Dockerfile</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>cat db_context<span class="op">/</span>Dockerfile</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -296,8 +266,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="our-docker-compose.yml-file" class="level3">
 <h3 class="anchored" data-anchor-id="our-docker-compose.yml-file">Our docker-compose.yml file</h3>
 <p>And this is our <code>docker-compose.yml</code> file. The <code>docker-compose.yml</code> file defines the services, and any networks, volumes, configs, and/or secrets/environment variables your system needs to work. The file below defines one service (named <code>postgis</code>) and one volume (named <code>sandbox_postgis_data</code>).</p>
-<div class="cell" data-execution_count="3">
-<details>
+<div id="2d5d9e97-e3c0-4597-a7f7-5adc4ab37274" class="cell" data-execution_count="3">
+<details class="code-fold">
 <summary>The contents of our docker-compose.yml</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>cat docker<span class="op">-</span>compose.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -342,8 +312,8 @@ volumes:
 <h3 class="anchored" data-anchor-id="building-the-images-used-in-our-system">Building the image(s) used in our system</h3>
 <p>The first time you build the image defined by your Dockerfile, docker will read your Dockerfile(s), download all layers of the base image(s) (defined in lines starting with <code>FROM</code>), process each subsequent instruction into a layer, cache layers, and then bind the layers into an image. This is a template for creating containers.</p>
 <p>The second time you run this command (assuming no changes have been made to the <code>docker-compose.yml</code> file, Dockerfile(s), or any other files the Dockerfile references), all layers will just be pulled from cache, producing much smaller output (like what’s shown below).</p>
-<div class="cell" data-execution_count="4">
-<details>
+<div id="a35f5412-2ddf-41ed-b817-08be4f72302f" class="cell" data-execution_count="4">
+<details class="code-fold">
 <summary>The output produced while building our images</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose build</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -377,8 +347,8 @@ volumes:
  =&gt; =&gt; naming to docker.io/library/sandbox_postgis:15.3.3                  0.0s</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
-<details>
+<div id="ce1f080b-20a2-485b-8e13-7cf4bb6a9785" class="cell" data-execution_count="5">
+<details class="code-fold">
 <summary>Shows that our system’s one container is not running yet</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -387,7 +357,7 @@ volumes:
 </div>
 </div>
 <p><code>docker ps</code> shows running containers, and the <code>-f name=...</code> option allows us to filter to running containers with a name containing the entered string. Currently, “sandbox-postgis” isn’t part of the name of any running container, so let’s spin one up.</p>
-<div class="cell" data-execution_count="6">
+<div id="aade6c3d-a1b1-4daa-baa0-b207f3c0df79" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose up <span class="op">-</span>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[+] Running 2/0
@@ -412,8 +382,8 @@ volumes:
  ✔ Container 015_docker_postgres_sandbox-postgis-1            Started      0.4s </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
-<details>
+<div id="b1751a35-e624-43a5-8940-78d3a903b5eb" class="cell" data-execution_count="7">
+<details class="code-fold">
 <summary>Shows that our system’s one container is running now</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -430,8 +400,8 @@ cf845e91c61a   sandbox_postgis:15.3.3   "docker-entrypoint.s…"   1 second ago 
 <section id="sending-commands-to-our-database" class="level2">
 <h2 class="anchored" data-anchor-id="sending-commands-to-our-database">Sending commands to our database</h2>
 <p>Now we have our database up and running on our local system, but now we need to connect to it from this jupyter notebook. I want to focus on experimenting with SQL, so I’ve implemented some functions than handle connecting to the database and executing SQL queries/commands.</p>
-<div class="cell" data-execution_count="8">
-<details>
+<div id="0b4632b3-7c96-4655-b6a9-ed79d306593d" class="cell" data-execution_count="8">
+<details class="code-fold">
 <summary>Helper functions for our main python-to-postgres connector code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> contextlib <span class="im">import</span> contextmanager</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Tuple, Union, Optional</span>
@@ -484,7 +454,7 @@ cf845e91c61a   sandbox_postgis:15.3.3   "docker-entrypoint.s…"   1 second ago 
 </div>
 <p>The <code>get_db_connection()</code> function provides a connection to our database. Note that <code>get_db_connection()</code> uses the <code>POSTGRES_DB</code>, <code>POSTGRES_USER</code>, and <code>POSTGRES_PASSWORD</code> environment variables as well as port number 54321, all of which we set in our <code>docker-compose.yml</code> file.</p>
 <p>The <code>execute_transaction()</code> function takes in a string containing one or more semicolon-separated SQL queries, executes each query using the same connection, displays the query and response from the database, and returns a list containing the query, database response, and result_set for each query from the input.</p>
-<div class="cell" data-execution_count="9">
+<div id="dad16f31-91c0-48e1-9814-8e4ecc4ee8d2" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="at">@contextmanager</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_db_connection():</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> psycopg2.<span class="ex">connect</span>(</span>
@@ -530,8 +500,8 @@ cf845e91c61a   sandbox_postgis:15.3.3   "docker-entrypoint.s…"   1 second ago 
 <p>To test whether our role meets the specification, we need to mock up some test fixtures.</p>
 <p>We’ll need a <code>clean_data</code> schema, and another non-<code>public</code> schema to test that our role can only view data in the <code>clean_data</code> schema.</p>
 <p>We’ll also need tables in these schemas to attempt to view.</p>
-<div class="cell" data-execution_count="10">
-<details>
+<div id="c3028bf0-a38c-4aa1-b853-3df3738c3d4c" class="cell" data-execution_count="10">
+<details class="code-fold">
 <summary>Creating raw_data and clean_data schemas and inserting a data table in each</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -619,8 +589,8 @@ Query:
 Database response message: 'INSERT 0 3'</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<details open="">
+<div id="90fdae83-0c39-4c17-ae65-1b9c70882785" class="cell" data-execution_count="11">
+<details open="" class="code-fold">
 <summary>Checking that my role can see a table</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -644,6 +614,7 @@ records in result: 3</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -663,7 +634,9 @@ records in result: 3</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -709,13 +682,14 @@ records in result: 3</code></pre>
 </div>
 </div>
 </div>
+</div>
 </section>
 <section id="creating-a-role-to-set-permissions-for-a-group-of-users" class="level3">
 <h3 class="anchored" data-anchor-id="creating-a-role-to-set-permissions-for-a-group-of-users">Creating a role to set permissions for a group of users</h3>
 <p>If we had to individually set the permissions for each database user, it wouldn’t take long before some user(s) were mistakenly granted privileges they shouldn’t have, and it would also be a chore for the data governance/IT team to have to manage this. Fortunately, Postgres allows us to create a role for a <a href="https://www.postgresql.org/docs/15/role-membership.html">group of users</a> (e.g.&nbsp;data analysts, data engineers, data scientists, etc), define the permissions that class should have, and then grant the role to relevant users.</p>
 <p>Let’s create a role for data analysts.</p>
-<div class="cell" data-execution_count="12">
-<details open="">
+<div id="ac17253e-6a9e-4016-89a2-b06f4900e83d" class="cell" data-execution_count="12">
+<details open="" class="code-fold">
 <summary>Creating a new role and seeing what it can see before granting it permissions</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -773,6 +747,7 @@ records in result: 1</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -792,7 +767,9 @@ records in result: 1</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -817,6 +794,7 @@ records in result: 1</code></pre>
 </tbody>
 </table>
 
+</div>
 </div>
 </div>
 </div>
@@ -857,8 +835,8 @@ Note: Why I keep setting the role in each transaction
 </div>
 <section id="necessary-permission-1-grant-usage-on-schema" class="level5">
 <h5 class="anchored" data-anchor-id="necessary-permission-1-grant-usage-on-schema">Necessary Permission 1: GRANT USAGE ON SCHEMA</h5>
-<div class="cell" data-execution_count="13">
-<details open="">
+<div id="3a3aae97-11ca-46f1-b7a0-da27cb06435a" class="cell" data-execution_count="13">
+<details open="" class="code-fold">
 <summary>Granting the role permission to use a schema and checking again</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -908,6 +886,7 @@ Database response message: '
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -927,7 +906,9 @@ Database response message: '
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -949,13 +930,14 @@ Database response message: '
 </div>
 </div>
 </div>
+</div>
 </section>
 <section id="necessary-permission-2-grant-privilege-on-all-tables-in-schema" class="level5">
 <h5 class="anchored" data-anchor-id="necessary-permission-2-grant-privilege-on-all-tables-in-schema">Necessary Permission 2: GRANT privilege ON ALL TABLES IN SCHEMA</h5>
 <p>Our role still doesn’t have enough privileges to see the <code>customers</code> table in the <code>clean_data</code> schema. We haven’t specified whether the role should be allowed to delete tables, insert data into tables, select data from tables, etc, and <code>postgres</code> defaults to the more secure choice when there’s ambiguity. So we have to specify what we want to allow the role to do.</p>
 <p>There are many privileges we could <a href="https://www.postgresql.org/docs/15/sql-grant.html">grant</a>, but we only want to grant SELECT privileges.</p>
-<div class="cell" data-execution_count="14">
-<details open="">
+<div id="a77fdd94-a0d8-44cf-84dd-75755655cea7" class="cell" data-execution_count="14">
+<details open="" class="code-fold">
 <summary>Granting the data_analyst role privileges to SELECT from tables in the clean_data schema</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -999,6 +981,7 @@ records in result: 3</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1018,7 +1001,9 @@ records in result: 3</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1064,10 +1049,11 @@ records in result: 3</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>Now we see that the <code>data_analyst</code> role can select data from the <code>clean_data.customers</code> and can’t select from the <code>raw_data.customers</code> table. That seems to meet parts of our specification.</p>
 <p>Let’s try creating some users and granting them the <code>data_analyst</code> role.</p>
-<div class="cell" data-execution_count="15">
-<details open="">
+<div id="11032146-e457-460b-9196-e35e3330dc92" class="cell" data-execution_count="15">
+<details open="" class="code-fold">
 <summary>Creating a new user and granting it the data_analyst role</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1111,6 +1097,7 @@ records in result: 2</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1136,7 +1123,9 @@ records in result: 2</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1171,9 +1160,10 @@ records in result: 2</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>Let’s confirm that our new user can view the <code>clean_data.customers</code> table and can’t view the <code>raw_data.customers</code> table.</p>
-<div class="cell" data-execution_count="16">
-<details open="">
+<div id="8f163437-82c6-4613-9672-13514dd31a1a" class="cell" data-execution_count="16">
+<details open="" class="code-fold">
 <summary>Checking if our new user can view the tables the data_analyst role can view.</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1211,6 +1201,7 @@ records in result: 3</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1230,7 +1221,9 @@ records in result: 3</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1276,9 +1269,10 @@ records in result: 3</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>Confirmed, our new user has the ability to select from a table in the <code>data_clean</code> schema. Let’s add another table and confirm the <code>data_analyst</code> and <code>analyst1</code> roles have permissions to view it, as well.</p>
-<div class="cell" data-execution_count="17">
-<details open="">
+<div id="3c4a8ccb-e605-443f-9b07-f9c2e9e67782" class="cell" data-execution_count="17">
+<details open="" class="code-fold">
 <summary>Mocking up new tables in both the raw_data and clean_data schemas</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1361,8 +1355,8 @@ Query:
 Database response message: 'INSERT 0 4'</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
-<details open="">
+<div id="c02582d7-aee4-422c-8803-26003689048f" class="cell" data-execution_count="18">
+<details open="" class="code-fold">
 <summary>Checking if our new user can view the tables the data_analyst role can view.</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1429,6 +1423,7 @@ Database response message: '
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1448,7 +1443,9 @@ Database response message: '
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1470,13 +1467,14 @@ Database response message: '
 </div>
 </div>
 </div>
+</div>
 <p>Wait, our neither the <code>data_analyst</code> nor the <code>analyst1</code> roles have sufficient privileges to select from the new table in the <code>clean_data</code> table? Good thing we checked, as now we know we need to do more before our <code>data_analyst</code> role delivers the behavior we specified.</p>
 </section>
 <section id="necessary-permission-2-part-2-alter-default-privileges" class="level5">
 <h5 class="anchored" data-anchor-id="necessary-permission-2-part-2-alter-default-privileges">Necessary Permission 2 part 2: ALTER DEFAULT PRIVILEGES</h5>
 <p><code>GRANT SELECT ON ALL TABLES IN clean_data</code> gave the <code>data_analyst</code> role (and any role inheriting from <code>data_analyst</code> at grant-execution-time) permission to select from any table in <code>clean_data</code>, but doesn’t set that as the default for users granted the <code>data_analyst</code> role later on. We have to <a href="https://www.postgresql.org/docs/15/sql-alterdefaultprivileges.html"><code>ALTER DEFAULT PRIVILEGES</code></a> (which will apply to future grantings), and then we have to run the <code>GRANT SELECT ...</code> command again (to apply to the already-existing <code>analyst1</code>).</p>
-<div class="cell" data-execution_count="19">
-<details open="">
+<div id="26ca37fc-3f99-4750-a078-07a571f700a7" class="cell" data-execution_count="19">
+<details open="" class="code-fold">
 <summary>Altering the default permissions for any user granted role data_analyst in the future</summary>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1554,6 +1552,7 @@ records in result: 4</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1573,7 +1572,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1626,7 +1627,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1647,7 +1650,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1701,9 +1706,10 @@ records in result: 4</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>And as a final check, let’s confirm that we can create another user and that they’ll have the ability to select from <code>clean_data</code> schema tables.</p>
-<div class="cell" data-execution_count="20">
-<details open="">
+<div id="f0bdb287-48b6-42d9-9ee7-b22bcaabdc51" class="cell" data-execution_count="20">
+<details open="" class="code-fold">
 <summary>Creating another user, granting them the data_analyst role, and checking permissions</summary>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1774,6 +1780,7 @@ records in result: 4</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1806,7 +1813,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1847,7 +1856,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1868,7 +1879,9 @@ records in result: 4</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1922,8 +1935,9 @@ records in result: 4</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<details open="">
+</div>
+<div id="e1c61efb-b11c-4280-981e-0337fb442d4b" class="cell" data-execution_count="21">
+<details open="" class="code-fold">
 <summary>Attempting to insert data into tables in both the raw_data and clean_data schemas</summary>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -1972,6 +1986,7 @@ Database response message: '
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -1992,8 +2007,9 @@ Database response message: '
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
-<details open="">
+</div>
+<div id="d0c57f46-e4ba-4f71-a148-92dcfb946314" class="cell" data-execution_count="22">
+<details open="" class="code-fold">
 <summary>Attempting to insert data into tables in both the raw_data and clean_data schemas</summary>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> execute_transaction(</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    query<span class="op">=</span><span class="st">"""</span></span>
@@ -2042,6 +2058,7 @@ Database response message: '
 </div>
 <div class="cell-output cell-output-display">
 <div>
+<div>
 
 
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
@@ -2059,6 +2076,7 @@ Database response message: '
 </tbody>
 </table>
 
+</div>
 </div>
 </div>
 </div>
@@ -2081,8 +2099,8 @@ Database response message: '
 <p>When we’re done with our experiments, we can tell docker to shut down our sandbox container and delete the volume storing our sandbox’s database via this command.</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose down <span class="at">-v</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To shut down our container without deleting the volume, just leave off the <code>-v</code> flag.</p>
-<div class="cell" data-execution_count="23">
-<details>
+<div id="f0618490-884d-4e66-9024-9ea8257fcd82" class="cell" data-execution_count="23">
+<details class="code-fold">
 <summary>Shutting down our sandbox and deleting our volume</summary>
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker compose down <span class="op">-</span>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -2107,8 +2125,8 @@ Database response message: '
  ✔ Network 015_docker_postgres_sandbox_default              Removed        0.2s </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="24">
-<details>
+<div id="a7a1edc4-7372-4840-9744-66c07ea56a18" class="cell" data-execution_count="24">
+<details class="code-fold">
 <summary>Shows that our system’s one container has shut down</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>docker ps <span class="op">-</span>a <span class="op">-</span>f name<span class="op">=</span>sandbox<span class="op">-</span>postgis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -2118,20 +2136,12 @@ Database response message: '
 </div>
 
 
-
 </section>
 </section>
 </section>
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
 <li id="fn1"><p>Before you can use docker and compose, you have to install <a href="https://docs.docker.com/engine/install/">docker</a> and <a href="https://docs.docker.com/compose/install/">compose</a>. I installed the docker engine and compose, but it looks like the developers at Docker Inc.&nbsp;guide people towards installing their Docker Desktop client. In either setup, docker should still become available to you via the command line, so instructions in this post should work.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
@@ -2268,10 +2278,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   if (showAllCode) {
     showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
-  function tippyHover(el, contentFn) {
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/www\.matttriano\.dev");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -2281,8 +2308,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -2294,7 +2330,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -2338,6 +2497,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -2363,6 +2523,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -2423,6 +2609,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

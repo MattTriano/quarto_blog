@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.553">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,7 +25,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,15 +60,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-listing/list.min.js"></script>
-<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -84,7 +82,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -93,58 +97,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: [],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 <script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Matt Triano" href="data_monitoring_w_gx_1_setup.xml"></head>
+</head>
 
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Matt Triano</span>
     </a>
@@ -156,23 +130,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/MattTriano" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/MattTriano"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
-</i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
-</div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -256,8 +225,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="cell" data-execution_count="1">
-<details>
+
+<div id="f96369b0-67cd-4410-b569-6fc6b0d31d30" class="cell" data-execution_count="1">
+<details class="code-fold">
 <summary>Imports and path-definition</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
@@ -292,8 +262,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="step-0-great-expectations-setup">Step 0: Great Expectations Setup</h2>
 <p>First, you’ll need to install the <code>great_expectations</code>. If you already have <code>conda</code> installed on your machine, you can easily set up a <code>conda</code> env just like the one used to run this notebook by: 1. copying the <code>gx_env_environment.yml</code> file in the same dir as this notebook file to your machine, 2. open a terminal and navigate to the dir with that new file, and 3. run command <code>conda env create -f environment.yml</code></p>
 <p>If you don’t have <code>conda</code> but would like to, check out my <a href="../../posts/000_setting_up_miniconda/Setting_up_Miniconda.html">opinionated conda install and configuration</a> post.</p>
-<div class="cell" data-execution_count="2">
-<details>
+<div id="b7393e3d-bdb2-4c2e-b08f-96ac232f74b5" class="cell" data-execution_count="2">
+<details class="code-fold">
 <summary>Collecting and preprocessing sample data for this post</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>PROJECT_DATA_DIR.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -338,8 +308,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <p>In the (folded up) cell below, we split the dataset into batches and write each batch to file in this post’s <code>./data</code> directory.</p>
-<div class="cell" data-execution_count="3">
-<details>
+<div id="637debce-bd54-4e10-974d-89f94fc9976c" class="cell" data-execution_count="3">
+<details class="code-fold">
 <summary>And here we split the dataset into batches and write each batch to file in this post’s <code>./data</code> directory.</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I want to split the data into 1-month batches, so I need to get the first day of the month</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   for every month between the earliest inspection and the month after the latest inspection</span></span>
@@ -370,15 +340,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="step-1-create-or-load-great-expectations-datacontext">Step 1: Create or Load Great Expectations <code>DataContext</code></h2>
 <p>A <a href="https://docs.greatexpectations.io/docs/terms/data_context/"><code>DataContext</code></a> is your primary tool for configuring your project and accessing project resources or GX methods. When you first create a <code>DataContext</code> for your project, GX will create a directory named <code>/great_expectations</code> in the <code>project_root_dir</code> directory.</p>
 <p>The code below will create a new <code>DataContext</code> if one doesn’t already exist in the <code>PROJECT_DIR</code> directory, and then load a <code>DataContext</code> instance from that <code>PROJECT_DIR</code>. Great Expectations defaults to collecting <a href="https://docs.greatexpectations.io/docs/reference/usage_statistics/">anonymized usage statistics</a>, but you can disable that for your context by setting <code>usage_statistics_enabled=False</code>.</p>
-<div class="cell" data-execution_count="4">
+<div id="113ad7dc-5fb0-4db0-b4f6-bd4130e5cc7c" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> great_expectations <span class="im">as</span> gx</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> great_expectations.data_context <span class="im">import</span> FileDataContext</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> FileDataContext.create(project_root_dir<span class="op">=</span>PROJECT_DIR, usage_statistics_enabled<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This tutorial uses a local <code>FileDataContext</code>, but GX also supports <code>CloudDataContext</code>s and <code>EphemeralDataContext</code>s.</p>
-<div class="cell" data-execution_count="5">
-<details>
+<div id="7bd5dc71-bb93-4126-88bc-b5da0c3c7a61" class="cell" data-execution_count="5">
+<details class="code-fold">
 <summary>Kinds of <code>DataContext</code>s</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(gx.data_context) <span class="cf">if</span> el.endswith(<span class="st">"Context"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -396,7 +366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="step-2-create-or-load-a-datasource">Step 2: Create or load a <code>Datasource</code></h2>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/datasource/"><code>Datasource</code></a> connects you to a source of data and gives you methods to define and access <code>DataAssets</code>.</p>
 <p>The code below will check the <code>DataContext</code> <code>context</code> for a <code>Datasource</code> with the given <code>datasource_name</code>, and either load or create a local filesystem <code>Datasource</code> instance.</p>
-<div class="cell" data-execution_count="6">
+<div id="34cd5de2-19ee-4e88-90dd-509879c2290e" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>datasource_name <span class="op">=</span> <span class="st">"food_inspection_datasource"</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="cf">if</span> <span class="bu">any</span>(el[<span class="st">"name"</span>] <span class="op">==</span> datasource_name <span class="cf">for</span> el <span class="kw">in</span> context.list_datasources()):</span>
@@ -412,8 +382,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>No Datasource with name 'food_inspection_datasource' found; creating now</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
-<details>
+<div id="e431eef8-4364-47b4-920b-7c06a98fec71" class="cell" data-execution_count="7">
+<details class="code-fold">
 <summary>Other kinds of GX <code>Datasource</code>s</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(context.sources) <span class="cf">if</span> el.startswith(<span class="st">"add_"</span>) <span class="kw">and</span> <span class="st">"_update_"</span> <span class="kw">not</span> <span class="kw">in</span> el]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -440,7 +410,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="step-3-define-dataassets-in-that-datasource">Step 3: Define <code>DataAssets</code> in that <code>Datasource</code></h2>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/data_asset/"><code>DataAsset</code></a> specifies a collection of records in a <code>Datasource</code> and the method for accessing those records.</p>
 <p>The code below checks if a <code>DataAsset</code> with the given name exists in the <code>datasource</code>, loading it if it exists, or specifying it if not. In the part that specifies the <code>DataAsset</code>, note that we set the name of the asset, specify that the data is in parquet files, and provide a regex pattern for the file_names and also defines variable-names for the <code>year</code> and <code>month</code> parts each file_name. We can use those <code>year</code> and <code>month</code> variables to specify how <code>DataAssets</code> should be split into batches and the order of those batches.</p>
-<div class="cell" data-execution_count="8">
+<div id="163fb08a-e795-4daa-b4fa-a0b5d44cc35a" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>data_asset_name <span class="op">=</span> <span class="st">"food_inspections_asset"</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="cf">if</span> data_asset_name <span class="kw">not</span> <span class="kw">in</span> datasource.get_asset_names():</span>
@@ -456,8 +426,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Creating data asset food_inspections_asset</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
-<details>
+<div id="08d29dd4-fc85-4f68-a614-b5b3553173df" class="cell" data-execution_count="9">
+<details class="code-fold">
 <summary>Other data file formats GX supports</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(datasource) <span class="cf">if</span> el.startswith(<span class="st">"add_"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -484,7 +454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/expectation/"><code>Expectation</code></a> is a verifiable assertion about some property of a <code>DataAsset</code>, and defining <code>Expectations</code> both enables GX to check that data meets expectations and enables domain experts to explicitly represent and communicate <code>Expectations</code> for data.</p>
 <p>GX supports hundreds of different <code>Expectations</code> and catalogs them in the <a href="https://greatexpectations.io/expectations/">Expectation Gallery</a> (although not all <code>Expectations</code> are implemented for all kinds of <code>Datasources</code>). GX also provides tools to aid in several <a href="https://docs.greatexpectations.io/docs/guides/expectations/create_expectations_overview">workflows</a> for defining suites of <code>Expectations</code>, including the GX <a href="https://docs.greatexpectations.io/docs/terms/data_assistant/"><strong>Data Assistant</strong></a> workflow (used below), which builds a suite of <code>Expectations</code> by profiling batches of data.</p>
 <p>In the code below, we create a new <code>Expectation</code> suite (on lines 3-5), organize batches of data (on lines 6-7), and use the data assistant to profile the <code>DataAsset</code> based on our batches of data (on lines 8-11).</p>
-<div class="cell" data-execution_count="10">
+<div id="a248572b-87f4-45b1-98a8-8852f16da7fe" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a>expectation_suite_name <span class="op">=</span> <span class="st">"food_inspections_suite"</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a></span>
 <span id="cb15-3"><a href="#cb15-3"></a>expectation_suite <span class="op">=</span> context.add_or_update_expectation_suite(</span>
@@ -1219,10 +1189,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="gx_data_assistant_profiler_profiling.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Profiler output</figcaption>
+<figcaption>Profiler output</figcaption>
 </figure>
 </div>
-<div class="cell" data-execution_count="11">
+<div id="92146ce9-f486-4ef5-ae83-85a3164b4c69" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_assistant_result.plot_expectations_and_metrics()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>64 Expectations produced, 23 Expectation and Metric plots implemented
@@ -1303,13 +1273,13 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>saved_suite <span class="op">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op">=</span>expectation_suite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In a future post I’ll go into further depth on methods for editing <code>Expectations</code>, but here I’ll show how to inspect and remove <code>Expectations</code>.</p>
-<div class="cell" data-execution_count="12">
+<div id="d616813a-ff19-4345-8146-c68bf41680e2" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>expectation_suite <span class="op">=</span> data_assistant_result.get_expectation_suite(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    expectation_suite_name<span class="op">=</span>expectation_suite_name</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="13">
-<details>
+<div id="6bf5cd10-c6fe-41c5-8bb6-9074797eb2c3" class="cell" data-execution_count="13">
+<details class="code-fold">
 <summary>Counts of Expectations by Type</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Counts of Expectations by Expectation-type:"</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>expecs_by_type <span class="op">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_expectation_type()</span>
@@ -1336,8 +1306,8 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
          'expect_table_row_count_to_be_between': 1})</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
-<details>
+<div id="3a1740f4-08e9-411f-adef-c4dd8e4b33cc" class="cell" data-execution_count="14">
+<details class="code-fold">
 <summary>Counts of Expectations by Column</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Counts of Expectations by Column-name:"</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>expecs_by_col <span class="op">=</span> expectation_suite.get_grouped_and_ordered_expectations_by_column()</span>
@@ -1365,8 +1335,8 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
  ('violations', 2)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
-<details>
+<div id="a54f0fd4-8f9f-446d-8b2b-a98e4c97cd86" class="cell" data-execution_count="15">
+<details class="code-fold">
 <summary>Expectation-related methods on our expectation_suite</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>[el <span class="cf">for</span> el <span class="kw">in</span> <span class="bu">dir</span>(expectation_suite) <span class="cf">if</span> <span class="st">"_expectation"</span> <span class="kw">in</span> el]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1394,8 +1364,8 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
  'show_expectations_by_expectation_type']</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
-<details>
+<div id="7199087d-247a-4566-ace3-0ab956af5d64" class="cell" data-execution_count="16">
+<details class="code-fold">
 <summary>Inspecting Expectation types for a given column</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>col_name <span class="op">=</span> <span class="st">"longitude"</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>[ex[<span class="st">"expectation_type"</span>] <span class="cf">for</span> ex <span class="kw">in</span> expectation_suite.get_column_expectations() <span class="cf">if</span> ex[<span class="st">"kwargs"</span>][<span class="st">"column"</span>] <span class="op">==</span> col_name]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1411,7 +1381,7 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
 </div>
 </div>
 <p>Some <code>Expectations</code> are redundant, such as <code>expect_column_min_to_be_between</code> and <code>expect_column_max_to_be_between</code>. I’ll remove them.</p>
-<div class="cell" data-execution_count="17">
+<div id="8b02c850-1f35-4a64-8b35-890fc6624c3c" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>col_name <span class="op">=</span> <span class="st">"longitude"</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>expectation_types_to_remove <span class="op">=</span> [</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"expect_column_min_to_be_between"</span>, <span class="st">"expect_column_max_to_be_between"</span></span>
@@ -1426,7 +1396,7 @@ DataAssistantResult.show_expectations_by_expectation_type() to show all produced
  {"kwargs": {"column": "longitude", "strict_min": false, "min_value": -87.5510612280602, "strict_max": false, "max_value": -87.5250941359867}, "meta": {"profiler_details": {"metric_configuration": {"metric_name": "column.max", "domain_kwargs": {"column": "longitude"}, "metric_value_kwargs": null}, "num_batches": 162}}, "expectation_type": "expect_column_max_to_be_between"}]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div id="acb6be70-0ced-4c8b-8007-f3e6e5f8a538" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Expectations prior to removal: </span><span class="sc">{</span><span class="bu">len</span>(expectation_suite.expectations)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> expectation_to_remove <span class="kw">in</span> col_expectations_w_type:</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    removed_expec <span class="op">=</span> expectation_suite.remove_expectation(expectation_to_remove)</span>
@@ -1437,7 +1407,7 @@ Expectations after removal:    62</code></pre>
 </div>
 </div>
 <p>We can also get rid of every instance of an <code>Expectation</code> type.</p>
-<div class="cell" data-execution_count="19">
+<div id="be372080-bc8c-4d1d-bbb7-3863d3ebb5aa" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Removing Expectation types:"</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> expec_type <span class="kw">in</span> expectation_types_to_remove:</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - </span><span class="sc">{</span>expec_type<span class="sc">}</span><span class="ss">"</span>)</span>
@@ -1453,7 +1423,7 @@ Expectations after removal:    60</code></pre>
 </div>
 </div>
 <p>After reviewing and editing <code>Expectations</code>, the <code>Expectation Suite</code> must be committed to the <code>DataContext</code>.</p>
-<div class="cell" data-execution_count="20">
+<div id="00225ec4-8220-47c0-bc86-b643307c2200" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>saved_suite <span class="op">=</span> context.add_or_update_expectation_suite(expectation_suite<span class="op">=</span>expectation_suite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -1463,7 +1433,7 @@ Expectations after removal:    60</code></pre>
 <p>A GX <a href="https://docs.greatexpectations.io/docs/terms/checkpoint"><code>Checkpoint</code></a> configures the validation process for an <code>Expectation Suite</code>.</p>
 <p>Specifically, a <code>Checkpoint</code> defines: * the <code>Expectation Suite</code> to evaluate, * the data Batches to evaluate against, and * the actions to take after evaluation.</p>
 <p>We’ll take the actions of compiling a report of results and committing our <code>Checkpoint</code> to our <code>DataContext</code>, but you can also configure a <code>Checkpoint</code> to send results via a <a href="https://docs.greatexpectations.io/docs/guides/validation/validation_actions/actions_lp">email or Slack notification</a>.</p>
-<div class="cell" data-execution_count="21">
+<div id="ce82ba04-f879-4353-8af6-76b1f8e2901b" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1"></a>checkpoint_name <span class="op">=</span> <span class="st">"food_inspections_checkpoint"</span></span>
 <span id="cb39-2"><a href="#cb39-2"></a></span>
 <span id="cb39-3"><a href="#cb39-3"></a>checkpoint <span class="op">=</span> gx.checkpoint.SimpleCheckpoint(</span>
@@ -1483,7 +1453,7 @@ Expectations after removal:    60</code></pre>
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
+<div id="35cbeb7e-28b5-4cd8-a265-5bce25c39c67" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>context.build_data_docs()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>{'local_site': 'file:///home/matt/projects/blogs/quarto_blog/posts/006_great_expectations_setup/great_expectations/uncommitted/data_docs/local_site/index.html'}</code></pre>
@@ -1491,7 +1461,7 @@ Expectations after removal:    60</code></pre>
 </div>
 <p>To view the generated validation report (or <strong>Data Docs</strong>), open the file <code>.../great_expectations/uncommitted/data_docs/local_site/index.html</code> and select the validation run you want to review. You may have to click <code>Trust HTML</code> (upper left corner in Jupyterlab) to navigate the document.</p>
 <p><img src="data_docs_index.png" class="img-fluid" alt="Data docs index"> <img src="validation_run_data_docs_sample.png" class="img-fluid" alt="Sample view of a validation report"></p>
-<div class="cell" data-execution_count="23">
+<div id="c045ac19-2a22-4136-988e-150c34d2c49e" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>context.add_checkpoint(checkpoint<span class="op">=</span>checkpoint)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <pre><code>{
@@ -1537,7 +1507,7 @@ Expectations after removal:    60</code></pre>
 </div>
 </div>
 <p>You can easily integrate a defined <code>Checkpoint</code> into a pipeline with just a few lines of code (and another dependency).</p>
-<div class="cell" data-execution_count="24">
+<div id="9f8b9976-401a-4401-a5ea-1218f15e852b" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1"></a><span class="im">import</span> great_expectations <span class="im">as</span> gx</span>
 <span id="cb44-2"><a href="#cb44-2"></a></span>
 <span id="cb44-3"><a href="#cb44-3"></a>context <span class="op">=</span> gx.get_context(context_root_dir<span class="op">=</span>PROJECT_DIR.joinpath(<span class="st">"great_expectations"</span>))</span>
@@ -1562,18 +1532,10 @@ Expectations after removal:    60</code></pre>
 <p>In future posts, I’ll dive deeper into the <code>Expectation</code>-setting process, demonstrate a workflow with a PostgreSQL <code>Datasource</code> and <code>DataAssets</code> (where GX really shines), and explore strategies for integrating data monitoring into production ETL/ELT pipelines (like those in my <a href="https://github.com/MattTriano/analytics_data_where_house">personal data warehousing platform</a>).</p>
 
 
-
 </section>
 </section>
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1704,10 +1666,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   if (showAllCode) {
     showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
-  function tippyHover(el, contentFn) {
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/www\.matttriano\.dev");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1717,8 +1696,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1730,7 +1718,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1774,6 +1885,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1799,6 +1911,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1859,6 +1997,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.553">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,7 +25,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,15 +60,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-listing/list.min.js"></script>
-<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -84,7 +82,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -93,57 +97,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: [],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Matt Triano" href="Crime_and_Prisons_part2.xml"></head>
+</head>
 
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Matt Triano</span>
     </a>
@@ -155,23 +129,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/MattTriano" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/MattTriano"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
-</i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
-</div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -257,6 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
+
 <div class="callout callout-style-simple callout-note callout-titled" title="Update Note">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -300,8 +270,8 @@ Update Note
 <h1 data-number="3"><span class="header-section-number">3</span> Imprisonment Counts and Rates by State (Table p16t02) <a id="2"></a></h1>
 <p>In the previous post, Exploratory Data Analysis Part 1, we saw that the vast majority of people in prisons are in state prisons, but we didn’t discover anything about imprisonment rates in individual states. One of my favorite tools for examining geographical data is the <strong>choropleth map</strong> (which you may recognize from any recent <a href="https://www.nytimes.com/elections/results/california">election night</a>). In this post, I use the Bokeh python package to generate some state-level choropleths to show rates of imprisonment and how they vary from state to state.</p>
 <p>Scroll to the bottom if you want to jump straight to the maps.</p>
-<div class="cell" data-execution_count="1">
-<details>
+<div id="cell-7" class="cell" data-execution_count="1">
+<details class="code-fold">
 <summary>Imports, styling, path definitions, and util funcs</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.request <span class="im">import</span> urlretrieve</span>
@@ -401,8 +371,8 @@ Update Note
 <span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> state_code</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="2">
-<details>
+<div id="cell-8" class="cell" data-execution_count="2">
+<details class="code-fold">
 <summary>Loading and preprocessing the t02 dataset, Counts by State and Gender</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breakdown by State and Gender (Table p16t02)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>CSV_PATH <span class="op">=</span> os.path.join(PRISON_DATA_DIR, <span class="st">'p16t02.csv'</span>)</span>
@@ -454,6 +424,7 @@ Update Note
 Data format after preprocessing</code></pre>
 </div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -599,11 +570,13 @@ Data format after preprocessing</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>/home/matt/miniconda3/envs/prisons_post_env/lib/python3.6/site-packages/pandas/core/generic.py:3812: PerformanceWarning: dropping on a non-lexsorted multi-index without a level parameter may impact performance.
   new_axis = axis.drop(labels, errors=errors)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -685,9 +658,10 @@ Data format after preprocessing</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>In the above cell, I’ve cleaned up the DataFrame so that the column header now consists of: * <strong>column labels:</strong> (‘2015’, ‘2016’, ‘Total’, ‘Male’, ‘Female’) * <strong>column label names:</strong> (’‘, ’SEX’) * <strong>index name:</strong> (’Code)</p>
-<div class="cell" data-execution_count="3">
-<details>
+<div id="cell-10" class="cell" data-execution_count="3">
+<details class="code-fold">
 <summary>Setting variables to help style plots and locate tooltips</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The color levels to use in the map</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>COLORS <span class="op">=</span> [<span class="st">'#feedde'</span>, <span class="st">'#fdd0a2'</span>, <span class="st">'#fdae6b'</span>, <span class="st">'#fd8d3c'</span>, <span class="st">'#f16913'</span>, <span class="st">'#d94801'</span>, <span class="st">'#8c2d04'</span>]</span>
@@ -696,8 +670,8 @@ Data format after preprocessing</code></pre>
 </details>
 </div>
 <p>One of the great things about coding in Jupyter Notebooks is that I can prototype things as I go, and then encapsulate that prototype into a function. I built the prototype for my visualization in the cell below, and after I tune the visualization, I can make it into a function and easily generate more visualizations.</p>
-<div class="cell" data-execution_count="4">
-<details>
+<div id="cell-12" class="cell" data-execution_count="4">
+<details class="code-fold">
 <summary>Prototyping Bokeh plotting code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>state_names <span class="op">=</span> []</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>prisoner_counts <span class="op">=</span> []</span>
@@ -754,7 +728,6 @@ Data format after preprocessing</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -1066,8 +1039,8 @@ Data format after preprocessing</code></pre>
 <section id="population-dataset" class="level3" data-number="3.1.1">
 <h3 data-number="3.1.1" class="anchored" data-anchor-id="population-dataset"><span class="header-section-number">3.1.1</span> Population Dataset <a id="4"></a></h3>
 <p>The US Census tracks and publishes population data, including a data set that tracks estimates of <a href="https://www2.census.gov/programs-surveys/popest/datasets/2010-2016/state/asrh/">annual state populations (by gender) from 2010 to 2016</a>. I’ll use this data to normalize the raw prisoner counts by state.</p>
-<div class="cell" data-execution_count="5">
-<details>
+<div id="cell-15" class="cell" data-execution_count="5">
+<details class="code-fold">
 <summary>(NEW CODE) automating data collection</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pop_file_path <span class="op">=</span> os.path.join(POP_DATA_DIR, <span class="st">"sc-est2016-agesex-civ.csv"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://www2.census.gov/programs-surveys/popest/datasets/2010-2016/state/asrh/sc-est2016-agesex-civ.csv"</span></span>
@@ -1075,8 +1048,8 @@ Data format after preprocessing</code></pre>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    urlretrieve(url<span class="op">=</span>url, filename<span class="op">=</span>pop_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="6">
-<details>
+<div id="cell-16" class="cell" data-execution_count="6">
+<details class="code-fold">
 <summary>Loading and preprocessing the Census State and Gender pop. estimates</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> pd.read_csv(pop_file_path, encoding<span class="op">=</span><span class="st">'latin1'</span>, header<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Raw Population Data Set Format'</span>)</span>
@@ -1107,6 +1080,7 @@ Raw Population Data Set Format
 Population Data Set Format After Reformatting</code></pre>
 </div>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1227,7 +1201,9 @@ Population Data Set Format After Reformatting</code></pre>
 
 </div>
 </div>
+</div>
 <div class="cell-output cell-output-display" data-execution_count="6">
+<div>
 <div>
 
 
@@ -1295,14 +1271,16 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>Now that I’ve reformatted the population data to match the format of the state prisoner counts, I want to merge these two DataFrames together so that I can calculate the normalized rates of imprisonment.</p>
-<div class="cell" data-execution_count="7">
-<details>
+<div id="cell-18" class="cell" data-execution_count="7">
+<details class="code-fold">
 <summary>Joining state pop. estimates with state inmate counts</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>state_sex_join_df <span class="op">=</span> state_sex_df.join(state_pop_sex_df)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1414,9 +1392,10 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
+</div>
 <p>Now that I’ve merged the state prisoner counts with population data, I have to divide male prisoner counts by state population (of that gender) and store that information for use later.</p>
-<div class="cell" data-execution_count="8">
-<details>
+<div id="cell-20" class="cell" data-execution_count="8">
+<details class="code-fold">
 <summary>Engineering per-capita inmate count features</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This Cell normalizes prisoner counts to be per 100k</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   state population for that year.</span></span>
@@ -1431,6 +1410,7 @@ Population Data Set Format After Reformatting</code></pre>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
+<div>
 <div>
 
 
@@ -1538,8 +1518,9 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
-<details>
+</div>
+<div id="cell-21" class="cell" data-execution_count="9">
+<details class="code-fold">
 <summary>Encapsulating Bokeh Choropleth Plotting code in a function</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I'm going to generate more choropleths, so I'll encapsulate the code</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   I prototyped above into this function.</span></span>
@@ -1620,8 +1601,8 @@ Population Data Set Format After Reformatting</code></pre>
 <section id="visualization-breakthrough" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="visualization-breakthrough"><span class="header-section-number">3.2</span> Visualization Breakthrough!</h2>
 <p>Now that we’ve normalized the number of imprisoned people to the state populations, we can compare rates between states. From looking at these choropleths, it’s clear that there are massive differences between states. ### Observations * For both men and women over the two included years, Massachusetts has the lowest imprisonment rates (below 145 men per 100k state male pop. and below 10 women per 100k state female pop). * For men, Louisiana has the highest imprisonment rate (at least 740 men per 100k state male pop.). * Delaware stands out as having a much higher imprisonment rate that its neighbors. Delaware imprisons at least 660 men per 100k state male pop., which is 2 to 3 times more than any neighboring state. * Oklahoma has the highest imprisonment rate for women at over 75 women per 100k state female pop. * In general, southern states have higher male imprisonment rates than the north. * Except for Delaware, New England and the Midwest have lower than average female imprisonment rates. * Bokeh’s built-in state geometries are convenient, but they’re not great (just look at Michigan and the Great Lakes).</p>
-<div class="cell" data-execution_count="10">
-<details open="">
+<div id="cell-23" class="cell" data-execution_count="10">
+<details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2015)"</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1634,7 +1615,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -1940,8 +1920,8 @@ Population Data Set Format After Reformatting</code></pre>
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<details open="">
+<div id="cell-24" class="cell" data-execution_count="11">
+<details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2016)"</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1954,7 +1934,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -2260,8 +2239,8 @@ Population Data Set Format After Reformatting</code></pre>
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="12">
-<details open="">
+<div id="cell-25" class="cell" data-execution_count="12">
+<details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2015)"</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2274,7 +2253,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -2580,8 +2558,8 @@ Population Data Set Format After Reformatting</code></pre>
 </script>
 </div>
 </div>
-<div class="cell" data-execution_count="13">
-<details open="">
+<div id="cell-26" class="cell" data-execution_count="13">
+<details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2016)"</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2594,7 +2572,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -2905,8 +2882,8 @@ Population Data Set Format After Reformatting</code></pre>
 <h2 data-number="3.3" class="anchored" data-anchor-id="state-imprisonment-distributions-by-gender"><span class="header-section-number">3.3</span> State Imprisonment Distributions by Gender <a id="6"></a></h2>
 <p>From the choropleths above (and from the prior notebook), we see that women are imprisoned at a far lower rate than men. But how does the ratio of female-to-male imprisonment rates vary by state?</p>
 <p>We could get a sense of that by checking values between different states in same-year-different-gender choropleths above, but that’s slow and difficult, which means it’s a bad way to visualize this data. Scatter plots are much better at visualizing ratios for many different cases, and histograms are much better at quickly expressing the distribution of many observations of a single data feature (eg male imprisonment rates across states).</p>
-<div class="cell" data-execution_count="14">
-<details>
+<div id="cell-29" class="cell" data-execution_count="14">
+<details class="code-fold">
 <summary>Encapsulating Seaborn plot-generating code in a function</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state_sea(yr, df):</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> sns.axes_style(<span class="st">"darkgrid"</span>):</span>
@@ -2927,8 +2904,8 @@ Population Data Set Format After Reformatting</code></pre>
 <p>The plots below (Seaborn’s JointGrid layout) combine both of these plots into a single visualization.</p>
 <p>For both 2015 and 2016, we see that the bulk of imprisonment rates for women fall between 15 and 60 per 100k of respective state female population with a median rate of about 32 (per 100k state female pop.) and the bulk of imprisonment rates for men fall between 100 and 500 per 100k of respective state male pop. with a median rate around 350 (per 100k state male pop.).</p>
 <p>We also see that there’s a fairly linear trend between the ratios of female-to-male imprisonment rates, meaning states that have a high male imprisonment rate also have a high female imprisonment rate, which could indicate that states’ criminal justice systems are consistent in how they treat women relative to how they treat men, or it could indicate actual differences in the rates at which men and women commit crime in different states. We would have to gather and explore more detailed data to explore these questions and possibly identify causal relationships.</p>
-<div class="cell" data-execution_count="15">
-<details open="">
+<div id="cell-31" class="cell" data-execution_count="15">
+<details open="" class="code-fold">
 <summary>Calling our plotting function to plot data for 2016 and 2016</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2015'</span>, state_sex_join_df)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2938,14 +2915,22 @@ Population Data Set Format After Reformatting</code></pre>
   warnings.warn("The 'normed' kwarg is deprecated, and has been "</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="Crime_and_Prisons_part2_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+<div>
+<figure class="figure">
+<p><img src="Crime_and_Prisons_part2_files/figure-html/cell-16-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="Crime_and_Prisons_part2_files/figure-html/cell-16-output-3.png" class="img-fluid"></p>
+<div>
+<figure class="figure">
+<p><img src="Crime_and_Prisons_part2_files/figure-html/cell-16-output-3.png" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
-<details>
+</div>
+<div id="cell-32" class="cell" data-execution_count="16">
+<details class="code-fold">
 <summary>Encapsulating Bokeh plot-generating code in a function</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state(yr, df):</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    mf_df <span class="op">=</span> df.loc[:,(yr, [<span class="st">'Male_rate'</span>,<span class="st">'Female_rate'</span>])][yr]</span>
@@ -2981,8 +2966,8 @@ Population Data Set Format After Reformatting</code></pre>
 <h3 data-number="3.3.2" class="anchored" data-anchor-id="interactive-scatter-plots"><span class="header-section-number">3.3.2</span> Interactive Scatter Plots <a id="8"></a></h3>
 <p>The plots above also show a regression curve that appears to deflect downward near the high end of the male imprisonment rates (mildly for 2015, and more significantly in 2016). From inspection, we see the state with the highest male imprisonment rate has a fairly average female imprisonment rate. From the choropleths above, we could (correctly) guess that this is Louisiana, but this highlights the fact that we have to cross-reference other data to identify the states, but that’s inconvenient if you’re just reading through this notebook on NBViewer. So I’ll replicate these plots with a library that allows me to reveal more information when you hover over a data point.</p>
 <p>Now we can confirm the outlier data point is Louisiana. You can also see that, in 2015, Alaska (AK) had the highest female imprisonment rate, which was not revealed in the choropleth maps above because I removed Alaska and Hawaii to make the maps more compact. Comparing between years, we can see that Alaska’s imprisonment rates for both men and women dropped significantly while the ratio remained fairly average.</p>
-<div class="cell" data-execution_count="17">
-<details open="">
+<div id="cell-34" class="cell" data-execution_count="17">
+<details open="" class="code-fold">
 <summary>Calling our plotting function to plot data for 2016 and 2016</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2015'</span>, state_sex_join_df)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2995,7 +2980,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -3308,7 +3292,6 @@ Population Data Set Format After Reformatting</code></pre>
     </div>
 </div>
 <div class="cell-output cell-output-display">
-
 <script type="application/javascript">
 
 (function(root) {
@@ -3620,19 +3603,11 @@ Population Data Set Format After Reformatting</code></pre>
 <p>Good visualizations allow us to quickly see interesting trends and outliers that would otherwise be hidden in data. For example, while it is somewhat useful to know where the bulk of prisoners are located (Texas, California, and Florida), it’s more useful and interesting to see this data after we’ve controlled for state population. Interestingly, we see that Louisiana has a significantly higher imprisonment rate than any other state. Knowing this, we can target further research and questions about this. Per some brief independent research, I’ve found that Louisiana is one of two states that allow people to be <a href="http://www.theadvocate.com/new_orleans/news/courts/article_85b28154-3492-11e8-bfd2-07fee9f093d2.html">convicted of felonies when only 10 of 12 jurors agree on guilt</a>. This lower bar for conviction may be one of several causal factors driving Louisiana’s imprisonment rate, but it will take more data and research to strengthen that hypothesis.</p>
 
 
-
 </section>
 </section>
 </section>
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -3763,10 +3738,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   if (showAllCode) {
     showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
-  function tippyHover(el, contentFn) {
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/www\.matttriano\.dev");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -3776,8 +3768,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -3789,7 +3790,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -3833,6 +3957,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -3858,6 +3983,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -3918,6 +4069,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
