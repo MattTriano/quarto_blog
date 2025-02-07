@@ -10,7 +10,1192 @@
 <atom:link href="https://www.matttriano.dev/index.xml" rel="self" type="application/rss+xml"/>
 <description>Experiments, walkthroughs past-me would have liked, and gifts to future me</description>
 <generator>quarto-1.6.40</generator>
-<lastBuildDate>Wed, 29 Jan 2025 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 05 Feb 2025 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>How to securely network and access your resources remotely</title>
+  <dc:creator>Matt Triano</dc:creator>
+  <link>https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/setting_up_tailscale.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="securely-access-your-devices-anywhere-with-tailscale" class="level1">
+<h1>Securely access your devices anywhere with Tailscale</h1>
+<p>Have you ever wanted to connect to your home network while away from home? Or have you wanted to let someone else connect to a something you’re hosting locally? <a href="https://tailscale.com/">Tailscale</a> makes this possible by creating private, encrypted networks that connect your devices and services seamlessly. With support for Windows, MacOS, Linux, iOS, and Android - plus a generous free tier for up to 3 users and 100 devices - it’s an excellent solution for both engineers and more casual users.</p>
+<section id="why-i-love-tailscale" class="level2">
+<h2 class="anchored" data-anchor-id="why-i-love-tailscale">Why I love Tailscale</h2>
+<p>Before I found Tailscale, if I wanted to connect remotely to machines on my home network, I’d have to wrestle with my ISP to get a static IP address, know my home network’s public IP, configure my router to listen for me, and manually navigate the maze of SSH and firewall security configurations. And if I wanted to connect remotely via my phone, well, I wouldn’t have had the first idea how to do that safely.</p>
+<p>Tailscale transforms this experience. Here’s what it enables me to do:</p>
+<ul>
+<li><p><strong>Remote SSH Access</strong>: Connecting to my homelab server is now trivially simple. I enter this command, <code>tailscale ssh homelab-name</code>, open the returned URL, and authenticate in a browser, and I get access to my private network Tailscale (aka my <strong>tailnet</strong>). No more fighting network configurations, moving <code>ssh</code> keys around, editing <code>~/.ssh/authorized_keys</code>, debugging terrible doublt-NAT setups, or navigating networking headaches.</p></li>
+<li><p><strong>Remote Service Access</strong>: Reaching services running on my homelab is beautifully straightforward. For example, I built and run a data warehousing platform on my homelab server, <code>matt-lab</code>. If I’m out and about but I want to update a dataset, thanks to Tailscale, I can run the dataset’s ELT pipeline through my platform’s Airflow web UI (on port <code>8080</code>) by pulling out my phone and opening <code>matt-lab:8080</code> in a browser. Or if I was struck by a data question, thanks to Tailscale, I can explore datasets and run queries through my platform’s Superset UI (on port <code>8088</code>) by going to <code>matt-lab:8088</code>.</p></li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/accessing_a_homelab_service_from_my_phone.png" class="img-fluid" style="width:100.0%" alt="elt dags in airflow"></th>
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/running_a_query_from_my_phone.png" class="img-fluid" style="width:100.0%" alt="querying through superset"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Accessing ELT pipeline DAGs in Airflow</td>
+<td style="text-align: center;">Running a query through Superset</td>
+</tr>
+</tbody>
+</table>
+<p>All this magic happens thanks to Tailscale’s sophisticated <a href="https://tailscale.com/blog/how-tailscale-works">under-the-hood technology</a>, but you don’t need to understand the complexity to enjoy the benefits.</p>
+</section>
+</section>
+<section id="overview-of-steps-to-set-up-a-tailscale-tailnet" class="level1">
+<h1>Overview of steps to set up a Tailscale Tailnet</h1>
+<ul>
+<li><a href="https://login.tailscale.com/start">Create a tailscale account</a>.
+<ul>
+<li>Optional: <a href="https://tailscale.com/kb/1017/install#invite-users">Invite</a> other users to your tailnet.</li>
+</ul></li>
+<li>Install the tailscale client on each device you want to connect in the network.
+<ul>
+<li>Linux (Ubuntu/Debian) install instructions</li>
+<li>MacOS install instructions</li>
+<li>Windows install instructions</li>
+<li>iOS install instructions</li>
+<li>Android install instructions</li>
+</ul></li>
+<li>Configure your tailnet’s ACLs (Access Control Lists) to control which devices users can access.
+<ul>
+<li>define groups, specify which devices each group should be able to access, and add users to groups.</li>
+</ul></li>
+<li>Configure a Homelab to accept incoming <code>ssh</code> connections</li>
+</ul>
+<section id="macos_install" class="level2">
+<h2 class="anchored" data-anchor-id="macos_install">Tailscale Client Installation on a MacOS Machine</h2>
+<p>To be able to use tailscale ssh from a macOS machine, you have install the open source <code>tailscaled</code> variant per <a href="https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS">these instructions</a>.</p>
+<p>If <code>golang</code> isn’t installed, <a href="https://go.dev/dl/">download</a> and install golang and make sure the <code>go</code> binary is in a dir on the system’s <code>PATH</code>.</p>
+<p>Then, run these commands</p>
+<pre class="console"><code>go install tailscale.com/cmd/tailscale{,d}@main
+sudo $HOME/go/bin/tailscaled install-system-daemon
+tailscale up</code></pre>
+<section id="enabling-magicdns" class="level3">
+<h3 class="anchored" data-anchor-id="enabling-magicdns">Enabling MagicDNS</h3>
+<p>You might have to manually add your tailnet’s DNS server IP address to your MacOS-running-machine’s DNS servers. Go into system settings, search for <strong>DNS</strong>, and add IP address “100.100.100.100” ahead of the existing IP address (Most routers use “192.168.0.1”). If you sometimes connect to Wi-Fi and other times use ethernet, you’ll probably have to do this for both connection modes.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/macos_dns_fix.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>First caption</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="windows_install" class="level2">
+<h2 class="anchored" data-anchor-id="windows_install">Tailscale Client Installation on a Windows Machine</h2>
+<p>I don’t have a current Windows device, but I remember it being pretty straightforward. The <a href="https://tailscale.com/kb/1022/install-windows">official instructions</a> look straightforward (download and run an installer, then log in).</p>
+</section>
+<section id="android_install" class="level2">
+<h2 class="anchored" data-anchor-id="android_install">Tailscale Client Installation on an Android Phone</h2>
+<ol type="1">
+<li>Install the <a href="https://play.google.com/store/apps/details?id=com.tailscale.ipn">android tailscale client</a> from the Play Store.</li>
+<li>Launch the app.
+<ol type="1">
+<li>click <strong>Get Started</strong>.</li>
+<li>approve the prompt to set up a VPN connection.</li>
+</ol></li>
+<li>Log in to your tailscale account.</li>
+<li>Approve the device in the admin console.</li>
+</ol>
+</section>
+<section id="ios_install" class="level2">
+<h2 class="anchored" data-anchor-id="ios_install">Tailscale Client Installation on an iPhone</h2>
+<p>The steps should be mostly the same as on Android, except installing from the App Store rather than the Play Store. I don’t have an iOS device, so I’ll defer to the <a href="https://tailscale.com/kb/1020/install-ios">official install instructions</a>).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_1.png" class="img-fluid" style="width:100.0%" alt="First caption"></th>
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_2.png" class="img-fluid" style="width:100.0%" alt="Second caption"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2.1. <strong>Get Started</strong></td>
+<td style="text-align: center;">2.2. Click <strong>OK</strong> to allow a VPN connection</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_3.png" class="img-fluid" style="width:100.0%" alt="First caption"></th>
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_4.png" class="img-fluid" style="width:100.0%" alt="Second caption"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">3. <strong>Log in</strong></td>
+<td style="text-align: center;">3. via the method used when signing up</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_5.png" class="img-fluid" style="width:100.0%" alt="First caption"></th>
+<th style="text-align: center;"><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/android_install_6.png" class="img-fluid" style="width:100.0%" alt="Second caption"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">4. <strong>Connect</strong> the device</td>
+<td style="text-align: center;">4. Open up the Admin console</td>
+</tr>
+</tbody>
+</table>
+<p>Then click <strong>Approve</strong> (not pictured, too much to redact).</p>
+</section>
+<section id="config_acl" class="level2">
+<h2 class="anchored" data-anchor-id="config_acl">Setting up ACLs</h2>
+<p>Tailscale allows us to easily network and connect to devices, but you may not want to grant all network users access to all devices. Tailscale has a robust <a href="https://tailscale.com/blog/rbac-like-it-was-meant-to-be">Role Based Access Control</a> framework that allows you to define maintainable and concise access control logic in your <a href="https://login.tailscale.com/admin/acls/file">ACL file</a>.</p>
+<p>The <a href="https://tailscale.com/kb/1337/acl-syntax">ACL syntax</a> supports very granular controls, but here’s the core logic for the main fields:</p>
+<ul>
+<li><p>In <strong>groups</strong>: define a <strong>group</strong> for each role you want your network to support (e.g., admin, dev, ci, prod, etc) and specify the users in the group.</p></li>
+<li><p>In <strong>tagOwners</strong>: define a <strong>tag</strong> for each device grouping you want to support, and specify which users/groups are allowed to apply that tag to devices.</p></li>
+<li><p>In <strong>acls</strong>: define which users/groups (sources, or <strong>src</strong>) can connect to which destination devices and ports (<strong>dst</strong>).</p></li>
+<li><p>In <strong>ssh</strong>: define which users/groups (<strong>src</strong>) can <code>ssh</code> into which devices (<strong>dst</strong>), the <strong>action</strong> <code>ssh</code> take (either just <strong>accept</strong> the connection request or <strong>check</strong> the user by requiring reauthentication every 12 hours), and the username(s) that <strong>src</strong> members can <code>ssh</code> into.</p></li>
+<li><p>In <strong>tests</strong>: define tests that check that specified users/gropups can or cannot connect to specified device-ports.</p>
+<ul>
+<li>These tests run whenever the ACL file is saved.</li>
+</ul></li>
+<li><p>In <strong>sshTests</strong>: define tests that check that specified groups can or cannot <code>ssh</code> into specified usernames on specified devices and face the correct authentication scrutiny.</p>
+<ul>
+<li>these tests also run whenever the ACL file is saved.</li>
+</ul></li>
+</ul>
+<section id="simple-acl-policy-specification" class="level3">
+<h3 class="anchored" data-anchor-id="simple-acl-policy-specification">Simple ACL policy specification</h3>
+<p>This ACL policy facilitates a secure single-user tailnet. Just copy it into your <a href="https://login.tailscale.com/admin/acls/file">ACL file</a> and update the sections with a “Replace …” comment.</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ACL</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">for</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">a</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">small</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">or</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">single-user</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">network</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-3">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Define</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">access</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">control</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">lists</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">for</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">groups</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">autogroups</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tags</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-4">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Tailscale</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">IP</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">addresses</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">and</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">subnet</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ranges.</span></span>
+<span id="cb2-5"></span>
+<span id="cb2-6">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Declare</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">static</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">groups</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">of</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users.</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Use</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">autogroups</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">for</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">all</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">or</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">a</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">specific</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">role.</span></span>
+<span id="cb2-7">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"groups"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-8">         <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">replace</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">that</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">email</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">emails</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">associated</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tailscale</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">accounts</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">of</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"admin"</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span></span>
+<span id="cb2-9">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admin_user_email@email.com"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb2-11"></span>
+<span id="cb2-12">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Define</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tags</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">which</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">can</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">be</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">applied</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">devices</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">and</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">by</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">which</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users.</span></span>
+<span id="cb2-13">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"tagOwners"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-14">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"tag:homelab"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>     <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-15">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"tag:workstation"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>     <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-16">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"tag:container"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-17">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">},</span></span>
+<span id="cb2-18"></span>
+<span id="cb2-19">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"acls"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-20">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Allow</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">all</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">connections</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">from</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">admin</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">group</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">members.</span></span>
+<span id="cb2-21">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"action"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"accept"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*:*"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-22">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Allow</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">access</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">their</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">own</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">devices.</span></span>
+<span id="cb2-23">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-24">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"action"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"accept"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-25">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:member"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-26">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:self:*"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-27">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-28">    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-29"></span>
+<span id="cb2-30">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Define</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">and</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">devices</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">that</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">can</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">use</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Tailscale</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SSH.</span></span>
+<span id="cb2-31">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"ssh"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-32">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Allow</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">all</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">users</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">SSH</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">into</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">their</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">own</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">devices</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">in</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">check</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">mode.</span></span>
+<span id="cb2-33">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-34">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"action"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"check"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-35">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:member"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-36">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:self"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-37">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"users"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:nonroot"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-38">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-39">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Allow</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">user</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">email</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">admin_user_email@email.com</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ssh</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">into</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">any</span></span>
+<span id="cb2-40">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span>   <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">non-root</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">username</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">on</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">any</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">device</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">homelab</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tag</span></span>
+<span id="cb2-41">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-42">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"action"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"check"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-43">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admin_user_email@email.com"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-44">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-45">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"users"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"autogroup:nonroot"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-46">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-47">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Allow</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">members</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">of</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">admin</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">group</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ssh</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">into</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">admin</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">username</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">on</span></span>
+<span id="cb2-48">        <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span>   <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">any</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">any</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">device</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">homelab</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">tag</span></span>
+<span id="cb2-49">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-50">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"action"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"check"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-51">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-52">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-53">            <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">replace</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"admin"</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">with</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">the</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">username</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">you</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">want</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">to</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ssh</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">into</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">on</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">dest</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">machine</span></span>
+<span id="cb2-54">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"users"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-55">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-56">    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-57"></span>
+<span id="cb2-58">    <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">//</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">Test</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">access</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">rules</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">every</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">time</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">they're</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">saved.</span></span>
+<span id="cb2-59">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"tests"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-60">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-61">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"alice@example.com"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-62">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"deny"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-63">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:22"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-64">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:80"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-65">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:443"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-66">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:8080"</span></span>
+<span id="cb2-67">            <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-68">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-69">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-70">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admin_user_email@email.com"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-71">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"accept"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-72">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:22"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-73">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:80"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-74">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:443"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-75">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab:8080"</span></span>
+<span id="cb2-76">            <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-77">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-78">    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-79"></span>
+<span id="cb2-80">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"sshTests"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb2-81">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-82">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>   <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-83">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-84">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"check"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-85">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"deny"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"root"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-86">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-87">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb2-88">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"src"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>   <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admin_user_email@gmail.com"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-89">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"dst"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tag:homelab"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-90">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"check"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group:admin"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-91">            <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"deny"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span>  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"root"</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-92">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-93">    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb2-94"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div>
+</section>
+</section>
+<section id="config_homelab" class="level2">
+<h2 class="anchored" data-anchor-id="config_homelab">Configure the homelab host to accept ssh connections</h2>
+<p>Open the <a href="https://login.tailscale.com/admin/machines">admin console</a> then edit the ACL tags for the Homelab device.</p>
+<p>In the <strong>Edit ACL Tags</strong> interface, click the <strong>Add tags</strong> dropdown and select the <strong>tag:homelab</strong> option. Note that these options were defined in the <strong>tagOwner</strong> section of ACL policy file.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/acl_open_tag_adding_interface.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<figcaption>First caption</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/acl_add_tag_to_homelab.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<figcaption>First caption</figcaption>
+</figure>
+</div>
+<p>Now, from a terminal on the homelab machine, run this command to direct tailscale to start up in <code>ssh</code> mode, which will persist even after rebooting.</p>
+<pre class="console"><code>sudo tailscale up --ssh</code></pre>
+<p>Now you can <code>ssh</code> into the homelab machine from another tailscale-connected machine via this command (replace “admin” for your username on that machine and “homelab” with whatever label you’ve given tailscale for that device).</p>
+<pre class="console"><code>tailscale ssh admin@homelab</code></pre>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This post only scratches the surface of what you can stand up with tailscale, and still, I feel like I should have split it up across a few smaller posts.</p>
+<p>In any case, in this post, we’ve covered: * how to install tailscale on all major device operating systems, * a basic ACL configuration and what the parts mean, * how to configure a machine to accept incoming <code>ssh</code> connections</p>
+<p>In future posts, I should write up how and why to build a homelab machine and how to build or configure LLM applications and serve them on locally on your tailnet.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>tailscale</category>
+  <category>infrastructure</category>
+  <category>ssh</category>
+  <category>workflow</category>
+  <category>security</category>
+  <category>vlan</category>
+  <guid>https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/setting_up_tailscale.html</guid>
+  <pubDate>Wed, 05 Feb 2025 00:00:00 GMT</pubDate>
+  <media:content url="https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/imgs/tailscale_network_setup.jpeg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Tailscale Installation Script Security Audits</title>
   <dc:creator>Matt Triano</dc:creator>
