@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2018-06-27">
 <meta name="description" content="Exploring prisoner data up through 2016">
 
-<title>Matt Triano - Exploration in Criminal Justice and Corrections Data, Part 2</title>
+<title>Exploration in Criminal Justice and Corrections Data, Part 2 – Matt Triano</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -36,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -72,10 +72,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-577d00769484caf683549b83995c8fa2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -139,7 +139,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -418,17 +418,13 @@ Update Note
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>display(state_sex_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Initial data format
-
-
-Data format after preprocessing</code></pre>
+<pre><code>Initial data format</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -449,7 +445,7 @@ Data format after preprocessing</code></pre>
 <th data-quarto-table-cell-role="th">Unnamed: 14_level_0</th>
 <th data-quarto-table-cell-role="th">Unnamed: 15_level_0</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">Jurisdiction</th>
 <th data-quarto-table-cell-role="th">Unnamed: 1_level_1</th>
@@ -570,6 +566,10 @@ Data format after preprocessing</code></pre>
 
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Data format after preprocessing</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>/home/matt/miniconda3/envs/prisons_post_env/lib/python3.6/site-packages/pandas/core/generic.py:3812: PerformanceWarning: dropping on a non-lexsorted multi-index without a level parameter may impact performance.
@@ -577,17 +577,16 @@ Data format after preprocessing</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th colspan="3" data-quarto-table-cell-role="th" data-halign="left">2015</th>
 <th colspan="3" data-quarto-table-cell-role="th" data-halign="left">2016</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">SEX</th>
 <th data-quarto-table-cell-role="th">Total</th>
 <th data-quarto-table-cell-role="th">Male</th>
@@ -658,67 +657,66 @@ Data format after preprocessing</code></pre>
 </div>
 </div>
 </div>
-</div>
 <p>In the above cell, I’ve cleaned up the DataFrame so that the column header now consists of: * <strong>column labels:</strong> (‘2015’, ‘2016’, ‘Total’, ‘Male’, ‘Female’) * <strong>column label names:</strong> (’‘, ’SEX’) * <strong>index name:</strong> (’Code)</p>
 <div id="cell-10" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Setting variables to help style plots and locate tooltips</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The color levels to use in the map</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>COLORS <span class="op">=</span> [<span class="st">'#feedde'</span>, <span class="st">'#fdd0a2'</span>, <span class="st">'#fdae6b'</span>, <span class="st">'#fd8d3c'</span>, <span class="st">'#f16913'</span>, <span class="st">'#d94801'</span>, <span class="st">'#8c2d04'</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>state_xs <span class="op">=</span> [states[code][<span class="st">"lons"</span>] <span class="cf">for</span> code <span class="kw">in</span> states]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>state_ys <span class="op">=</span> [states[code][<span class="st">"lats"</span>] <span class="cf">for</span> code <span class="kw">in</span> states]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The color levels to use in the map</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>COLORS <span class="op">=</span> [<span class="st">'#feedde'</span>, <span class="st">'#fdd0a2'</span>, <span class="st">'#fdae6b'</span>, <span class="st">'#fd8d3c'</span>, <span class="st">'#f16913'</span>, <span class="st">'#d94801'</span>, <span class="st">'#8c2d04'</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>state_xs <span class="op">=</span> [states[code][<span class="st">"lons"</span>] <span class="cf">for</span> code <span class="kw">in</span> states]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>state_ys <span class="op">=</span> [states[code][<span class="st">"lats"</span>] <span class="cf">for</span> code <span class="kw">in</span> states]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>One of the great things about coding in Jupyter Notebooks is that I can prototype things as I go, and then encapsulate that prototype into a function. I built the prototype for my visualization in the cell below, and after I tune the visualization, I can make it into a function and easily generate more visualizations.</p>
 <div id="cell-12" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Prototyping Bokeh plotting code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>state_names <span class="op">=</span> []</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>prisoner_counts <span class="op">=</span> []</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>yr <span class="op">=</span> <span class="st">'2015'</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>sex <span class="op">=</span> <span class="st">'Male'</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> state_sex_df</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>min_val <span class="op">=</span> df.loc[:,yr][sex].<span class="bu">min</span>()</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>max_val <span class="op">=</span> df.loc[:,yr][sex].<span class="bu">max</span>()</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> <span class="bu">len</span>(COLORS)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>TOOLS <span class="op">=</span> <span class="st">"pan,wheel_zoom,reset,hover,save"</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> state_code <span class="kw">in</span> states:</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        num_imprisoned <span class="op">=</span> df.loc[state_code,yr][sex]</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        state_names.append(state_code)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        prisoner_counts.append(num_imprisoned)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">KeyError</span>:</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        state_names.append(<span class="st">' '</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        prisoner_counts.append(<span class="dv">0</span>)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>color_mapper <span class="op">=</span> LinearColorMapper(palette<span class="op">=</span>COLORS,</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                                 low<span class="op">=</span><span class="bu">min</span>(prisoner_counts),</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                                 high<span class="op">=</span><span class="bu">max</span>(prisoner_counts))</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>state_xs,</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>state_ys,</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span>state_names,</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    imp_count <span class="op">=</span> prisoner_counts</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"(Weak Visualization) Number of Imprisoned Males by State (2015)"</span>,</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>           toolbar_location<span class="op">=</span><span class="st">"left"</span>,</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>           plot_width<span class="op">=</span><span class="dv">800</span>, plot_height<span class="op">=</span><span class="dv">450</span>, tools<span class="op">=</span>TOOLS)</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>p.patches(<span class="st">'x'</span>, <span class="st">'y'</span>, source<span class="op">=</span>source, </span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>          fill_color<span class="op">=</span>{<span class="st">'field'</span>: <span class="st">'imp_count'</span>, <span class="st">'transform'</span>: color_mapper}, fill_alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>          line_color<span class="op">=</span><span class="st">"#884444"</span>, line_width<span class="op">=</span><span class="dv">2</span>, line_alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>color_bar <span class="op">=</span> ColorBar(color_mapper<span class="op">=</span>color_mapper, ticker<span class="op">=</span>BasicTicker(),</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>                     label_standoff<span class="op">=</span><span class="dv">12</span>, border_line_color<span class="op">=</span><span class="va">None</span>, location<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>))</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>p.add_layout(color_bar, <span class="st">'right'</span>)</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>hover <span class="op">=</span> p.select_one(HoverTool)</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>hover.point_policy <span class="op">=</span> <span class="st">"follow_mouse"</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>hover.tooltips <span class="op">=</span> [</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"State"</span>, <span class="st">"@name"</span>),</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"No. Imprisoned in this State"</span>, <span class="st">"@imp_count"</span>)</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>state_names <span class="op">=</span> []</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>prisoner_counts <span class="op">=</span> []</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>yr <span class="op">=</span> <span class="st">'2015'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>sex <span class="op">=</span> <span class="st">'Male'</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> state_sex_df</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>min_val <span class="op">=</span> df.loc[:,yr][sex].<span class="bu">min</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>max_val <span class="op">=</span> df.loc[:,yr][sex].<span class="bu">max</span>()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> <span class="bu">len</span>(COLORS)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>TOOLS <span class="op">=</span> <span class="st">"pan,wheel_zoom,reset,hover,save"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> state_code <span class="kw">in</span> states:</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        num_imprisoned <span class="op">=</span> df.loc[state_code,yr][sex]</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        state_names.append(state_code)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        prisoner_counts.append(num_imprisoned)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">KeyError</span>:</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        state_names.append(<span class="st">' '</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        prisoner_counts.append(<span class="dv">0</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>color_mapper <span class="op">=</span> LinearColorMapper(palette<span class="op">=</span>COLORS,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                                 low<span class="op">=</span><span class="bu">min</span>(prisoner_counts),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                                 high<span class="op">=</span><span class="bu">max</span>(prisoner_counts))</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>state_xs,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>state_ys,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span>state_names,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    imp_count <span class="op">=</span> prisoner_counts</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> figure(title<span class="op">=</span><span class="st">"(Weak Visualization) Number of Imprisoned Males by State (2015)"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>           toolbar_location<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>           plot_width<span class="op">=</span><span class="dv">800</span>, plot_height<span class="op">=</span><span class="dv">450</span>, tools<span class="op">=</span>TOOLS)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>p.patches(<span class="st">'x'</span>, <span class="st">'y'</span>, source<span class="op">=</span>source, </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>          fill_color<span class="op">=</span>{<span class="st">'field'</span>: <span class="st">'imp_count'</span>, <span class="st">'transform'</span>: color_mapper}, fill_alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>          line_color<span class="op">=</span><span class="st">"#884444"</span>, line_width<span class="op">=</span><span class="dv">2</span>, line_alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>color_bar <span class="op">=</span> ColorBar(color_mapper<span class="op">=</span>color_mapper, ticker<span class="op">=</span>BasicTicker(),</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>                     label_standoff<span class="op">=</span><span class="dv">12</span>, border_line_color<span class="op">=</span><span class="va">None</span>, location<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>))</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>p.add_layout(color_bar, <span class="st">'right'</span>)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>hover <span class="op">=</span> p.select_one(HoverTool)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>hover.point_policy <span class="op">=</span> <span class="st">"follow_mouse"</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>hover.tooltips <span class="op">=</span> [</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"State"</span>, <span class="st">"@name"</span>),</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"No. Imprisoned in this State"</span>, <span class="st">"@imp_count"</span>)</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>output_notebook()</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -1042,49 +1040,45 @@ Data format after preprocessing</code></pre>
 <div id="cell-15" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>(NEW CODE) automating data collection</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pop_file_path <span class="op">=</span> os.path.join(POP_DATA_DIR, <span class="st">"sc-est2016-agesex-civ.csv"</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://www2.census.gov/programs-surveys/popest/datasets/2010-2016/state/asrh/sc-est2016-agesex-civ.csv"</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> os.path.isfile(pop_file_path):</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    urlretrieve(url<span class="op">=</span>url, filename<span class="op">=</span>pop_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pop_file_path <span class="op">=</span> os.path.join(POP_DATA_DIR, <span class="st">"sc-est2016-agesex-civ.csv"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://www2.census.gov/programs-surveys/popest/datasets/2010-2016/state/asrh/sc-est2016-agesex-civ.csv"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> os.path.isfile(pop_file_path):</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    urlretrieve(url<span class="op">=</span>url, filename<span class="op">=</span>pop_file_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div id="cell-16" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Loading and preprocessing the Census State and Gender pop. estimates</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> pd.read_csv(pop_file_path, encoding<span class="op">=</span><span class="st">'latin1'</span>, header<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Raw Population Data Set Format'</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>display(state_pop_sex_df.head())</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df[state_pop_sex_df[<span class="st">'SEX'</span>].isin([<span class="dv">1</span>,<span class="dv">2</span>])]</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>state_code <span class="op">=</span> get_state_code()</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>map_state_codes <span class="op">=</span> <span class="kw">lambda</span> x: state_code[x]</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>fix_sex <span class="op">=</span> <span class="kw">lambda</span> x: <span class="st">'Male'</span> <span class="cf">if</span> x <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">'Female'</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df[<span class="st">'SEX'</span>] <span class="op">=</span> state_pop_sex_df[<span class="st">'SEX'</span>].<span class="bu">apply</span>(fix_sex)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.drop([<span class="st">'SUMLEV'</span>,<span class="st">'REGION'</span>,<span class="st">'DIVISION'</span>,<span class="st">'STATE'</span>,<span class="st">'AGE'</span>, </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'ESTBASE2010_CIV'</span>, <span class="st">'POPEST2010_CIV'</span>, <span class="st">'POPEST2011_CIV'</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'POPEST2012_CIV'</span>, <span class="st">'POPEST2013_CIV'</span>, <span class="st">'POPEST2014_CIV'</span>], </span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                      axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.rename({<span class="st">'POPEST2015_CIV'</span>:<span class="st">'2015_pop'</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'POPEST2016_CIV'</span>:<span class="st">'2016_pop'</span>},</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                        axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df[<span class="st">'Code'</span>] <span class="op">=</span> state_pop_sex_df[<span class="st">'NAME'</span>].<span class="bu">apply</span>(map_state_codes)</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df.groupby([<span class="st">'SEX'</span>, <span class="st">'Code'</span>]).<span class="bu">sum</span>()</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df.unstack(<span class="dv">0</span>)</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n\n</span><span class="st">Population Data Set Format After Reformatting'</span>)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> pd.read_csv(pop_file_path, encoding<span class="op">=</span><span class="st">'latin1'</span>, header<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Raw Population Data Set Format'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>display(state_pop_sex_df.head())</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df[state_pop_sex_df[<span class="st">'SEX'</span>].isin([<span class="dv">1</span>,<span class="dv">2</span>])]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>state_code <span class="op">=</span> get_state_code()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>map_state_codes <span class="op">=</span> <span class="kw">lambda</span> x: state_code[x]</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>fix_sex <span class="op">=</span> <span class="kw">lambda</span> x: <span class="st">'Male'</span> <span class="cf">if</span> x <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">'Female'</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df[<span class="st">'SEX'</span>] <span class="op">=</span> state_pop_sex_df[<span class="st">'SEX'</span>].<span class="bu">apply</span>(fix_sex)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.drop([<span class="st">'SUMLEV'</span>,<span class="st">'REGION'</span>,<span class="st">'DIVISION'</span>,<span class="st">'STATE'</span>,<span class="st">'AGE'</span>, </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'ESTBASE2010_CIV'</span>, <span class="st">'POPEST2010_CIV'</span>, <span class="st">'POPEST2011_CIV'</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                       <span class="st">'POPEST2012_CIV'</span>, <span class="st">'POPEST2013_CIV'</span>, <span class="st">'POPEST2014_CIV'</span>], </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                      axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.rename({<span class="st">'POPEST2015_CIV'</span>:<span class="st">'2015_pop'</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'POPEST2016_CIV'</span>:<span class="st">'2016_pop'</span>},</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>                        axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df[<span class="st">'Code'</span>] <span class="op">=</span> state_pop_sex_df[<span class="st">'NAME'</span>].<span class="bu">apply</span>(map_state_codes)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df.groupby([<span class="st">'SEX'</span>, <span class="st">'Code'</span>]).<span class="bu">sum</span>()</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df <span class="op">=</span> state_pop_sex_df.unstack(<span class="dv">0</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n\n</span><span class="st">Population Data Set Format After Reformatting'</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>state_pop_sex_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Raw Population Data Set Format
-
-
-Population Data Set Format After Reformatting</code></pre>
+Raw Population Data Set Format</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1201,20 +1195,23 @@ Population Data Set Format After Reformatting</code></pre>
 
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Population Data Set Format After Reformatting</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2015_pop</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2016_pop</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">SEX</th>
 <th data-quarto-table-cell-role="th">Female</th>
 <th data-quarto-table-cell-role="th">Male</th>
@@ -1271,20 +1268,18 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
-</div>
 <p>Now that I’ve reformatted the population data to match the format of the state prisoner counts, I want to merge these two DataFrames together so that I can calculate the normalized rates of imprisonment.</p>
 <div id="cell-18" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Joining state pop. estimates with state inmate counts</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>state_sex_join_df <span class="op">=</span> state_sex_df.join(state_pop_sex_df)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>state_sex_join_df <span class="op">=</span> state_sex_df.join(state_pop_sex_df)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1293,7 +1288,7 @@ Population Data Set Format After Reformatting</code></pre>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2015_pop</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2016_pop</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">SEX</th>
 <th data-quarto-table-cell-role="th">Total</th>
 <th data-quarto-table-cell-role="th">Male</th>
@@ -1392,29 +1387,27 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
-</div>
 <p>Now that I’ve merged the state prisoner counts with population data, I have to divide male prisoner counts by state population (of that gender) and store that information for use later.</p>
 <div id="cell-20" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Engineering per-capita inmate count features</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This Cell normalizes prisoner counts to be per 100k</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   state population for that year.</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>yrs <span class="op">=</span> [<span class="st">'2015'</span>,<span class="st">'2016'</span>]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sexes <span class="op">=</span> [<span class="st">'Male'</span>,<span class="st">'Female'</span>]</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> yr <span class="kw">in</span> yrs:</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> sex <span class="kw">in</span> sexes:</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        state_sex_join_df.loc[:,(yr, sex <span class="op">+</span> <span class="st">'_rate'</span>)] <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>            state_sex_join_df.loc[:,(yr, sex)]<span class="op">\</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            .divide(state_sex_join_df.loc[:,(yr <span class="op">+</span> <span class="st">'_pop'</span>, sex)]<span class="op">/</span><span class="dv">100000</span>)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This Cell normalizes prisoner counts to be per 100k</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   state population for that year.</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>yrs <span class="op">=</span> [<span class="st">'2015'</span>,<span class="st">'2016'</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>sexes <span class="op">=</span> [<span class="st">'Male'</span>,<span class="st">'Female'</span>]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> yr <span class="kw">in</span> yrs:</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> sex <span class="kw">in</span> sexes:</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        state_sex_join_df.loc[:,(yr, sex <span class="op">+</span> <span class="st">'_rate'</span>)] <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            state_sex_join_df.loc[:,(yr, sex)]<span class="op">\</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            .divide(state_sex_join_df.loc[:,(yr <span class="op">+</span> <span class="st">'_pop'</span>, sex)]<span class="op">/</span><span class="dv">100000</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>display(state_sex_join_df.head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1425,7 +1418,7 @@ Population Data Set Format After Reformatting</code></pre>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2015</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">2016</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">SEX</th>
 <th data-quarto-table-cell-role="th">Total</th>
 <th data-quarto-table-cell-role="th">Male</th>
@@ -1518,82 +1511,81 @@ Population Data Set Format After Reformatting</code></pre>
 </div>
 </div>
 </div>
-</div>
 <div id="cell-21" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Encapsulating Bokeh Choropleth Plotting code in a function</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I'm going to generate more choropleths, so I'll encapsulate the code</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   I prototyped above into this function.</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_choropleth(df, level1, level2, title, colors<span class="op">=</span>COLORS):</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generates a choropleth with tooltips</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">        df:        The DataFrame containing the relevant data. df should be</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">                 formatted such that it has a 2 level column-header</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">        level1:    The top column-header name (eg '2015' in examples above)</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">        level2:    The next-lower column header name (eg 'Male)</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">        title:     A title for the Choropleth</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">        colors:    An ordered list of color codes to use in mapping data.</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    state_names <span class="op">=</span> []</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> []</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    min_val <span class="op">=</span> df.loc[:,level1][level2].<span class="bu">min</span>()</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    max_val <span class="op">=</span> df.loc[:,level1][level2].<span class="bu">max</span>()</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    bins <span class="op">=</span> <span class="bu">len</span>(colors)</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    TOOLS <span class="op">=</span> <span class="st">"pan,wheel_zoom,reset,hover,save"</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> state_code <span class="kw">in</span> states:</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>            num_imprisoned <span class="op">=</span> df.loc[state_code,level1][level2]</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>            state_names.append(state_code)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>            data.append(num_imprisoned)</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">KeyError</span>:</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>            state_names.append(<span class="st">' '</span>)</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>            data.append(<span class="dv">0</span>)</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loading up Bokeh's special data structure</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>state_xs,</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>state_ys,</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>state_names,</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>        imp_count <span class="op">=</span> data</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maps the data value to a color</span></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    color_mapper <span class="op">=</span> LinearColorMapper(palette<span class="op">=</span>colors,</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>                                     low<span class="op">=</span><span class="bu">min</span>(data),</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>                                     high<span class="op">=</span><span class="bu">max</span>(data))</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Instantiating the figure</span></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> figure(</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span>title, toolbar_location<span class="op">=</span><span class="st">"left"</span>,</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>        plot_width<span class="op">=</span><span class="dv">800</span>, plot_height<span class="op">=</span><span class="dv">450</span>, tools<span class="op">=</span>TOOLS</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plotting the state-polygons on the figure</span></span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    p.patches(<span class="st">'x'</span>, <span class="st">'y'</span>, source<span class="op">=</span>source,</span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>              fill_color<span class="op">=</span>{<span class="st">'field'</span>: <span class="st">'imp_count'</span>,</span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'transform'</span>: color_mapper},</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>              fill_alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>              line_color<span class="op">=</span><span class="st">"#884444"</span>,</span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>              line_width<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>              line_alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Setting the legend for colors</span></span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    color_bar <span class="op">=</span> ColorBar(color_mapper<span class="op">=</span>color_mapper,</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>                         ticker<span class="op">=</span>BasicTicker(),</span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>                         label_standoff<span class="op">=</span><span class="dv">12</span>,</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>                         border_line_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>                         location<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>))</span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    p.add_layout(color_bar, <span class="st">'right'</span>)</span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    hover <span class="op">=</span> p.select_one(HoverTool)</span>
-<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>    hover.point_policy <span class="op">=</span> <span class="st">"follow_mouse"</span></span>
-<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>    hover.tooltips <span class="op">=</span> [</span>
-<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"State"</span>, <span class="st">"@name"</span>),</span>
-<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"Imprisonment rate (per 100k state pop)"</span>, <span class="st">"@imp_count"</span>)</span>
-<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>    output_notebook()</span>
-<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>    show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I'm going to generate more choropleths, so I'll encapsulate the code</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   I prototyped above into this function.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_choropleth(df, level1, level2, title, colors<span class="op">=</span>COLORS):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generates a choropleth with tooltips</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">        df:        The DataFrame containing the relevant data. df should be</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">                 formatted such that it has a 2 level column-header</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">        level1:    The top column-header name (eg '2015' in examples above)</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">        level2:    The next-lower column header name (eg 'Male)</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">        title:     A title for the Choropleth</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">        colors:    An ordered list of color codes to use in mapping data.</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    state_names <span class="op">=</span> []</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> []</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    min_val <span class="op">=</span> df.loc[:,level1][level2].<span class="bu">min</span>()</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    max_val <span class="op">=</span> df.loc[:,level1][level2].<span class="bu">max</span>()</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    bins <span class="op">=</span> <span class="bu">len</span>(colors)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    TOOLS <span class="op">=</span> <span class="st">"pan,wheel_zoom,reset,hover,save"</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> state_code <span class="kw">in</span> states:</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>            num_imprisoned <span class="op">=</span> df.loc[state_code,level1][level2]</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>            state_names.append(state_code)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>            data.append(num_imprisoned)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">KeyError</span>:</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>            state_names.append(<span class="st">' '</span>)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>            data.append(<span class="dv">0</span>)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loading up Bokeh's special data structure</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    source <span class="op">=</span> ColumnDataSource(data<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>state_xs,</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>state_ys,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>state_names,</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>        imp_count <span class="op">=</span> data</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maps the data value to a color</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    color_mapper <span class="op">=</span> LinearColorMapper(palette<span class="op">=</span>colors,</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>                                     low<span class="op">=</span><span class="bu">min</span>(data),</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>                                     high<span class="op">=</span><span class="bu">max</span>(data))</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Instantiating the figure</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> figure(</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span>title, toolbar_location<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>        plot_width<span class="op">=</span><span class="dv">800</span>, plot_height<span class="op">=</span><span class="dv">450</span>, tools<span class="op">=</span>TOOLS</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plotting the state-polygons on the figure</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>    p.patches(<span class="st">'x'</span>, <span class="st">'y'</span>, source<span class="op">=</span>source,</span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>              fill_color<span class="op">=</span>{<span class="st">'field'</span>: <span class="st">'imp_count'</span>,</span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'transform'</span>: color_mapper},</span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>              fill_alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>              line_color<span class="op">=</span><span class="st">"#884444"</span>,</span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>              line_width<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>              line_alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Setting the legend for colors</span></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>    color_bar <span class="op">=</span> ColorBar(color_mapper<span class="op">=</span>color_mapper,</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>                         ticker<span class="op">=</span>BasicTicker(),</span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>                         label_standoff<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>                         border_line_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>                         location<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>))</span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>    p.add_layout(color_bar, <span class="st">'right'</span>)</span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>    hover <span class="op">=</span> p.select_one(HoverTool)</span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a>    hover.point_policy <span class="op">=</span> <span class="st">"follow_mouse"</span></span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a>    hover.tooltips <span class="op">=</span> [</span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"State"</span>, <span class="st">"@name"</span>),</span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"Imprisonment rate (per 100k state pop)"</span>, <span class="st">"@imp_count"</span>)</span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>    output_notebook()</span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a>    show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1604,8 +1596,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-23" class="cell" data-execution_count="10">
 <details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2015)"</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2015)"</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -1923,8 +1915,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-24" class="cell" data-execution_count="11">
 <details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2016)"</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Females per 100k Female State Population (2016)"</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Female_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -2242,8 +2234,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-25" class="cell" data-execution_count="12">
 <details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2015)"</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2015)"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2015'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -2561,8 +2553,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-26" class="cell" data-execution_count="13">
 <details open="" class="code-fold">
 <summary>Calling our Choropleth-plotting function</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2016)"</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Number of Imprisoned Males per 100k State Male Population (2016)"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>make_choropleth(state_sex_join_df, <span class="st">'2016'</span>, <span class="st">'Male_rate'</span>, title)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -2885,18 +2877,18 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-29" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Encapsulating Seaborn plot-generating code in a function</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state_sea(yr, df):</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> sns.axes_style(<span class="st">"darkgrid"</span>):</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        tmp_df <span class="op">=</span> df.loc[:,(yr, [<span class="st">'Male_rate'</span>,<span class="st">'Female_rate'</span>])][yr]</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        g <span class="op">=</span> sns.JointGrid(x<span class="op">=</span><span class="st">"Male_rate"</span>, y<span class="op">=</span><span class="st">"Female_rate"</span>, data<span class="op">=</span>tmp_df, size<span class="op">=</span><span class="dv">8</span>) </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        g.plot_joint(sns.regplot, order<span class="op">=</span><span class="dv">2</span>) </span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        g.plot_marginals(sns.distplot)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.93</span>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">'Female vs Male State Imprisonment Rates in </span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(yr)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        g.fig.suptitle(title, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        g.set_axis_labels(<span class="st">'Male Imprisonment Rate [per 100k State male pop.]'</span>,</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'Female Imprisonment Rate [per 100k State female pop.]'</span>, </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                          fontsize<span class="op">=</span><span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state_sea(yr, df):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> sns.axes_style(<span class="st">"darkgrid"</span>):</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        tmp_df <span class="op">=</span> df.loc[:,(yr, [<span class="st">'Male_rate'</span>,<span class="st">'Female_rate'</span>])][yr]</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        g <span class="op">=</span> sns.JointGrid(x<span class="op">=</span><span class="st">"Male_rate"</span>, y<span class="op">=</span><span class="st">"Female_rate"</span>, data<span class="op">=</span>tmp_df, size<span class="op">=</span><span class="dv">8</span>) </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        g.plot_joint(sns.regplot, order<span class="op">=</span><span class="dv">2</span>) </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        g.plot_marginals(sns.distplot)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.93</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">'Female vs Male State Imprisonment Rates in </span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(yr)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        g.fig.suptitle(title, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        g.set_axis_labels(<span class="st">'Male Imprisonment Rate [per 100k State male pop.]'</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                          <span class="st">'Female Imprisonment Rate [per 100k State female pop.]'</span>, </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                          fontsize<span class="op">=</span><span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="static-scatter-plots-with-distributions" class="level3" data-number="3.3.1">
@@ -2907,8 +2899,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-31" class="cell" data-execution_count="15">
 <details open="" class="code-fold">
 <summary>Calling our plotting function to plot data for 2016 and 2016</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2015'</span>, state_sex_join_df)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2015'</span>, state_sex_join_df)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state_sea(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>/home/matt/miniconda3/envs/prisons_post_env/lib/python3.6/site-packages/matplotlib/axes/_axes.py:6462: UserWarning: The 'normed' kwarg is deprecated, and has been replaced by the 'density' kwarg.
@@ -2932,33 +2924,33 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-32" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Encapsulating Bokeh plot-generating code in a function</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state(yr, df):</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    mf_df <span class="op">=</span> df.loc[:,(yr, [<span class="st">'Male_rate'</span>,<span class="st">'Female_rate'</span>])][yr]</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    cdf <span class="op">=</span> ColumnDataSource(mf_df)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> figure(plot_height<span class="op">=</span><span class="dv">500</span>, plot_width<span class="op">=</span><span class="dv">500</span>, tools<span class="op">=</span><span class="st">""</span>, toolbar_location<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>               title<span class="op">=</span><span class="st">"Female Imprisonment Rates vs Male Imprisonment Rates in </span><span class="sc">{}</span><span class="st">"</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>               .<span class="bu">format</span>(yr))</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    p.background_fill_color<span class="op">=</span><span class="st">"#f5f5f5"</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    p.grid.grid_line_color<span class="op">=</span><span class="st">"white"</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    p.xaxis.axis_label <span class="op">=</span> <span class="st">'Male Imprisonment Rate [per 100k State male pop.]'</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    p.yaxis.axis_label <span class="op">=</span> <span class="st">'Female Imprisonment Rate [per 100k State female pop.]'</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    p.scatter(x<span class="op">=</span><span class="st">'Male_rate'</span>,</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>              y<span class="op">=</span><span class="st">'Female_rate'</span>,</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>              source<span class="op">=</span>cdf,</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>              fill_alpha<span class="op">=</span><span class="fl">0.6</span>,</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>              size<span class="op">=</span><span class="dv">12</span>,</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>              line_color<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    p.add_tools(HoverTool(</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>        tooltips<span class="op">=</span>[</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'State'</span>, <span class="st">'@Code'</span>),</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'Male Rate'</span>, <span class="st">'@Male_rate'</span>),</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'Female Rate'</span>, <span class="st">'@Female_rate'</span>),</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>        ],</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    output_notebook()</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>    show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_male_v_female_by_state(yr, df):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    mf_df <span class="op">=</span> df.loc[:,(yr, [<span class="st">'Male_rate'</span>,<span class="st">'Female_rate'</span>])][yr]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    cdf <span class="op">=</span> ColumnDataSource(mf_df)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> figure(plot_height<span class="op">=</span><span class="dv">500</span>, plot_width<span class="op">=</span><span class="dv">500</span>, tools<span class="op">=</span><span class="st">""</span>, toolbar_location<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>               title<span class="op">=</span><span class="st">"Female Imprisonment Rates vs Male Imprisonment Rates in </span><span class="sc">{}</span><span class="st">"</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>               .<span class="bu">format</span>(yr))</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    p.background_fill_color<span class="op">=</span><span class="st">"#f5f5f5"</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    p.grid.grid_line_color<span class="op">=</span><span class="st">"white"</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    p.xaxis.axis_label <span class="op">=</span> <span class="st">'Male Imprisonment Rate [per 100k State male pop.]'</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    p.yaxis.axis_label <span class="op">=</span> <span class="st">'Female Imprisonment Rate [per 100k State female pop.]'</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    p.scatter(x<span class="op">=</span><span class="st">'Male_rate'</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>              y<span class="op">=</span><span class="st">'Female_rate'</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>              source<span class="op">=</span>cdf,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>              fill_alpha<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>              size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>              line_color<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    p.add_tools(HoverTool(</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>        tooltips<span class="op">=</span>[</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'State'</span>, <span class="st">'@Code'</span>),</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'Male Rate'</span>, <span class="st">'@Male_rate'</span>),</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'Female Rate'</span>, <span class="st">'@Female_rate'</span>),</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    output_notebook()</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    show(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -2969,8 +2961,8 @@ Population Data Set Format After Reformatting</code></pre>
 <div id="cell-34" class="cell" data-execution_count="17">
 <details open="" class="code-fold">
 <summary>Calling our plotting function to plot data for 2016 and 2016</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2015'</span>, state_sex_join_df)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2015'</span>, state_sex_join_df)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>plot_male_v_female_by_state(<span class="st">'2016'</span>, state_sex_join_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 
@@ -3643,18 +3635,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -3686,7 +3667,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
   const viewSource = window.document.getElementById('quarto-view-source') ||
                      window.document.getElementById('quarto-code-tools-source');
   if (viewSource) {
@@ -3745,7 +3746,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
@@ -3842,7 +3843,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
