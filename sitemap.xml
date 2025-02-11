@@ -2,62 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.matttriano.dev/posts/006_great_expectations_setup/data_monitoring_w_gx_1_setup.html</loc>
-    <lastmod>2025-02-07T23:52:43.696Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.800Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/002_notebook_test/jupyter_quarto.html</loc>
-    <lastmod>2025-02-07T23:52:43.627Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.732Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/011_crime_and_prisons_p2/Crime_and_Prisons_part2.html</loc>
-    <lastmod>2025-02-07T23:52:43.800Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.904Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/install_code_security_audit.html</loc>
-    <lastmod>2025-02-07T23:52:43.814Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.918Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/012_crime_and_prisons_p3/Crime_and_Prisons_part3.html</loc>
-    <lastmod>2025-02-07T23:52:43.801Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.905Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/015_docker_postgres_sandbox/setting_up_a_dockerized_postgis_database.html</loc>
-    <lastmod>2025-02-07T23:52:43.802Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.907Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/index.html</loc>
-    <lastmod>2025-02-07T23:52:43.625Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.729Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/about.html</loc>
-    <lastmod>2025-02-07T23:52:43.625Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.729Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/000_setting_up_miniconda/Setting_up_Miniconda.html</loc>
-    <lastmod>2025-02-07T23:52:43.625Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.729Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/008_aerial_imagery/Aerial_Imagery_experiments.html</loc>
-    <lastmod>2025-02-07T23:52:43.788Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.892Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/007_midjourney_experiments/midjourney_experiments.html</loc>
-    <lastmod>2025-02-07T23:52:43.707Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.812Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/019_setup_tailscale_for_ssh/setting_up_tailscale.html</loc>
-    <lastmod>2025-02-07T23:52:43.814Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.918Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/004_census_tiger_dev/TIGER_data_collector_dev.html</loc>
-    <lastmod>2025-02-07T23:52:43.695Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.799Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/010_crime_and_prisons_p1/Crime_and_Prisons_part1.html</loc>
-    <lastmod>2025-02-07T23:52:43.794Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.899Z</lastmod>
   </url>
   <url>
     <loc>https://www.matttriano.dev/posts/009_reproducing_a_conda_env/Manually_reproducing_an_old_env.html</loc>
-    <lastmod>2025-02-07T23:52:43.792Z</lastmod>
+    <lastmod>2025-02-11T02:41:13.896Z</lastmod>
   </url>
 </urlset>

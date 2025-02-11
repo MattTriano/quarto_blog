@@ -166,6 +166,11 @@ window.Quarto = {
 </i> 
 <span class="menu-text"></span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -249,8 +254,8 @@ window.Quarto = {
 <section id="tailscale-installation-script-security-audits" class="level1">
 <h1>Tailscale Installation Script Security Audits</h1>
 <p>The corresponding notebook/post includes directions to download and run installation scripts, but I’m always a little wary of running shell scripts I haven’t looked over, even if they’re from a reliable-seeming source. So I’ll scan over install scripts</p>
-<section id="tailscale-client-installation-on-a-ubuntudebian-linux-machine" class="level3 linux_install">
-<h3 class="linux_install anchored" data-anchor-id="tailscale-client-installation-on-a-ubuntudebian-linux-machine">Tailscale Client Installation on a Ubuntu/Debian Linux Machine</h3>
+<section id="tailscale-client-installation-on-a-ubuntudebian-linux-machine" class="level3">
+<h3 class="anchored" data-anchor-id="tailscale-client-installation-on-a-ubuntudebian-linux-machine">Tailscale Client Installation on a Ubuntu/Debian Linux Machine</h3>
 <pre class="console"><code>curl -fsSL https://tailscale.com/install.sh | sh</code></pre>
 <div id="a03d1a6c-074d-40f7-b04b-491bcb8acd22" class="cell" data-execution_count="1">
 <details class="code-fold">
@@ -270,7 +275,7 @@ window.Quarto = {
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Lines in install script: </span><span class="sc">{</span>lines_in_script<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Lines in install script: 626</code></pre>
+<pre><code>Lines in install script: 627</code></pre>
 </div>
 </div>
 <p>The install script defines and invokes one function, <code>main()</code>.</p>
@@ -609,7 +614,7 @@ UBUNTU_CODENAME=jammy</code></pre>
                 VERSION="" # rolling release
                 PACKAGETYPE="pacman"
                 ;;
-            manjaro|manjaro-arm)
+            manjaro|manjaro-arm|biglinux)
                 OS="manjaro"
                 VERSION="" # rolling release
                 PACKAGETYPE="pacman"
@@ -847,7 +852,8 @@ function as well. Currently available tracks are:
             ;;
         freebsd)
             if [ "$VERSION" != "12" ] &amp;&amp; \
-               [ "$VERSION" != "13" ]
+               [ "$VERSION" != "13" ] &amp;&amp; \
+               [ "$VERSION" != "14" ]
             then
                 OS_UNSUPPORTED=1
             fi
@@ -900,8 +906,7 @@ function as well. Currently available tracks are:
         else
             echo "No /etc/os-release"
         fi
-        exit 1
-    fi</code></pre>
+        exit 1</code></pre>
 </div>
 </div>
 </section>
@@ -915,7 +920,8 @@ function as well. Currently available tracks are:
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(linux_script_lines.split(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)[<span class="dv">448</span>:<span class="dv">468</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>    # Step 3: work out if we can run privileged commands, and if so,
+<pre><code>
+    # Step 3: work out if we can run privileged commands, and if so,
     # how.
     CAN_ROOT=
     SUDO=
@@ -933,8 +939,7 @@ function as well. Currently available tracks are:
         echo "This installer needs to run commands as root."
         echo "We tried looking for 'sudo' and 'doas', but couldn't find them."
         echo "Either re-run this script as root, or set up sudo/doas."
-        exit 1
-    fi</code></pre>
+        exit 1</code></pre>
 </div>
 </div>
 <div id="a07b2645-2c31-4ab5-9088-08a620ef5424" class="cell" data-execution_count="13">
@@ -975,7 +980,8 @@ function as well. Currently available tracks are:
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(linux_script_lines.split(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)[<span class="dv">470</span>:<span class="dv">614</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>    # Step 4: run the installation.
+<pre><code>
+    # Step 4: run the installation.
     OSVERSION="$OS"
     [ "$VERSION" != "" ] &amp;&amp; OSVERSION="$OSVERSION $VERSION"
     echo "Installing Tailscale for $OSVERSION, using method $PACKAGETYPE"
@@ -1079,7 +1085,7 @@ function as well. Currently available tracks are:
             ;;
         pkg)
             set -x
-            $SUDO pkg install tailscale
+            $SUDO pkg install --yes tailscale
             $SUDO service tailscaled enable
             $SUDO service tailscaled start
             set +x
@@ -1117,8 +1123,7 @@ function as well. Currently available tracks are:
         *)
             echo "unexpected: unknown package type $PACKAGETYPE"
             exit 1
-            ;;
-    esac</code></pre>
+            ;;</code></pre>
 </div>
 </div>
 <div id="0e1d8857-c631-463a-b3f2-2bd098aa7e76" class="cell" data-execution_count="17">
@@ -1146,13 +1151,14 @@ function as well. Currently available tracks are:
 <span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>keyring_keyfile_resp <span class="op">=</span> requests.get(keyring_keyfile_url)</span>
 <span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>keyring_keyfile_resp.raise_for_status()</span>
 <span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n\n</span><span class="ss">Modern keyring gpg key (compressed, binary format)"</span>)</span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(keyring_keyfile_resp.text)</span>
-<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a><span class="co"># $CURL "https://pkgs.tailscale.com/$TRACK/$OS/$VERSION.tailscale-keyring.list" | $SUDO tee /etc/apt/sources.list.d/tailscale.list</span></span>
-<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_url <span class="op">=</span> <span class="ss">f"https://pkgs.tailscale.com/</span><span class="sc">{</span>track<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>os<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>version<span class="sc">}</span><span class="ss">.tailscale-keyring.list"</span></span>
-<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_resp <span class="op">=</span> requests.get(keyring_pkg_repo_url)</span>
-<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_resp.raise_for_status()</span>
-<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>keyring_pkg_repo_resp<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Omitted due to being unparsable binary"</span>)</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a><span class="co"># print(keyring_keyfile_resp.text)</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="co"># $CURL "https://pkgs.tailscale.com/$TRACK/$OS/$VERSION.tailscale-keyring.list" | $SUDO tee /etc/apt/sources.list.d/tailscale.list</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_url <span class="op">=</span> <span class="ss">f"https://pkgs.tailscale.com/</span><span class="sc">{</span>track<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>os<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>version<span class="sc">}</span><span class="ss">.tailscale-keyring.list"</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_resp <span class="op">=</span> requests.get(keyring_pkg_repo_url)</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>keyring_pkg_repo_resp.raise_for_status()</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>keyring_pkg_repo_resp<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Legacy gpg key
@@ -1216,22 +1222,7 @@ deb https://pkgs.tailscale.com/stable/ubuntu jammy main
 
 
 Modern keyring gpg key (compressed, binary format)
-Pʌ�g�|Bb���e-�A�d��&lt;���fCJͳpc/���4���0� ��N&lt;�Q��Fk&amp;�����j�=,�70�� ����%�P��*T1��^.C_�w/vx��#"�7� `�k�?�F�^CA�.������^�\4�Dm��a���'y��^�ɫo׍�z; ^ꐦ���Hȵ�嚍�s_�R�m#(҆��Q�WN�7U���'pP��&lt;��|#"�aiU��d�ݕ{���Sλ(�[H���i�}x*ӟ6)�kL��tă�L5���M���F7�3�#����^a!)�m� =!��\jR��e�G�w7ǈ���.�b��^��w�
-$�j"\�
-�h�%�ǌ�����H?��u���*㚳���zߕC�
--=g2����&amp;/}���ňlvt�tِ����Ӗ��{�� J=�DTailscale Inc. (Package repository signing key) &lt;info@tailscale.com&gt;�N8!%�����8!�&lt;
-yE��2�Xh^T��
-�
-^T���H��x]�X&lt;f��0��fm�r���`��䂡���5ejW��l�PG��k��(�j��E&lt;��)���N���+7���J�   Dl�����/��Xn!���^�2�v,e��||L&gt;�����v�|��d'$UK'b6��x�/z�e�z$.Rl2�M͒�����*���N��#�G�rGST�7�.����ɥ���5�X9��4�k3ل��o���a7V��Jdݢ���գjIZ&gt;@d!��k�kU���ܫBBa�F$u�3��]H~!~a�a��xm�+{�s���j��CU��D�1�=���r�����k����}4�Ԃ�P"k���
-!#&amp;Q�Y"C�`�7�Va�H��K�����}��8x%��P:�ȰT�U���"�f��x���b����2Pr�U�56x(��Ĺ�k�X��(�!I�AO�Y������Jʀ�"�3���
-$L�P�0�_��ܸ��&gt;A
-��w�g��H�۷�jK$����f�2kb��@�T�X�l�Ņ�i%{�o�y�%�@�q٘!ϸ�+��v�5X,Ť
-j�  �%��X�g���;]_ֹ11e�L�g�ه��J�A�2F����� h '��T�j�O�/Y�V�&lt;���7��Q�}'#�6 !%�����8!�&lt;
-yE��2�Xh^T��
-�� Mx�G&lt;q���/r.y�v�g��1v
-��,1m�V�˲m&amp;�JbS5��2Qcn�ס�pRLW�#*�v�x��(]�1�4����{~K��6��8d9��������~ᥳ�e��S�uT=��g�3��z� �j��P����{�s���Ӫ��C�&amp;���ԛ_VO3���g�z��'�%���ފ8]7T��mdQ��0n�F�"w��/^c���pa��E�y���X��
-׏�c(���wc���*���0��3BLK�Sd7R�ur�� ��3�!9�-9���U����hL6ɭ��[*�z��锅�-#��G�]�Г� q��3��g���M\[q�/$�gɘ��}J�ba��{L�,
-�
+Omitted due to being unparsable binary
 
 # Tailscale packages for ubuntu jammy
 deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu jammy main
