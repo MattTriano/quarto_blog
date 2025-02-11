@@ -28,4 +28,4 @@ jobs:
         pip install requests
 
     - name: Test RSS feed
-      run: python test_rss_feed.py
+      run: python -m tests.test_rss_feed
