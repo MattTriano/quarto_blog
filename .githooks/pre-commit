@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+echo "Testing RSS feed..."
+cd "$PROJECT_ROOT" && python -m tests.test_rss_feed
+
+if [ $? -ne 0 ]; then
+    echo "RSS feed validation failed"
+    exit 1
+fi

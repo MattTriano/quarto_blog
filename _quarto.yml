@@ -4,12 +4,26 @@ project:
 website:
   title: "Matt Triano"
   site-url: https://www.matttriano.dev
-  description: "Experiments, walkthroughs past-me would have liked, and gifts to future me"
+  description: "Notes and how-tos on data engineering, analysis, python, networking, experiments with hot new things, and more"
   navbar:
     right:
       - about.qmd
       - icon: github
         href: https://github.com/MattTriano
+      - icon: rss
+        href: index.xml
+feed:
+  posts:
+    limit: 20
+    feed-url: /index.xml
+    escape: true
+    items:
+      - title: true
+      - date: true
+      - description:
+          html: true
+          html-type: application/xhtml
+          length: 2000
 format:
   html:
     theme: darkly
