@@ -1,5 +1,5 @@
 ---
-title: "Experiments, how-tos, and gifts to my future self"
+title: "How-tos, Experiments, and Misc Research"
 listing:
   contents: posts
   sort: "date desc"
