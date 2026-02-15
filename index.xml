@@ -23,23 +23,45 @@
 
 <section id="why-jupyterlab" class="level1">
 <h1>Why Jupyterlab</h1>
-<p>Jupyter notebooks are great for developing data pipelines and tooling. You can easily load, transform, and inspect data.</p>
-<p>For example</p>
+<p>Jupyter notebooks are great for developing data products, whether it’s data analysis, data pipelines, or (classical) ML models. The format enables an interactive, iterative workflow where you can incrementally execute snippets of code and immediately seeing results inline. This makes it very easy to incrementally build your analyis and/or data pipeline and then develop that code into reusable and importable functions or classes.</p>
+<p>In this post, I’ll show: * an example of this Jupyter-enabled workflow (both the EDA workflow and the tooling development workflow), and * how I set up <code>jupyterlab</code> (including my solutions to <code>jupyterlab</code>’s few annoying quirks)</p>
+</section>
+<section id="example-workflow" class="level1">
+<h1>Example Workflow</h1>
+<p>I’ll break this down into two parts, the EDA (Exploratory Data Analysis) workflow, and then the Development workflow (which will build upon the EDA workflow).</p>
+<section id="exploratory-data-analysis-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-workflow">Exploratory Data Analysis workflow</h2>
+<p>Thanks to python’s robust data science/analysis/engineering ecosystem, you can load a dataset into memory in one line of code and then iteratvely explore loaded datasets, as shown in the <strong>cells</strong> below.</p>
 <div id="7b572a2c-e8b0-41a9-8a0b-68731821b51b" class="cell" data-execution_count="1">
 <details class="code-fold">
-<summary>Formatting</summary>
+<summary>Formatting and Imports</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> geopandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> gpd</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> pd</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">pd.options.display.max_columns <span class="op" style="color: #5E5E5E;
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> matplotlib.lines <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Line2D</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">pd.options.display.max_columns <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span></span>
-<span id="cb1-4">pd.options.display.max_colwidth <span class="op" style="color: #5E5E5E;
+<span id="cb1-7">pd.options.display.max_colwidth <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -47,44 +69,28 @@ font-style: inherit;">150</span></span></code></pre></div></div>
 </details>
 </div>
 <div id="4e4b5573-d8e3-4187-9a0a-0eace2ce63e7" class="cell" data-execution_count="2">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> geopandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> gpd</span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> plt</span>
-<span id="cb2-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> matplotlib.lines <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Line2D</span>
-<span id="cb2-4"></span>
-<span id="cb2-5">chicago_boundary <span class="op" style="color: #5E5E5E;
+<details open="" class="code-fold">
+<summary>Loading data</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">chicago_boundary <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gpd.read_file(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/qqq8-j68g?method=export&amp;format=GeoJSON"</span>)</span>
-<span id="cb2-6">chicago_park_events <span class="op" style="color: #5E5E5E;
+<span id="cb2-2">chicago_park_events <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gpd.read_file(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/tn7v-6rnw?method=export&amp;format=GeoJSON"</span>)</span>
-<span id="cb2-7"></span>
-<span id="cb2-8"><span class="bu" style="color: null;
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(chicago_park_events.shape)</span>
-<span id="cb2-9">display(chicago_park_events.head(<span class="dv" style="color: #AD0000;
+<span id="cb2-5">display(chicago_park_events.head(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>(7815, 28)</code></pre>
+<pre><code>(7597, 28)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -127,65 +133,65 @@ font-style: inherit;">2</span>))</span></code></pre></div></div>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>2026-01-09 15:45:00</td>
-<td>42.0098764</td>
-<td>60631</td>
-<td>January 9, 2026 to March 13, 2026</td>
-<td>2025-12-08 15:00:00</td>
+<td>2026-01-07 07:00:00</td>
 <td>None</td>
 <td>None</td>
-<td>Instruction</td>
-<td>Youth</td>
+<td>January 7, 2026 to March 4, 2026</td>
+<td>2025-12-10 15:00:00</td>
 <td>None</td>
-<td>-87.8072766</td>
 <td>None</td>
-<td>548971</td>
-<td>2026-03-13 16:30:00</td>
+<td>Open</td>
+<td>All Ages</td>
 <td>None</td>
-<td>Brooks (Oscar) Park</td>
-<td>7100 N. Harlem Ave.</td>
-<td>Sports - Basketball</td>
-<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/548971</td>
-<td>Basketball at Brooks</td>
+<td>None</td>
+<td>None</td>
+<td>567134</td>
+<td>2026-03-04 08:00:00</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+<td>Sports - Skating</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/567134</td>
+<td>Ice Skating - Freestyle Ice (Main Rink) at McFetridge</td>
 <td>None</td>
 <td>Program</td>
 <td>None</td>
 <td>None</td>
 <td>None</td>
-<td>From January 9, 2026 to March 13, 2026 Each Friday from 3:45pm to 4:30pm</td>
-<td>21</td>
-<td>POINT (-87.80728 42.00988)</td>
+<td>From January 7, 2026 to March 4, 2026 Each Wednesday from 7am to 8am</td>
+<td>72</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>2026-01-08 16:30:00</td>
-<td>41.9526427</td>
-<td>60634</td>
-<td>January 8, 2026 to March 12, 2026</td>
-<td>2025-12-08 15:00:00</td>
+<td>2026-01-05 18:50:00</td>
+<td>None</td>
+<td>None</td>
+<td>January 5, 2026 to February 23, 2026</td>
+<td>2025-12-10 15:00:00</td>
 <td>None</td>
 <td>None</td>
 <td>Instruction</td>
-<td>Early Childhood</td>
+<td>All Ages</td>
 <td>None</td>
-<td>-87.7851891</td>
 <td>None</td>
-<td>550704</td>
-<td>2026-03-12 17:30:00</td>
 <td>None</td>
-<td>Merrimac Park</td>
-<td>6343 W. Irving Park Rd.</td>
-<td>Tumbling</td>
-<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/550704</td>
-<td>Tiny Tot Tumbling at Merrimac</td>
+<td>567122</td>
+<td>2026-02-23 19:30:00</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+<td>Sports - Skating</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/567122</td>
+<td>Ice Skating - Freestyle 5 at McFetridge</td>
 <td>None</td>
 <td>Program</td>
 <td>None</td>
 <td>None</td>
 <td>None</td>
-<td>From January 8, 2026 to March 12, 2026 Each Thursday from 4:30pm to 5:30pm</td>
-<td>10</td>
-<td>POINT (-87.78519 41.95264)</td>
+<td>From January 5, 2026 to February 23, 2026 Each Monday from 6:50pm to 7:30pm</td>
+<td>127</td>
+<td>None</td>
 </tr>
 </tbody>
 </table>
@@ -194,8 +200,8 @@ font-style: inherit;">2</span>))</span></code></pre></div></div>
 </div>
 </div>
 <div id="471b76d1-b7a6-4e00-a7eb-e4130f8f6b91" class="cell" data-execution_count="3">
-<details class="code-fold">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Exploring data</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">woodworking_events <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> chicago_park_events.loc[chicago_park_events[<span class="st" style="color: #20794D;
@@ -332,6 +338,910 @@ font-style: inherit;">"lower left"</span>)</span></code></pre></div></div>
 </div>
 </div>
 </section>
+<section id="development-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="development-workflow">Development Workflow</h2>
+<p>Above, we loaded some data and visualized an aspect of two specific subsets of the data. It’s not too easy to reuse or adapt to explore other subsets, but the notebook format makes it easy to iteratively refactor those experiments into something reusable that’s also much easier to version-control.</p>
+<p>Below, I’ve refactored the above experiments into a reusable bit of code that retrieves the data and provides methods to inspect counts of Chicago Park Dept events and map out events.</p>
+<div id="f8698934-e895-42b1-8782-ae8b594269e0" class="cell" data-execution_count="4">
+<details open="" class="code-fold">
+<summary>Encapsulating Functionality</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> typing <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Optional</span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> ChicagoParkEventExplorer:</span>
+<span id="cb5-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">__init__</span>(</span>
+<span id="cb5-5">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>,</span>
+<span id="cb5-6">        chicago_boundary: Optional[gpd.GeoDataFrame] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>,</span>
+<span id="cb5-7">        chicago_park_events: Optional[gpd.GeoDataFrame] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span></span>
+<span id="cb5-8">    ) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>:</span>
+<span id="cb5-9">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.load_chicago_boundary(chicago_boundary)</span>
+<span id="cb5-10">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.load_chicago_park_events(chicago_park_events)</span>
+<span id="cb5-11"></span>
+<span id="cb5-12">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> load_chicago_boundary(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>, df: Optional[gpd.GeoDataFrame] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>:</span>
+<span id="cb5-13">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> df <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">is</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>:</span>
+<span id="cb5-14">            <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_boundary <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df.copy()</span>
+<span id="cb5-15">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span>:</span>
+<span id="cb5-16">            <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_boundary <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> gpd.read_file(</span>
+<span id="cb5-17">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/qqq8-j68g?"</span></span>
+<span id="cb5-18">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"method=export&amp;format=GeoJSON"</span></span>
+<span id="cb5-19">            )</span>
+<span id="cb5-20">            <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_boundary</span>
+<span id="cb5-21"></span>
+<span id="cb5-22">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> load_chicago_park_events(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>, df: Optional[gpd.GeoDataFrame] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>:</span>
+<span id="cb5-23">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> df <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">is</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>:</span>
+<span id="cb5-24">            <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df.copy()</span>
+<span id="cb5-25">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span>:</span>
+<span id="cb5-26">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Getting fresh Chicago Parks Dept Events data."</span>)</span>
+<span id="cb5-27">            <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> gpd.read_file(</span>
+<span id="cb5-28">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://data.cityofchicago.org/api/geospatial/tn7v-6rnw?"</span></span>
+<span id="cb5-29">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"method=export&amp;format=GeoJSON"</span></span>
+<span id="cb5-30">            )</span>
+<span id="cb5-31">        col_order <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb5-32">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"activity_id"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"title"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"description"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"category"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"activity_type"</span>,</span>
+<span id="cb5-33">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"start_date"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"end_date"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"registration_date"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date_notes"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"age_range"</span>,</span>
+<span id="cb5-34">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"location_facility"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"address"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"zip"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fee"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"information_link"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"type"</span>,</span>
+<span id="cb5-35">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"movie_title"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"movie_rating"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"image_link"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"registration_link"</span>,</span>
+<span id="cb5-36">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"event_cancelled"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"season"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"zone"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"restrictions"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"location_notes"</span>,</span>
+<span id="cb5-37">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"latitude"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"longitude"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"geometry"</span></span>
+<span id="cb5-38">        ]</span>
+<span id="cb5-39">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events[col_order].copy()</span>
+<span id="cb5-40">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events.convert_dtypes()</span>
+<span id="cb5-41"></span>
+<span id="cb5-42">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@property</span></span>
+<span id="cb5-43">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> event_category_counts(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> pd.Series:</span>
+<span id="cb5-44">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"category"</span>].value_counts(dropna<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb5-45"></span>
+<span id="cb5-46">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> plot_events(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>, event_categories: <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>], fig_width: <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> plt.Axes:</span>
+<span id="cb5-47">        markers <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"o"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"x"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"+"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"."</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"3"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"4"</span>]</span>
+<span id="cb5-48">        cmap <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.get_cmap(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tab10"</span>, <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(markers))</span>
+<span id="cb5-49">        colors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [cmap(i) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(markers))]</span>
+<span id="cb5-50">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(event_categories) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(markers):</span>
+<span id="cb5-51">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Too many categories entered, showing the first </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(markers)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb5-52">        fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(fig_width, fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.618</span>))</span>
+<span id="cb5-53">        ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_boundary.plot(facecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span>, ax<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ax)</span>
+<span id="cb5-54">        legend_elements <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb5-55">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i, event_category <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">enumerate</span>(event_categories):</span>
+<span id="cb5-56">            df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events.loc[</span>
+<span id="cb5-57">                <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">self</span>.chicago_park_events[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"category"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> event_category</span>
+<span id="cb5-58">            ].copy()</span>
+<span id="cb5-59">            ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df.plot(</span>
+<span id="cb5-60">                marker<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>markers[i], markersize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>colors[i], ax<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ax</span>
+<span id="cb5-61">            )</span>
+<span id="cb5-62">            legend_elements.append(Line2D(</span>
+<span id="cb5-63">                [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], marker<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>markers[i], color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"w"</span>, markerfacecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>colors[i],</span>
+<span id="cb5-64">                markeredgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>colors[i], markersize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>fig_width,</span>
+<span id="cb5-65">                markeredgewidth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>event_category</span>
+<span id="cb5-66">            ))</span>
+<span id="cb5-67">        _ <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ax.legend(</span>
+<span id="cb5-68">            handles<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>legend_elements, loc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lower left"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>,</span>
+<span id="cb5-69">            markerscale<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb5-70">        )</span>
+<span id="cb5-71">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> ax</span>
+<span id="cb5-72"></span>
+<span id="cb5-73">event_explorer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ChicagoParkEventExplorer(chicago_boundary, chicago_park_events)</span>
+<span id="cb5-74"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(event_explorer.chicago_park_events.shape)</span>
+<span id="cb5-75">event_explorer.chicago_park_events.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(7597, 28)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">activity_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">category</th>
+<th data-quarto-table-cell-role="th">activity_type</th>
+<th data-quarto-table-cell-role="th">start_date</th>
+<th data-quarto-table-cell-role="th">end_date</th>
+<th data-quarto-table-cell-role="th">registration_date</th>
+<th data-quarto-table-cell-role="th">date_notes</th>
+<th data-quarto-table-cell-role="th">age_range</th>
+<th data-quarto-table-cell-role="th">location_facility</th>
+<th data-quarto-table-cell-role="th">address</th>
+<th data-quarto-table-cell-role="th">zip</th>
+<th data-quarto-table-cell-role="th">fee</th>
+<th data-quarto-table-cell-role="th">information_link</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">movie_title</th>
+<th data-quarto-table-cell-role="th">movie_rating</th>
+<th data-quarto-table-cell-role="th">image_link</th>
+<th data-quarto-table-cell-role="th">registration_link</th>
+<th data-quarto-table-cell-role="th">event_cancelled</th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">zone</th>
+<th data-quarto-table-cell-role="th">restrictions</th>
+<th data-quarto-table-cell-role="th">location_notes</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>567134</td>
+<td>Ice Skating - Freestyle Ice (Main Rink) at McFetridge</td>
+<td>January 7, 2026 to March 4, 2026</td>
+<td>Sports - Skating</td>
+<td>Open</td>
+<td>2026-01-07 07:00:00</td>
+<td>2026-03-04 08:00:00</td>
+<td>2025-12-10 15:00:00</td>
+<td>From January 7, 2026 to March 4, 2026 Each Wednesday from 7am to 8am</td>
+<td>All Ages</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>72</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/567134</td>
+<td>Program</td>
+<td>None</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>567122</td>
+<td>Ice Skating - Freestyle 5 at McFetridge</td>
+<td>January 5, 2026 to February 23, 2026</td>
+<td>Sports - Skating</td>
+<td>Instruction</td>
+<td>2026-01-05 18:50:00</td>
+<td>2026-02-23 19:30:00</td>
+<td>2025-12-10 15:00:00</td>
+<td>From January 5, 2026 to February 23, 2026 Each Monday from 6:50pm to 7:30pm</td>
+<td>All Ages</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>127</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/567122</td>
+<td>Program</td>
+<td>None</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="c30b4c2d-5de4-49da-a938-fb2711cd6d42" class="cell" data-execution_count="5">
+<details open="" class="code-fold">
+<summary>Exploring Category Counts</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span></span>
+<span id="cb7-2">event_explorer.event_category_counts.iloc[i: i<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>]</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>category
+Walking                                  55
+Specialized                              52
+Textiles                                 49
+Theater                                  41
+Sports - Cheerleading                    41
+Painting                                 40
+Drawing                                  40
+Aerobics                                 36
+Sports - Track &amp;amp; Field               34
+Self-Defense                             32
+Sports - Archery                         30
+Sports - Table Tennis                    26
+Sports - Baseball                        25
+Sports, Girls P.L.A.Y. Events            24
+Sports - Badminton                       21
+Sports - Football                        20
+Sports                                   19
+Out of School Programs - After School    17
+Sports - Bowling                         16
+Photography                              14
+Name: count, dtype: Int64</code></pre>
+</div>
+</div>
+<div id="3e95a7b1-6fb7-4e6d-8464-4a054e0973b4" class="cell" data-execution_count="6">
+<details open="" class="code-fold">
+<summary>(nearly exclusively) North-side Events</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> event_explorer.plot_events(</span>
+<span id="cb9-2">    event_categories<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sports - Bocce"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sports - Badminton"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Education"</span>,</span>
+<span id="cb9-3">                      <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gardening"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Photography"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sculpture"</span>],</span>
+<span id="cb9-4">    fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span></span>
+<span id="cb9-5">)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/020_uv_jupyterlab_setup/interactive_python_development_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There are more yoga events than I expected, and it looks like it’s a common event at Chicago’s beaches (which are all parkland thanks to Daniel Burnham’s visionary 1909 “Plan of Chicago”).</p>
+<div id="8e2e0db9-2273-4628-8b62-f63197561b9a" class="cell" data-execution_count="7">
+<details open="" class="code-fold">
+<summary>Yoga Events</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> event_explorer.plot_events(</span>
+<span id="cb10-2">    event_categories<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Yoga"</span>],</span>
+<span id="cb10-3">    fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span></span>
+<span id="cb10-4">)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/020_uv_jupyterlab_setup/interactive_python_development_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="6f338993-10be-4c34-bf95-abb8b59e7fc7" class="cell" data-execution_count="8">
+<details open="" class="code-fold">
+<summary>Crafty Events</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> event_explorer.plot_events(</span>
+<span id="cb11-2">    event_categories<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Textiles"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Printmaking"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Woodworking"</span>],</span>
+<span id="cb11-3">    fig_width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span></span>
+<span id="cb11-4">)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://www.matttriano.dev/posts/020_uv_jupyterlab_setup/interactive_python_development_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Hmm, that swath of textile events from Beverly to South Shore is kind of interesting. I wonder what the story behind that is (more instructors? more community interest?)</p>
+<section id="importablity" class="level3">
+<h3 class="anchored" data-anchor-id="importablity">Importablity</h3>
+<p>When our tooling is developed enough to version control, we can mode it to a <code>.py</code> file and import it into this or subsequent notebooks by adding the containing directory to the Python Path.</p>
+<div id="b8d71720-b4fb-4baa-b1b7-4f7a507a6d43" class="cell" data-execution_count="9">
+<details open="" class="code-fold">
+<summary>Making code importable</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> sys</span>
+<span id="cb12-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> pathlib <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Path</span>
+<span id="cb12-3"></span>
+<span id="cb12-4">module_dir <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Path(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"."</span>).resolve()</span>
+<span id="cb12-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Directory we're adding to the python path (so we can import from it):</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">  </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>module_dir<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-6">sys.path.append(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>(module_dir))</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Directory we're adding to the python path (so we can import from it):
+  /home/matt/projects/blogs/quarto_blog/posts/020_uv_jupyterlab_setup</code></pre>
+</div>
+</div>
+<p>Jupyter notebooks default to only executing imports once, so changes made to code in a local <code>.py</code> file won’t be accessible in your notebook unless you configure your notebook to automatically reload changes.</p>
+<div id="8bc5b94b-de3f-41b4-af66-52a54fc90c8d" class="cell" data-execution_count="10">
+<details open="" class="code-fold">
+<summary>Making code changes automatically reload</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>load_ext autoreload</span>
+<span id="cb14-2"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>autoreload <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb14-3"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>aimport developed_tools</span></code></pre></div></div>
+</details>
+</div>
+<div id="48846110-2749-4152-8d10-79a6f24b3c5d" class="cell" data-execution_count="11">
+<details open="" class="code-fold">
+<summary>Importing from our .py file</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> developed_tools <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ExtractedChicagoParkEventExplorer</span>
+<span id="cb15-2"></span>
+<span id="cb15-3">imported_event_explorer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ExtractedChicagoParkEventExplorer()</span>
+<span id="cb15-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(imported_event_explorer.chicago_park_events.shape)</span>
+<span id="cb15-5">imported_event_explorer.chicago_park_events.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Getting fresh Chicago Parks Dept Events data.
+(7597, 28)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">activity_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">category</th>
+<th data-quarto-table-cell-role="th">activity_type</th>
+<th data-quarto-table-cell-role="th">start_date</th>
+<th data-quarto-table-cell-role="th">end_date</th>
+<th data-quarto-table-cell-role="th">registration_date</th>
+<th data-quarto-table-cell-role="th">date_notes</th>
+<th data-quarto-table-cell-role="th">age_range</th>
+<th data-quarto-table-cell-role="th">location_facility</th>
+<th data-quarto-table-cell-role="th">address</th>
+<th data-quarto-table-cell-role="th">zip</th>
+<th data-quarto-table-cell-role="th">fee</th>
+<th data-quarto-table-cell-role="th">information_link</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">movie_title</th>
+<th data-quarto-table-cell-role="th">movie_rating</th>
+<th data-quarto-table-cell-role="th">image_link</th>
+<th data-quarto-table-cell-role="th">registration_link</th>
+<th data-quarto-table-cell-role="th">event_cancelled</th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">zone</th>
+<th data-quarto-table-cell-role="th">restrictions</th>
+<th data-quarto-table-cell-role="th">location_notes</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>546961</td>
+<td>Park Kids - Fall Winter Spring at Haines School</td>
+<td>August 18, 2025 to June 4, 2026</td>
+<td>After School</td>
+<td>Activity Package</td>
+<td>2025-08-18 14:45:00</td>
+<td>2026-06-04 18:00:00</td>
+<td>2025-08-05 14:00:00</td>
+<td>From August 18, 2025 to June 4, 2026 Each Monday,Tuesday,Wednesday,Thursday,Friday from 2:45pm to 6pm</td>
+<td>Youth</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>543</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/546961</td>
+<td>Program</td>
+<td>None</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>550133</td>
+<td>Pickleball at Sauganash</td>
+<td>January 5, 2026 to March 9, 2026</td>
+<td>Sports - Pickleball</td>
+<td>Instruction</td>
+<td>2026-01-05 15:30:00</td>
+<td>2026-03-09 16:30:00</td>
+<td>2025-12-08 15:00:00</td>
+<td>From January 5, 2026 to March 9, 2026 Each Monday from 3:30pm to 4:30pm</td>
+<td>Youth</td>
+<td>Sauganash Park</td>
+<td>5861 N. Kostner Ave.</td>
+<td>60646</td>
+<td>21</td>
+<td>http://apm.activecommunities.com/chicagoparkdistrict/Activity_Search/550133</td>
+<td>Program</td>
+<td>None</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>None</td>
+<td>&lt;NA&gt;</td>
+<td>41.9882037</td>
+<td>-87.7372685</td>
+<td>POINT (-87.73727 41.9882)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <p>I’ve worked through a number of different setups, but I’ve used this setup for two years for my general analysis and development work without any frustrations.</p>
@@ -345,10 +1255,10 @@ uv run jupyter server --generate-config</code></pre>
 <p>And I can start up a server and access it via the machine I’m <code>ssh</code>-ing in from via</p>
 <pre class="console"><code>cd ~/projects
 uv --project /jupyter run jupyterlab --ip 0.0.0.0 --no-browser</code></pre>
-<div id="3a5c1120-a397-47b0-b096-94c0214a1a20" class="cell" data-execution_count="4">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="op" style="color: #5E5E5E;
+<div id="3a5c1120-a397-47b0-b096-94c0214a1a20" class="cell" data-execution_count="12">
+<details open="" class="code-fold">
+<summary>Examining the ~/projects/jupyter directory</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span>ls <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -359,16 +1269,16 @@ background-color: null;
 font-style: inherit;">/</span>jupyter</span></code></pre></div></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>total 568
+<pre><code>total 580
 drwxrwxr-x  4 matt matt   4096 Dec  6 12:39 .
 drwxrwxr-x 61 matt matt   4096 Jan 30 22:46 ..
-drwxrwxr-x  7 matt matt   4096 Dec  6 12:39 .git
+drwxrwxr-x  7 matt matt   4096 Feb 13 12:32 .git
 -rw-rw-r--  1 matt matt    109 Dec  6 12:39 .gitignore
 -rw-rw-r--  1 matt matt     85 Dec  6 12:39 main.py
--rw-rw-r--  1 matt matt    472 Jan 31 19:48 pyproject.toml
+-rw-rw-r--  1 matt matt    498 Feb  7 18:51 pyproject.toml
 -rw-rw-r--  1 matt matt      5 Dec  6 12:39 .python-version
 -rw-rw-r--  1 matt matt      0 Dec  6 12:39 README.md
--rw-rw-r--  1 matt matt 546250 Jan 31 19:48 uv.lock
+-rw-rw-r--  1 matt matt 561107 Feb  7 18:51 uv.lock
 drwxrwxr-x  7 matt matt   4096 Jan 17 00:50 .venv</code></pre>
 </div>
 </div>
@@ -376,10 +1286,10 @@ drwxrwxr-x  7 matt matt   4096 Jan 17 00:50 .venv</code></pre>
 <h2 class="anchored" data-anchor-id="relocating-.ipynb_checkpoints-files">Relocating .ipynb_checkpoints files</h2>
 <p>Jupyter notebooks default to automatically creating a hidden directory named <code>.ipynb_checkpoints</code> in whatever directory a the notebook is in, and in that directory is periodically autosaves backups of a notebook. In development workflows (where something automatically detects files through subdirectories), this can be particularly annoying.</p>
 <p>Fortunately, we can reconfigure that. In the <code>~/.jupyter/jupyter_server_config.py</code> file that we generated above (via the <code>uv run jupyter server --generate-config</code> command), add these lines around the <code>c = get_config()</code> line to create a directory to shunt checkpoint files to and to actually route checkpoint files there.</p>
-<div id="f0a17373-0382-4094-881e-fa8b0e542160" class="cell" data-execution_count="5">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="op" style="color: #5E5E5E;
+<div id="f0a17373-0382-4094-881e-fa8b0e542160" class="cell" data-execution_count="13">
+<details open="" class="code-fold">
+<summary>Examining the code one must add to their jupyter server config to relocate .ipynb_checkpoints files</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span>cat <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -412,10 +1322,10 @@ c.FileCheckpoints.checkpoint_dir = str(CHECKPOINT_DIR)
 <section id="showing-hidden-files" class="level2">
 <h2 class="anchored" data-anchor-id="showing-hidden-files">Showing hidden files</h2>
 <p>The other annoying <code>jupyter</code> default is that hidden files (like <code>.env</code> files) are not displayed in the file browser. To correct this, uncomment the <code>...ContentsManager.allow_hidden</code> lines and make sure they’re set to <code>True</code>.</p>
-<div id="1e095bb1-1864-479f-bb81-359616b83a8f" class="cell" data-execution_count="6">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="op" style="color: #5E5E5E;
+<div id="1e095bb1-1864-479f-bb81-359616b83a8f" class="cell" data-execution_count="14">
+<details open="" class="code-fold">
+<summary>Examining the configs that have to be changed to show hidden files in the File Browser</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!</span>grep <span class="op" style="color: #5E5E5E;
 background-color: null;
