@@ -94,12 +94,13 @@ class BikeNetworkExplorer:
 
     def show(
         self,
-        zoom_start=16,
+        zoom_start=15,
         show_nodes=True,
         show_tags=True,
-        edge_weight=3,
-        edge_opacity=0.8,
+        edge_weight=2,
+        edge_opacity=0.6,
         node_radius=3,
+        node_opacity=0.6,
         min_component_size=1,
         max_components=None,
         tiles="CartoDB positron",
@@ -120,6 +121,8 @@ class BikeNetworkExplorer:
             Line opacity for edges.
         node_radius : int
             Circle radius for nodes.
+        node_opacity : float
+            Opacity for nodes.
         min_component_size : int
             Hide components with fewer nodes than this.
         max_components : int or None
@@ -192,7 +195,7 @@ class BikeNetworkExplorer:
                     color=color,
                     fill=True,
                     fill_color=color,
-                    fill_opacity=0.9,
+                    fill_opacity=node_opacity,
                     popup=popup,
                 ).add_to(m)
 
