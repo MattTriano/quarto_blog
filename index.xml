@@ -68601,7 +68601,7 @@ Zoomed in, you’ll see point locations that you can select for more detail
   <category>projects</category>
   <guid>https://www.matttriano.dev/posts/021_bike_map/bike_map_routing_tool.html</guid>
   <pubDate>Sat, 04 Apr 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://www.matttriano.dev/posts/021_bike_map/imgs/route_around_crash_zones.png" medium="image" type="image/png"/>
+  <media:content url="https://www.matttriano.dev/posts/021_bike_map/imgs/route_around_crash_zones.png" medium="image" type="image/png" height="134" width="144"/>
 </item>
 <item>
   <title>Interactive python development</title>
