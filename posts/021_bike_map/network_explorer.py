@@ -135,8 +135,8 @@ class BikeNetworkExplorer:
         folium.Map
         """
         nodes_gdf = ox.graph_to_gdfs(self.G, edges=False)
-        center_lat = nodes_gdf["y"].mean()
-        center_lon = nodes_gdf["x"].mean()
+        center_lat = (nodes_gdf["y"].max() + nodes_gdf["y"].min()) / 2
+        center_lon = ((nodes_gdf["x"].max() + nodes_gdf["x"].min()) / 2) - ((nodes_gdf["x"].max() - nodes_gdf["x"].min()) * 0.2)
 
         m = folium.Map(
             location=[center_lat, center_lon],
