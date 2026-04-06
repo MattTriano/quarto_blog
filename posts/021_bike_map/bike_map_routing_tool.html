@@ -8,7 +8,7 @@
 
 <meta name="author" content="Matt Triano">
 <meta name="dcterms.date" content="2026-04-04">
-<meta name="description" content="How I turned Chicago crash data, bike infrastructure data, and OpenStreetMap ways and nodes into a routing tool that finds safer routes from A to B in Chicagoland.">
+<meta name="description" content="How I turned Chicago crash data, bike infrastructure data, and OpenStreetMap edges and nodes into a routing tool that finds safer routes from A to B in Chicagoland.">
 
 <title>Every bike routing tool optimizes for speed. I built one that optimizes for not getting hit by a car. – Matt Triano</title>
 <style>
@@ -161,7 +161,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="quarto-title-block"><div><h1 class="title">Every bike routing tool optimizes for speed. I built one that optimizes for not getting hit by a car.</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
                   <div>
         <div class="description">
-          How I turned Chicago crash data, bike infrastructure data, and OpenStreetMap ways and nodes into a routing tool that finds safer routes from A to B in Chicagoland.
+          How I turned Chicago crash data, bike infrastructure data, and OpenStreetMap edges and nodes into a routing tool that finds safer routes from A to B in Chicagoland.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -242,7 +242,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="motivation" class="level1">
 <h1>Motivation</h1>
 <p>On a trip to Copenhagen, I biked in a city for the first time in a decade. It was delightful and liberating, and it made sense that the majority of Copenhagen residents primarily commuted by bike. Returning home to Chicago, I bought a bike and quickly felt the difference that bike infrastructure and culture makes.</p>
-<p>In Copenhagen, bike safety and bike theft were basically solved problems. Extensive infrastructure made routes everywhere safe to bike and from the number of unlocked bikes, it was clear that bike theft wasn’t an issue. Back in Chicago, I was sharing lanes with cars going 40 mph and despite extensive locking and uglying up my bike, I still never know if my bike will still be there. The gap between those two experiences stuck with me. Over time I’ve learned safer, more comfortable routes, and Chicago keeps building out new infrastructure, but you wouldn’t know about these better ways from the existing popular routing tools (see the images below). So I built a tool to help find the safer routes and find secure parking areas, the missing last mile issues that keep people from biking.</p>
+<p>In Copenhagen, bike safety and bike theft were basically solved problems. Extensive infrastructure made routes everywhere safe to bike and from the number of unlocked bikes, it was clear that bike theft wasn’t an issue. Back in Chicago, I was sharing lanes with cars going 40 mph and despite extensive locking and uglying up my bike, I still never knew if my bike would still be there. The gap between those two experiences stuck with me. Over time I’ve learned safer, more comfortable routes, and Chicago keeps building out new infrastructure, but you wouldn’t know about these better ways from the existing popular routing tools (see the images below). So I built a tool to help find the safer routes and find secure parking areas, the missing last mile issues that keep people from biking.</p>
 <p>You can try it at <a href="https://bike-map.dev.missinglastmile.net/">bike-map.dev.missinglastmile.net</a>.</p>
 <div style="display: flex; gap: 1rem; justify-content: center;">
 <figure style="text-align: center; margin: 0; width: 45%;" class="figure">
@@ -68676,11 +68676,11 @@ Google Maps route for the same start and end point
 <li><strong>Bike infrastructure</strong>: is there a protected lane, a painted bike lane, a sharrow, or nothing at all? How close can cars get to you?</li>
 <li><strong>Speed limits</strong>: a 25 mph residential street is a very different environment from an arterial road with many cars going 40+ mph.</li>
 <li><strong>Road type</strong>: a dedicated bike path is inherently different from a four-lane road, even before you look at infrastructure or crash data.</li>
-<li><strong>Traffic control devices</strong>: Intersections are particularly dangerous places to ride and that’s (somewhat) reduced by stop signs, traffic light, etc.</li>
+<li><strong>Traffic control devices</strong>: Intersections are particularly dangerous places to ride and that’s (somewhat) reduced by stop signs, traffic lights, etc.</li>
 </ul>
 <p>Each road segment gets a cost that estimates the risk of riding down that segment, and the routing algorithm finds the path with the lowest total score — the safest route, not the shortest one.</p>
-<p>Here’s a concrete example of how the safety-weighted routes differ primarily distance or time weighted routes. The safety-weighted route on the left avoids a dangerous stretch of Milwaukee Ave (where there have been over 60 recent CPD-recorded crashes involving a cyclist) by sending the cyclist onto dedicated cycling infrastructure (the Bloomingdale trail). The Google Maps routes send the cyclist through a very unsafe and uncomfortable intersection and onto high crash stretch of Milwaukee.</p>
-<p>Route differences like these tell me the cost model is having the intended effect: the algorithm will choose slightly longer routes over low risk segments rather than slightly shorter route over higher risk segments.</p>
+<p>Here’s a concrete example of how the safety-weighted routes differ from distance or time weighted routes. The safety-weighted route on the left avoids a dangerous stretch of Milwaukee Ave (where there have been over 60 recent CPD-recorded crashes involving a cyclist) by sending the cyclist onto dedicated cycling infrastructure (the Bloomingdale trail). The Google Maps routes send the cyclist through a very unsafe and uncomfortable intersection and onto high crash stretch of Milwaukee.</p>
+<p>Route differences like these tell me the cost model is having the intended effect: the algorithm will choose slightly longer routes via low risk segments rather than slightly shorter routes via higher risk segments.</p>
 <div style="display: flex; gap: 1rem; justify-content: center;">
 <figure style="text-align: center; margin: 0; width: 47%;" class="figure">
 <img src="imgs/safety_weighted_route_around_six_corners.png" style="width: 100%;" class="figure-img">
@@ -68707,7 +68707,7 @@ Zoomed out, you’ll see aggregated counts of crashes, thefts, and bike parking 
 </figcaption>
 </figure>
 </div>
-<p>Notice how the route goes three blocks west to travel north on a residential street with no crashes instead of the shorter route straight north on Halstead (over a four block span with ~20 CPD-recorded crashes over the past three years).</p>
+<p>Notice how the route goes three blocks west to travel north on a residential street with no crashes instead of the shorter route straight north on Halsted (over a four block span with ~20 CPD-recorded crashes over the past three years).</p>
 <div style="display: flex; gap: 1rem; justify-content: center;">
 <figure style="text-align: center; margin: 0; width: 90%;" class="figure">
 <img src="imgs/bike_parking_zoomed_in.png" style="width: 100%;" class="figure-img">
