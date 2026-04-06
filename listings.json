@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/021_bike_map/bike_map_routing_tool.html",
       "/posts/020_uv_jupyterlab_setup/interactive_python_development.html",
       "/posts/019_setup_tailscale_for_ssh/setting_up_tailscale.html",
       "/posts/019_setup_tailscale_for_ssh/install_code_security_audit.html",
