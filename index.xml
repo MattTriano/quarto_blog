@@ -194,7 +194,7 @@ font-style: inherit;">import</span> BikeNetworkExplorer</span></code></pre></div
 <h1>Motivation</h1>
 <p>On a trip to Copenhagen, I biked in a city for the first time in a decade. It was delightful and liberating, and it made sense that the majority of Copenhagen residents primarily commuted by bike. Returning home to Chicago, I bought a bike and quickly felt the difference that bike infrastructure and culture makes.</p>
 <p>In Copenhagen, bike safety and bike theft were basically solved problems. Extensive infrastructure made routes everywhere safe to bike and from the number of unlocked bikes, it was clear that bike theft wasn’t an issue. Back in Chicago, I was sharing lanes with cars going 40 mph and despite extensive locking and uglying up my bike, I still never knew if my bike would still be there. The gap between those two experiences stuck with me. Over time I’ve learned safer, more comfortable routes, and Chicago keeps building out new infrastructure, but you wouldn’t know about these better ways from the existing popular routing tools (see the images below). So I built a tool to help find the safer routes and find secure parking areas, the missing last mile issues that keep people from biking.</p>
-<p>You can try it at <a href="https://bike-map.dev.missinglastmile.net/">bike-map.dev.missinglastmile.net</a>.</p>
+<p>You can try it at <a href="https://chicago.bikeinfra.com/">chicago.bikeinfra.com</a>.</p>
 <div style="display: flex; gap: 1rem; justify-content: center;">
 <figure style="text-align: center; margin: 0; width: 45%;" class="figure">
 <img src="https://www.matttriano.dev/posts/021_bike_map/imgs/bike_map__palmer_park_to_wrigley.png" style="width: 100%;" class="figure-img">
@@ -68723,7 +68723,7 @@ Zoomed in, you’ll see point locations that you can select for more detail
 </section>
 <section id="try-it-out" class="level2">
 <h2 class="anchored" data-anchor-id="try-it-out">Try it out</h2>
-<p>The app is live at <a href="https://bike-map.dev.missinglastmile.net/">bike-map.dev.missinglastmile.net</a>. Pick two points in Chicago and see what route it suggests. Toggle the crash and theft layers to see how risk is distributed across the city.</p>
+<p>The app is live at <a href="https://chicago.bikeinfra.com/">chicago.bikeinfra.com</a>. Pick two points in Chicago and see what route it suggests. Toggle the crash and theft layers to see how risk is distributed across the city.</p>
 <p>If you ride in Chicago, I have a question: what’s a route you’ve figured out the hard way — one where you learned to avoid a particular street or take a specific detour? I’m curious whether the app finds the same route. That kind of local knowledge is exactly what helps me tune the model.</p>
 
 
